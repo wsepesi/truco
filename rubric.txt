@@ -1,0 +1,24 @@
+Rubric Turned in on Time (5 points)
+- Approved by Oliver Rosenberg
+
+Languages/Frameworks Used (30 points)
+- Learned/Used React frontend (10 points)
+- Learned/Used Express backend (10 points)
+- Learned/Used Mongo DB database (10 points)
+
+Functionality (40 points)
+- Users can log into a lobby that displays open games (5 points)
+- Users can join a game if there is an open seat (5 points)
+- Gameplay follows the rules of Truco (20 points)
+    - User who goes first cycles each hand (5 points)
+    - Users can only play a card when it is their turn (5 points)
+    - When someone calls "envido" or "truco", no player can play a card until there is a resopnse (5 points)
+    - Order properties of the cards are maintained (5 points)
+- Server sends a message to the user explaining how points were received/distributed (5 points)
+- Database keeps track of trick points and game points (5 points)
+
+Best Practices (5 points)
+- Code is well-formatted and readable (3 points)
+- HTML output passes validator (2 points)
+
+Creative Portion (20 points)
