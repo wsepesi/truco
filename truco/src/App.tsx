@@ -6,15 +6,18 @@ import {
 } from 'react-query'
 
 import AppContent from './components/AppContent';
-import React from 'react';
+import { BrowserRouter } from "react-router-dom";
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AppContent />
-    </QueryClientProvider>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <AppContent />
+      </QueryClientProvider>
+    </BrowserRouter>
+    
   );
 }
 
