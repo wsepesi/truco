@@ -1,23 +1,16 @@
 import './App.css';
 
-import {
-  QueryClient,
-  QueryClientProvider,
-} from 'react-query'
+import { Route, Routes } from 'react-router-dom';
 
 import AppContent from './components/AppContent';
-import { BrowserRouter } from "react-router-dom";
-
-const queryClient = new QueryClient();
+import Test from './components/Test';
 
 function App() {
   return (
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <AppContent />
-      </QueryClientProvider>
-    </BrowserRouter>
-    
+    <Routes>
+      <Route path="/" element={<AppContent />} />
+      <Route path="test" element={<Test />} />
+    </Routes>
   );
 }
 

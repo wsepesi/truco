@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import React from 'react';
 import logo from '../logo.svg';
 import useTestExpress from '../hooks/testExpress';
@@ -26,6 +27,7 @@ const AppContent = (): React.ReactElement => {
                 <p>{status}</p>
                 {/* {isError && <p>{error}</p>} */}
             </header>
+            <Link to="/test">Test</Link>
         </div>)
 }
 
