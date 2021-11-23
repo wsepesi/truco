@@ -3,7 +3,8 @@ import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
-import AppContent from './components/AppContent';
+import Home from './components/Home';
+// import AppContent from './components/AppContent';
 import Test from './components/Test';
 import io from 'socket.io-client';
 
@@ -23,7 +24,7 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<AppContent />} />
+      <Route path="/" element={<Home />} />
       <Route path="test" element={<Test socket={socket}/>} />
     </Routes>
   );

@@ -9,8 +9,6 @@ import express from 'express'
 
 dotenv.config({ path: './config.env'});
 
-// require('dotenv').config({ path: './config.env'})
-
 const app = express()
 const port = process.env.PORT || 5000
 

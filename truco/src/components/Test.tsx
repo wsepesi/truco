@@ -1,5 +1,6 @@
 import React, { MouseEventHandler } from 'react';
 
+import { Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
 import { useState } from 'react';
@@ -7,6 +8,7 @@ import { useState } from 'react';
 type Props = {
     socket: Socket
 }
+
 const Test = (props: Props): React.ReactElement => {
     const [message, setMessage] = useState<string>('');
 
@@ -26,7 +28,7 @@ const Test = (props: Props): React.ReactElement => {
             <h1>Test page</h1>
             <Link to="/">Home</Link>
             <p>{message}</p>
-            <button onClick={sendHello}>Send Hello</button>
+            <Button onClick={sendHello}>Send Hello</Button>
         </div>)
 }
 

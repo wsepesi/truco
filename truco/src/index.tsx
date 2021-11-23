@@ -11,7 +11,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {ThemeProvider} from '@mui/material/styles';
 import reportWebVitals from './reportWebVitals';
-import theme from './configs/theme'
+import { theme } from './configs/theme'
 
 const queryClient = new QueryClient();
 
@@ -19,9 +19,9 @@ ReactDOM.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        {/* <ThemeProvider theme={theme}> */}
+        <ThemeProvider theme={theme}>
           <App />
-        {/* </ThemeProvider> */}
+        </ThemeProvider>
       </BrowserRouter>
     </QueryClientProvider>
   </React.StrictMode>,
