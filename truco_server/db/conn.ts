@@ -1,13 +1,10 @@
 import { MongoClient } from "mongodb";
 const Db = process.env.ATLAS_URI;
-const client = new MongoClient(Db, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const client = new MongoClient(Db);
  
-var _db;
+var _db: any;
  
-export function connectToServer(callback) {
+const connectToServer = (callback: any) => {
     client.connect(function (err, db) {
         // Verify we got a good "db" object
         if (db) {
@@ -20,3 +17,5 @@ export function connectToServer(callback) {
 export function getDb() {
     return _db;
 }
+
+export default connectToServer;
