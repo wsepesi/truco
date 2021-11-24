@@ -1,14 +1,15 @@
-import { Box, Grid } from '@mui/material'
+import { Box, Grid, Typography } from '@mui/material'
 import React from 'react'
+import Game from './Game'
 
 const Games = () :React.ReactElement => {
   return (
     <div>
-        <Grid container spacing ={1} item xs={4}>
-            <Box>
-                Game Text Here
-            </Box>
-        </Grid>
+      <Grid>
+          <Box>
+            <Game/>
+          </Box>
+      </Grid>
     </div>
   )
 }
