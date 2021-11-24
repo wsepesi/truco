@@ -9,7 +9,6 @@ const http_1 = require("http");
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 dotenv_1.default.config({ path: './config.env' });
-// require('dotenv').config({ path: './config.env'})
 const app = (0, express_1.default)();
 const port = process.env.PORT || 5000;
 app.use((0, cors_1.default)());
