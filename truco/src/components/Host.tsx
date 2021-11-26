@@ -1,10 +1,15 @@
-import { Button } from '@mui/material'
+import { Link } from 'react-router-dom';
 import React from 'react'
 
-const Host = () :React.ReactElement => {
+type Props = {
+  currentUser: String
+}
+
+const Host = (props:Props) :React.ReactElement => {
   return (
     <div>
-        <Button color="inherit">Host a Game</Button>
+        <Link to="/gameHome">Host a Game</Link>
+        {/* TODO: PASS CURRENT USER AS GAME OWNER */}
     </div>
   )
 }

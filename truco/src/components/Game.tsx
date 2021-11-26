@@ -1,9 +1,20 @@
+import { Button } from '@mui/material'
 import React from 'react'
 
-const Game = () :React.ReactElement => {
+type Props = {
+  gameOwner: String
+  gameId: number
+}
+
+const Game = (props:Props) :React.ReactElement => {
+  const joinGame = () => {
+    // TODO: PUT SOMETHING WITH GAME ID HERE
+  }
+
   return (
     <div>
-        <p>Test Game Text</p>
+        Game Owner: {props.gameOwner}
+        <Button onClick={joinGame}>Join Game</Button>
     </div>
   )
 }

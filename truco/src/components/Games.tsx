@@ -7,7 +7,11 @@ const Games = () :React.ReactElement => {
     <div>
       <Grid>
           <Box>
-            <Game/>
+            {/* TODO: CHECK IN THE DATABASE FOR ALL THE GAMES THEN MAP OVER THAT ARRAY */}
+            <Game
+              gameOwner="test" //FIXME:
+              gameId={0} //FIXME:
+            />
           </Box>
       </Grid>
     </div>

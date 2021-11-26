@@ -7,6 +7,7 @@ import Home from './components/Home';
 // import AppContent from './components/AppContent';
 import Test from './components/Test';
 import io from 'socket.io-client';
+import GameHome from './components/GameHome';
 
 function App() {
   const [socket, setSocket] = useState<any>(null);
@@ -26,6 +27,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="test" element={<Test socket={socket}/>} />
+      <Route path="gameHome" element={<GameHome socket={socket}/>} />
     </Routes>
   );
 }

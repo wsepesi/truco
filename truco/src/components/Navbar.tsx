@@ -1,10 +1,11 @@
 import { AppBar, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Toolbar, Typography } from '@mui/material'
 import React from 'react'
-import { setSourceMapRange } from 'typescript'
 
 type Props = {
   loggedIn: boolean
   setLoggedIn: any //FIXME:
+  currentUser: String
+  setCurrentUser: any //FIXME:
 }
 
 const Navbar = (props:Props) :React.ReactElement => {
@@ -16,6 +17,7 @@ const Navbar = (props:Props) :React.ReactElement => {
 
   const logoutClick = () => {
     props.setLoggedIn(false)
+    props.setCurrentUser("")
   }
 
   const closeLoginCancel = () => {
@@ -25,6 +27,9 @@ const Navbar = (props:Props) :React.ReactElement => {
   const closeLoginSuccess = () => {
     setLoginOpen(false)
     props.setLoggedIn(true)
+    props.setCurrentUser("something")
+    //TODO: CHECK IF THE USERNAME ALREADY EXISTS
+      //I AM NOT SURE HOW TO ACCESS THE FORM THAT THE USER IS TYPING INTO
   }
 
   return (
@@ -35,7 +40,9 @@ const Navbar = (props:Props) :React.ReactElement => {
               <Typography variant="h6" color="inherit" sx={{ mr: 10 }}>Truco</Typography>
               <Button color="inherit" sx={{mr: 5}}>Home</Button>
               <Button color="inherit" sx={{mr: "auto"}}>Rules</Button>
-              {props.loggedIn ? <Button color="inherit" onClick={logoutClick}>Logout</Button> : <Button color="inherit" onClick={loginClick}>Login</Button>}
+              {props.loggedIn
+                ? <span><Box sx={{ display: { xs: 'none', md: 'flex' } }}><Typography variant="h6" color="inherit">Username: {props.currentUser}</Typography><Button color="inherit" onClick={logoutClick} sx={{ml: 5}}>Logout</Button></Box></span>
+                : <Button color="inherit" onClick={loginClick}>Login</Button>}
               <Dialog open={loginOpen} onClose={closeLoginCancel}>
                 <DialogTitle>Login</DialogTitle>
                 <DialogContent>
