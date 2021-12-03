@@ -39,7 +39,7 @@ const GameHome = (props: Props) :React.ReactElement => {
             />
         </div>
         <div style={{width: "15vw"}}>
-            <Chat />
+            <Chat socket={props.socket}/>
         </div>
     </div>
   )

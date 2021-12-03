@@ -32,6 +32,13 @@ io.on("connection", (socket) => {
     console.log("Test");
     socket.emit('ping', 'pong');
   })
+
+  socket.on("chat", (data) => {
+    console.log("chat");
+    socket.emit("chat", {
+      msg: data.msg
+    });
+  })
 });
 
 httpServer.listen(4000);

@@ -1,7 +1,8 @@
-import React from 'react'
 import Games from './Games'
 import Host from './Host'
+import { Link } from 'react-router-dom'
 import Navbar from './Navbar'
+import React from 'react'
 
 const Home = () :React.ReactElement => {
   const[loggedIn, setLoggedIn] = React.useState(false)
@@ -19,6 +20,7 @@ const Home = () :React.ReactElement => {
         currentUser={currentUser}
       />
       <Games />
+      <Link to="/test">Test</Link>
     </div>
   )
 }
