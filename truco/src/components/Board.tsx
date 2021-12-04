@@ -1,5 +1,6 @@
 import { Button, Typography } from '@mui/material'
 import React from 'react'
+import Cards from './Cards'
 import CardsPlayed from './CardsPlayed'
 
 type Props = {
@@ -41,13 +42,15 @@ const Board = (props: Props) :React.ReactElement => {
     <div style={{display: "flex", justifyContent: "space-between"}}>
         <div style={{width: "90%"}}>
           <div style={{paddingTop: "35px"}}>
-            Other Cards
+            <Typography variant="h5" align="center">Opponent's Cards</Typography>
+            <Cards />
           </div>
           <div>
             <CardsPlayed />
           </div>
           <div>
-            User's Cards
+            <Typography variant="h5" align="center">Your Cards</Typography>
+            <Cards />
           </div>
         </div>
         <div style={{width: "10%"}}>

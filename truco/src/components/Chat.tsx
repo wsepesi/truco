@@ -52,12 +52,12 @@ const Chat = (props: Props): React.ReactElement => {
       <div style={{textAlign: "center"}}>
         <Typography variant="h4" color="inherit">Chat</Typography>
       </div>
-      <div>
-        {messages ? toComponents(messages) : null}
-      </div>
       <TextField variant="standard" style={{marginLeft: "5px"}} value={msg} onChange={(e) => setMsg(e.target.value)}/>
       {/* <input type="text" id="chatText"  placeholder="Chat"></input> */}
       <Button onClick={sendChat}>Send</Button>
+      <div>
+        {messages ? toComponents(messages) : null}
+      </div>
     </div>
   )
 }

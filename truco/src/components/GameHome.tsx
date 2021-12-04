@@ -8,6 +8,8 @@ type Props = {
     socket: Socket
 }
 
+//TODO: ADD THE NAVBAR, BE ABLE TO PASS THE STATE VARIABLE LOGGED IN TO THIS PAGE
+
 const GameHome = (props: Props) :React.ReactElement => {
     const[trucoCalled, setTrucoCalled] = React.useState(false)
     const[envidoCalled, setEnvidoCalled] = React.useState(false)
@@ -17,7 +19,7 @@ const GameHome = (props: Props) :React.ReactElement => {
     const[otherPoints, setOtherPoints] = React.useState(0)
 
   return (
-    <div style={{display: "flex", justifyContent: "space-between", height: "100vw"}}>
+    <div style={{display: "flex", justifyContent: "space-between", height: "100vh"}}>
         <div style={{width: "15vw"}}>
             <PointTracker
                 trucoPoints={trucoPoints}
