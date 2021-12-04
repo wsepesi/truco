@@ -35,7 +35,7 @@ io.on("connection", (socket) => {
 
   socket.on("chat", (data) => {
     console.log("chat");
-    socket.emit("chat", {
+    io.emit("chat", {
       msg: data.msg
     });
   })

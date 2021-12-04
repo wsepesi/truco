@@ -1,6 +1,6 @@
 import { Button, TextField, Typography } from '@mui/material'
+import React, { useEffect } from 'react'
 
-import React from 'react'
 import { Socket } from 'socket.io-client'
 
 //TODO: users should show up w messages
@@ -15,23 +15,21 @@ type sChat = {
 
 const Chat = (props: Props): React.ReactElement => {
   const [msg, setMsg] = React.useState<string>('');
-  const [messages, setMessages] = React.useState<React.ReactElement[]>([]);
+  const [messages, setMessages] = React.useState<string[]>([]);
 
   const { socket } = props;
 
-  socket.on("chat", (data: sChat) => {
-    addMsg(data.msg);
-  })
+  useEffect(() => {
+    socket.on("chat", (data: sChat) => {
+      setMessages(messages => [...messages, data.msg]);
+    })
 
-  const handleAddMessages = (newMsg: string) => {
-    const newTyp: React.ReactElement = <Typography>{newMsg}</Typography>
-    const newMessages = [...messages, newTyp];
-    setMessages(newMessages /*.slice(-10)*/);
-  }
-
-  const addMsg = (msg: string) => {
-    handleAddMessages(msg);
-  }
+    return () => {
+      socket.off("chat");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  
+  }, [socket]);
 
   const sendChat = () => {
     const message = msg
@@ -43,10 +41,10 @@ const Chat = (props: Props): React.ReactElement => {
     else (alert("no socket"))
   }
 
-  // const toComponents = (messages: string[]): React.ReactElement[] => {
-  //   // console.log()
-  //   return messages.slice(-10).map((msg: string, i: number) => <Typography key={i}>{msg}</Typography>)
-  // }
+  const toComponents = (messages: string[]): React.ReactElement[] => {
+    // console.log()
+    return messages.slice(-10).map((msg: string, i: number) => <Typography key={i}>{msg}</Typography>)
+  }
 
   return (
     <div>
@@ -54,7 +52,7 @@ const Chat = (props: Props): React.ReactElement => {
         <Typography variant="h4" color="inherit">Chat</Typography>
       </div>
       <div>
-        {messages}
+        {messages ? toComponents(messages) : null}
       </div>
       <TextField variant="standard" style={{marginLeft: "5px"}} value={msg} onChange={(e) => setMsg(e.target.value)}/>
       {/* <input type="text" id="chatText"  placeholder="Chat"></input> */}
