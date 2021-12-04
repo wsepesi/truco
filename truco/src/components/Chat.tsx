@@ -15,7 +15,7 @@ type sChat = {
 
 const Chat = (props: Props): React.ReactElement => {
   const [msg, setMsg] = React.useState<string>('');
-  const [messages, setMessages] = React.useState<string[]>([]);
+  const [messages, setMessages] = React.useState<React.ReactElement[]>([]);
 
   const { socket } = props;
 
@@ -24,8 +24,9 @@ const Chat = (props: Props): React.ReactElement => {
   })
 
   const handleAddMessages = (newMsg: string) => {
-    const newMessages = [...messages, newMsg];
-    setMessages(newMessages);
+    const newTyp: React.ReactElement = <Typography>{newMsg}</Typography>
+    const newMessages = [...messages, newTyp];
+    setMessages(newMessages /*.slice(-10)*/);
   }
 
   const addMsg = (msg: string) => {
@@ -42,22 +43,22 @@ const Chat = (props: Props): React.ReactElement => {
     else (alert("no socket"))
   }
 
-  const toComponents = (messages: string[]): React.ReactElement[] => {
-    // console.log()
-    return messages.slice(-10).map((msg: string, i: number) => <Typography key={i}>{msg}</Typography>)
-  }
+  // const toComponents = (messages: string[]): React.ReactElement[] => {
+  //   // console.log()
+  //   return messages.slice(-10).map((msg: string, i: number) => <Typography key={i}>{msg}</Typography>)
+  // }
 
   return (
     <div>
       <div style={{textAlign: "center"}}>
         <Typography variant="h4" color="inherit">Chat</Typography>
       </div>
+      <div>
+        {messages}
+      </div>
       <TextField variant="standard" style={{marginLeft: "5px"}} value={msg} onChange={(e) => setMsg(e.target.value)}/>
       {/* <input type="text" id="chatText"  placeholder="Chat"></input> */}
       <Button onClick={sendChat}>Send</Button>
-      <div>
-        {messages ? toComponents(messages) : null}
-      </div>
     </div>
   )
 }
