@@ -1,16 +1,16 @@
 import './App.css';
 
 import { Route, Routes } from 'react-router-dom';
+import io, { Socket } from 'socket.io-client';
 import { useEffect, useState } from 'react';
 
+import GameHome from './components/GameHome';
 import Home from './components/Home';
 // import AppContent from './components/AppContent';
 import Test from './components/Test';
-import io from 'socket.io-client';
-import GameHome from './components/GameHome';
 
 function App() {
-  const [socket, setSocket] = useState<any>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
     const newSocket = io(`http://${window.location.hostname}:4000`, {
@@ -20,12 +20,16 @@ function App() {
       // },
     });
     setSocket(newSocket);
-    // return () => newSocket.close();
+    return () => {
+      newSocket.close();
+    };
   }, []);
+
+  
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<Home socket={socket}/>} />
       <Route path="test" element={<Test socket={socket}/>} />
       <Route path="gameHome" element={<GameHome socket={socket}/>} />
     </Routes>

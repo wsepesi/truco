@@ -1,4 +1,5 @@
 import { AppBar, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Toolbar, Typography } from '@mui/material'
+
 import React from 'react'
 
 type Props = {
@@ -9,7 +10,8 @@ type Props = {
 }
 
 const Navbar = (props:Props) :React.ReactElement => {
-  const [loginOpen, setLoginOpen] = React.useState(false)
+  const [username, setUsername] = React.useState<string>('');
+  const [loginOpen, setLoginOpen] = React.useState<boolean>(false);
 
   const loginClick = () => {
     setLoginOpen(true)
@@ -27,7 +29,8 @@ const Navbar = (props:Props) :React.ReactElement => {
   const closeLoginSuccess = () => {
     setLoginOpen(false)
     props.setLoggedIn(true)
-    props.setCurrentUser("something")
+    props.setCurrentUser(username)
+    setUsername('');
     //TODO: CHECK IF THE USERNAME ALREADY EXISTS
       //I AM NOT SURE HOW TO ACCESS THE FORM THAT THE USER IS TYPING INTO
   }
@@ -55,6 +58,7 @@ const Navbar = (props:Props) :React.ReactElement => {
                     type="text"
                     fullWidth
                     variant="standard"
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                 </DialogContent>
                 <DialogActions>
