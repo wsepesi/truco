@@ -3,19 +3,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const truco_1 = require("./routes/truco");
 const socket_io_1 = require("socket.io");
-const conn_1 = require("./db/conn");
+const database_service_1 = require("./src/services/database.service");
 const cors_1 = __importDefault(require("cors"));
 const http_1 = require("http");
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
+const truco_router_1 = require("./src/routes/truco.router");
 dotenv_1.default.config({ path: './config.env' });
 const app = (0, express_1.default)();
 const port = process.env.PORT || 5000;
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
-app.use(truco_1.trucoRoutes);
 const t = "hi";
 console.log(t);
 const httpServer = (0, http_1.createServer)(app);
@@ -52,13 +51,16 @@ app.get('/', (_, res) => {
 //   // add to database  
 //   res.send({ success: true});
 // });
-app.listen(port, () => {
-    (0, conn_1.connectToServer)((err) => {
-        if (err) {
-            console.log(err);
-        }
+(0, database_service_1.connectToDatabase)()
+    .then(() => {
+    app.use("/truco", truco_router_1.trucoRouter);
+    app.listen(port, () => {
+        console.log(`Running on port ${port}`);
     });
-    console.log(`Running on port ${port}`);
+})
+    .catch((error) => {
+    console.log(error);
+    process.exit();
 });
 //TODO:
 // add routing file, see https://mongodb.com/languages/mern-stack-tutorial
