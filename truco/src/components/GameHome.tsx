@@ -1,11 +1,11 @@
-import React from 'react'
-import { Socket } from 'socket.io-client';
 import Board from './Board';
 import Chat from './Chat';
 import PointTracker from './PointTracker';
+import React from 'react'
+import { SocketContext } from '../hooks/socket-context';
 
 type Props = {
-    socket: Socket
+    
 }
 
 //TODO: ADD THE NAVBAR, BE ABLE TO PASS THE STATE VARIABLE LOGGED IN TO THIS PAGE
@@ -41,7 +41,9 @@ const GameHome = (props: Props) :React.ReactElement => {
             />
         </div>
         <div style={{width: "15vw"}}>
-            <Chat socket={props.socket}/>
+            <SocketContext.Consumer>
+                {socket => <Chat socket={socket}/>}
+            </SocketContext.Consumer>
         </div>
     </div>
   )

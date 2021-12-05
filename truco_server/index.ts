@@ -1,7 +1,8 @@
 import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "./src/types";
+import { User, trucoRoutes } from './routes/truco'
 
 import { Server } from "socket.io";
-import connectToServer from "./db/conn";
+import { connectToServer } from "./db/conn";
 import cors from 'cors'
 import { createServer } from "http";
 import dotenv from 'dotenv'
@@ -14,7 +15,7 @@ const port = process.env.PORT || 5000
 
 app.use(cors())
 app.use(express.json())
-// app.use(require("./routes/record")); ADD BACK LATER
+app.use(trucoRoutes);
 
 const t = "hi";
 console.log(t);
@@ -43,18 +44,29 @@ io.on("connection", (socket) => {
 
 httpServer.listen(4000);
 
-// const dbo = require('./db/conn');
-
 app.get('/', (_, res) => {
   res.send('Hello World!');
 })
 
+// app.get('login', (req, res) => {
+//   const { username, socketId } = req.body;
+//   const user: User = {
+//     id: null,
+//     username,
+//     socketId
+//   }
+//   truco
+//   // add to database  
+
+//   res.send({ success: true});
+// });
+
 app.listen(port, () => {
-  // connectToServer((err: any) => { //TODO: type
-  //   if (err) {
-  //     console.log(err);
-  //   }
-  // });
+  connectToServer((err: any) => { //TODO: type
+    if (err) {
+      console.log(err);
+    }
+  });
   console.log(`Running on port ${port}`)
 })
 

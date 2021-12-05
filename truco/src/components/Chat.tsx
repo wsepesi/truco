@@ -6,7 +6,7 @@ import { Socket } from 'socket.io-client'
 //TODO: users should show up w messages
 
 type Props = {
-  socket: Socket
+  socket: Socket | null
 }
 
 type sChat = {
@@ -20,12 +20,14 @@ const Chat = (props: Props): React.ReactElement => {
   const { socket } = props;
 
   useEffect(() => {
-    socket.on("chat", (data: sChat) => {
-      setMessages(messages => [...messages, data.msg]);
-    })
+    if (socket) {
+      socket.on("chat", (data: sChat) => {
+        setMessages(messages => [...messages, data.msg]);
+      })
 
-    return () => {
-      socket.off("chat");
+      return () => {
+        socket.off("chat");
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   

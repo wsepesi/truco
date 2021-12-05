@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import GameHome from './components/GameHome';
 import Home from './components/Home';
 // import AppContent from './components/AppContent';
-import Test from './components/Test';
+import { SocketContext } from './hooks/socket-context';
 
 function App() {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -28,11 +28,12 @@ function App() {
   
 
   return (
-    <Routes>
-      <Route path="/" element={<Home socket={socket}/>} />
-      <Route path="test" element={<Test socket={socket}/>} />
-      <Route path="gameHome" element={<GameHome socket={socket}/>} />
-    </Routes>
+    <SocketContext.Provider value={socket}>
+      <Routes>
+        <Route path="/" element={<Home/>} />
+        <Route path="gameHome" element={<GameHome/>} />
+      </Routes>
+    </SocketContext.Provider>
   );
 }
 

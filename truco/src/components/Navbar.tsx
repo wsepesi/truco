@@ -1,15 +1,24 @@
 import { AppBar, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Toolbar, Typography } from '@mui/material'
+import axios, { AxiosResponse } from 'axios';
 
+import { BASE_URL } from '../configs/vars';
 import React from 'react'
+import { Socket } from 'socket.io-client';
 
 type Props = {
   loggedIn: boolean
   setLoggedIn: any //FIXME:
   currentUser: String
   setCurrentUser: any //FIXME:
+  socket: Socket | null
 }
 
-const Navbar = (props:Props) :React.ReactElement => {
+type LoginResult = {
+  success: boolean,
+}
+
+const Navbar = (props:Props): React.ReactElement => {
+  const { socket } = props;
   const [username, setUsername] = React.useState<string>('');
   const [loginOpen, setLoginOpen] = React.useState<boolean>(false);
 
@@ -26,11 +35,31 @@ const Navbar = (props:Props) :React.ReactElement => {
     setLoginOpen(false)
   }
 
-  const closeLoginSuccess = () => {
-    setLoginOpen(false)
-    props.setLoggedIn(true)
-    props.setCurrentUser(username)
-    setUsername('');
+  const serverLogin = async (username: string): Promise<boolean> => {
+    if (!socket) return false; //FIXME:
+    const result: AxiosResponse<LoginResult> = await axios({
+        method: 'post',
+        url: `${BASE_URL}users/add`,
+        data: {
+          username,
+          socketId: socket.id
+        }
+    });
+    return result.data.success;
+  }
+
+  const closeLoginSuccess = async () => {
+    const res = await serverLogin(username);
+    if (res) {
+      setLoginOpen(false)
+      props.setLoggedIn(true)
+      props.setCurrentUser(username)
+      setUsername('');
+    } else {
+      alert("Login failed");
+      setLoginOpen(false);
+    }
+    
     //TODO: CHECK IF THE USERNAME ALREADY EXISTS
       //I AM NOT SURE HOW TO ACCESS THE FORM THAT THE USER IS TYPING INTO
   }
