@@ -1,12 +1,12 @@
 import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "./src/types";
-import { User, trucoRoutes } from './routes/truco'
 
 import { Server } from "socket.io";
-import { connectToServer } from "./db/conn";
+import { connectToDatabase } from "./src/services/database.service"
 import cors from 'cors'
 import { createServer } from "http";
 import dotenv from 'dotenv'
 import express from 'express'
+import { trucoRouter } from './src/routes/truco.router'
 
 dotenv.config({ path: './config.env'});
 
@@ -15,7 +15,6 @@ const port = process.env.PORT || 5000
 
 app.use(cors())
 app.use(express.json())
-app.use(trucoRoutes);
 
 const t = "hi";
 console.log(t);
@@ -61,13 +60,17 @@ app.get('/', (_, res) => {
 //   res.send({ success: true});
 // });
 
-app.listen(port, () => {
-  connectToServer((err: any) => { //TODO: type
-    if (err) {
-      console.log(err);
-    }
-  });
-  console.log(`Running on port ${port}`)
+connectToDatabase()
+.then(() => {
+  app.use("/truco", trucoRouter);
+
+  app.listen(port, () => {
+    console.log(`Running on port ${port}`)
+  })
+})
+.catch((error: Error) => {
+  console.log(error);
+  process.exit();
 })
 
 //TODO:
