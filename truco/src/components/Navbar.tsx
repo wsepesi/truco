@@ -4,6 +4,7 @@ import axios, { AxiosResponse } from 'axios';
 import { BASE_URL } from '../configs/vars';
 import React from 'react'
 import { Socket } from 'socket.io-client';
+import { User } from '../configs/types';
 
 type Props = {
   loggedIn: boolean
@@ -14,7 +15,9 @@ type Props = {
 }
 
 type LoginResult = {
+  msg: string,
   success: boolean,
+  id?: string
 }
 
 const Navbar = (props:Props): React.ReactElement => {
@@ -37,18 +40,23 @@ const Navbar = (props:Props): React.ReactElement => {
 
   const serverLogin = async (username: string): Promise<boolean> => {
     if (!socket) return false; //FIXME:
+    const user: User = {
+      name: username,
+      socketId: socket.id
+    }
+    console.log(user)
     const result: AxiosResponse<LoginResult> = await axios({
         method: 'post',
-        url: `${BASE_URL}users/add`,
-        data: {
-          username,
-          socketId: socket.id
-        }
+        url: `${BASE_URL}db/users`,
+        data: user
     });
-    return result.data.success;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { success, id } = result.data;
+    return success;
   }
 
   const closeLoginSuccess = async () => {
+    console.log("closeLoginSuccess")
     const res = await serverLogin(username);
     if (res) {
       setLoginOpen(false)

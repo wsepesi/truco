@@ -1,5 +1,9 @@
+import Game from "./gameLogic";
+import Room from "./models/room";
+
 type cChat = {
     msg: string,
+    room: string
 }
 
 type sChat = {
@@ -111,11 +115,16 @@ export interface ServerToClientEvents {
     chat: (data: sChat) => void;
     basicEmit: (a: number, b: string, c: Buffer) => void;
     withAck: (d: string, callback: (e: number) => void) => void;
+    rooms: (rooms: Room[]) => void;
+    startHand: (game: Game) => void;
   }
   
 export interface ClientToServerEvents {
     hello: () => void;
     chat: (data: cChat) => void;
+    updateRooms: () => void;
+    joinRoom: (roomId: string) => void;
+    startHand: (id: string) => void;
 }
 
 export interface InterServerEvents {

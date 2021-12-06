@@ -30,8 +30,8 @@ function App() {
   return (
     <SocketContext.Provider value={socket}>
       <Routes>
-        <Route path="/" element={<Home/>} />
-        <Route path="gameHome" element={<GameHome/>} />
+        <Route path="/" element={<Home socket={socket}/>} />
+        <Route path="room/:id" element={<GameHome socket={socket}/>} />
       </Routes>
     </SocketContext.Provider>
   );

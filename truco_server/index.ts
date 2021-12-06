@@ -1,5 +1,8 @@
 import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "./src/types";
+import { getGame, getRooms, updateGame } from "./src/routes/routesUtils";
 
+import Game from "./src/gameLogic";
+import Room from "./src/models/room";
 import { Server } from "socket.io";
 import { connectToDatabase } from "./src/services/database.service"
 import cors from 'cors'
@@ -34,12 +37,43 @@ io.on("connection", (socket) => {
   })
 
   socket.on("chat", (data) => {
-    console.log("chat");
-    io.emit("chat", {
+    console.log("chat", data.room);
+    io.in(data.room).emit("chat", {
       msg: data.msg
     });
   })
-});
+
+  // UPDATE ROOMS LIST
+  socket.on("updateRooms", async () => {
+    // GET ROOMS FROM DB
+    const rooms: Room[] = await getRooms();
+
+    console.log("got rooms", rooms);
+
+    // SEND ROOMS TO CLIENT
+    io.emit("rooms", rooms);
+  });
+
+  // JOIN ROOM
+  socket.on('joinRoom', (roomId) => {
+    socket.join(roomId);
+  })
+
+  // START GAME
+  socket.on('startHand', async (id) => {
+    // GET GAME FROM DB
+    const game: Game = await getGame(id);
+
+    // START HAND ON OBJECT
+    game.startHand();
+
+    // SEND GAME TO DB
+    await updateGame(game);
+
+    // UPDATE CLIENTS IN ROOM
+    io.in(game.gameId).emit("startHand", game);
+  });
+})
 
 httpServer.listen(4000);
 
@@ -62,7 +96,7 @@ app.get('/', (_, res) => {
 
 connectToDatabase()
 .then(() => {
-  app.use("/truco", trucoRouter);
+  app.use("/db", trucoRouter);
 
   app.listen(port, () => {
     console.log(`Running on port ${port}`)

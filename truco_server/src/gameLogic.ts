@@ -1,13 +1,15 @@
-import { MatchKeysAndValues } from "mongodb";
-import { exit } from "process";
 import { Card, CardIds, CardOrder } from "./types";
+
+// import { ObjectId } from "mongodb";
 
 const HOST_TOKEN_VALUE = 0;
 const OTHER_TOKEN_VALUE = 1;
 
-export class Game {
-    hostId: number;
-    otherId: number;
+export default class Game {
+    gameId: string;
+
+    hostId: string;
+    otherId: string;
 
     hostPoints: number;
     otherPoints: number;
@@ -27,8 +29,8 @@ export class Game {
 
     handTrucoPoints: number;
     handEnvidoPoints: number;
-    handTrucoWinnerId: number;
-    handEnvidoWinnerId: number;
+    handTrucoWinnerId: string;
+    handEnvidoWinnerId: string;
 
     hostCalledEnvido: boolean;
     otherCalledEnvido: boolean;
@@ -52,7 +54,9 @@ export class Game {
     hostHasFlor: boolean;
     otherHasFlor: boolean;
 
-    constructor (hostId: number, otherId: number) {
+    constructor (gameId: string, hostId: string, otherId: string) {
+        this.gameId = gameId;
+
         this.hostId = hostId;
         this.otherId = otherId;
 
@@ -74,8 +78,8 @@ export class Game {
 
         this.handTrucoPoints = 1;
         this.handEnvidoPoints = 0;
-        this.handTrucoWinnerId = 0;
-        this.handEnvidoWinnerId = 0;
+        this.handTrucoWinnerId = '';
+        this.handEnvidoWinnerId = '';
 
         this.hostCalledEnvido = false;
         this.otherCalledEnvido = false;
@@ -314,14 +318,14 @@ export class Game {
         if (this.handTrucoWinnerId === this.hostId) this.hostPoints += this.handTrucoPoints;
         if (this.handTrucoWinnerId === this.otherId) this.otherPoints += this.handTrucoPoints;
         this.handTrucoPoints = 1;
-        this.handTrucoWinnerId = 0;
+        this.handTrucoWinnerId = '';
     }
 
     distributeEnvidoPoints = () => {
         if (this.handEnvidoWinnerId === this.hostId) this.hostPoints += this.handEnvidoPoints;
         if (this.handEnvidoWinnerId === this.otherId) this.otherPoints += this.handEnvidoPoints;
         this.handEnvidoPoints = 0;
-        this.handEnvidoWinnerId = 0;
+        this.handEnvidoWinnerId = '';
     }
 
     //end the hand
@@ -339,7 +343,7 @@ export class Game {
     }
 
     //will receive the index of which card the user clicked on
-    playCard = (index: number, playerId: number) => {
+    playCard = (index: number, playerId: string) => {
         //host cards
         if (playerId === this.hostId) {
             if (this.cardsPlayedInHand === 0 || this.cardsPlayedInHand === 1) {
@@ -374,7 +378,7 @@ export class Game {
     }
 
     //will update the state of allowing players to respond
-    handleTrucoCalledBy = (playerId: number) => {
+    handleTrucoCalledBy = (playerId: string) => {
         this.canCallTruco = false;
         this.tempCanCallEnvido = false;
         playerId === this.hostId ? this.otherCanTrucoRespond = true : this.hostCanTrucoRespond = true;
@@ -382,14 +386,14 @@ export class Game {
     }
 
     //ends the hand
-    handleTrucoNoQuieroBy = (playerId: number) => {
+    handleTrucoNoQuieroBy = (playerId: string) => {
         playerId === this.hostId ? this.handTrucoWinnerId = this.otherId : this.handTrucoWinnerId = this.hostId;
         this.updateGameState();
         this.endHand();
     }
 
     //resets who can respond
-    handleRetrucoBy = (playerId: number) => {
+    handleRetrucoBy = (playerId: string) => {
         if (playerId === this.hostId) {
             this.hostCanTrucoRespond = false;
             this.otherCanTrucoRespond = true;
@@ -405,7 +409,7 @@ export class Game {
     }
 
     //ensures only the player who accepted can again call retruco
-    handleTrucoQuieroBy = (playerId: number) => {
+    handleTrucoQuieroBy = (playerId: string) => {
         if (playerId === this.hostId) {
             this.hostCanTrucoRespond = false;
             this.hostCanRetrucoAfterQuiero = true;
@@ -420,7 +424,7 @@ export class Game {
     }
 
     //allow the other player to respond
-    handleEnvidoCalledBy = (playerId: number) => {
+    handleEnvidoCalledBy = (playerId: string) => {
         this.tempCanCallTruco = false;
         this.canCallEnvido = false;
         if (playerId === this.hostId) {
@@ -436,14 +440,14 @@ export class Game {
     }
 
     //assign the envido hand winner, allow users to call truco again
-    handleEnvidoNoQuieroBy = (playerId: number) => {
+    handleEnvidoNoQuieroBy = (playerId: string) => {
         playerId === this.hostId ? this.handEnvidoWinnerId = this.otherId : this.handEnvidoWinnerId = this.hostId;
         this.tempCanCallTruco = true;
         this.updateGameState();
     }
 
     //change whose turn it is to respond
-    handleEnvidoQuieroConBy = (playerId: number, envidoNumber: number) => {
+    handleEnvidoQuieroConBy = (playerId: string, envidoNumber: number) => {
         if (envidoNumber < 20 || envidoNumber > 33) {
             //TODO: RE-PROMPT THE USER
             return;
@@ -464,7 +468,7 @@ export class Game {
         this.updateGameState();
     }
 
-    handleEnvidoQuieroConFlorBy = (playerId: number) => {
+    handleEnvidoQuieroConFlorBy = (playerId: string) => {
         if (playerId === this.hostId) {
             this.hostCanEnvidoRespond1 = false;
             this.hostCalledEnvido = true;
@@ -479,7 +483,7 @@ export class Game {
         this.updateGameState();
     }
 
-    handleEsMejorBy = (playerId: number) => {
+    handleEsMejorBy = (playerId: string) => {
         if (playerId === this.hostId) {
             this.hostCanEnvidoRespond2 = false;
             this.handEnvidoWinnerId = this.otherId;
@@ -492,7 +496,7 @@ export class Game {
         this.updateGameState();
     }
 
-    handleTengoBy = (playerId: number, envidoNumber: number) => {
+    handleTengoBy = (playerId: string, envidoNumber: number) => {
         if (playerId === this.hostId) {
             //TODO: PROBABLY PUT THIS CLIENT-SIDE
             if (envidoNumber < this.otherEnvidoCon || (envidoNumber === this.otherEnvidoCon && !this.hostHasDeck) || envidoNumber > 33) {
@@ -516,7 +520,7 @@ export class Game {
         this.updateGameState();
     }
 
-    handleFlorTambienBy = (playerId: number) => {
+    handleFlorTambienBy = (playerId: string) => {
         playerId === this.hostId ? this.hostCanEnvidoRespond2 = false : this.otherCanEnvidoRespond2 = false;
         this.hostFlorNumber > this.otherFlorNumber ? this.handEnvidoWinnerId = this.hostId : this.handEnvidoWinnerId = this.otherId;
         this.tempCanCallTruco = true;

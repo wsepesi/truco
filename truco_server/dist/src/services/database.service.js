@@ -46,12 +46,28 @@ const connectToDatabase = () => __awaiter(void 0, void 0, void 0, function* () {
     console.log(process.env.DB_NAME);
     const db = client.db(process.env.DB_NAME);
     console.log(db);
+    // CONNECT TO INDIVIDUAL COLLECTIONS
+    // USERS
     console.log(process.env.USERS_COLLECTION_NAME);
     const usersCollection = process.env.USERS_COLLECTION_NAME ? db.collection(process.env.USERS_COLLECTION_NAME) : null;
     if (!usersCollection)
         return;
     exports.collections.users = usersCollection;
-    console.log(`Successfully connected to database: ${db.databaseName} and collection: ${usersCollection.collectionName}`);
+    console.log(`Successfully connected to collection: ${usersCollection.collectionName}`);
+    // ROOMS
+    console.log(process.env.ROOMS_COLLECTION_NAME);
+    const roomsCollection = process.env.ROOMS_COLLECTION_NAME ? db.collection(process.env.ROOMS_COLLECTION_NAME) : null;
+    if (!roomsCollection)
+        return;
+    exports.collections.rooms = roomsCollection;
+    console.log(`Successfully connected to collection: ${roomsCollection.collectionName}`);
+    // GAMES
+    console.log(process.env.GAMES_COLLECTION_NAME);
+    const gamesCollection = process.env.GAMES_COLLECTION_NAME ? db.collection(process.env.GAMES_COLLECTION_NAME) : null;
+    if (!gamesCollection)
+        return;
+    exports.collections.games = gamesCollection;
+    console.log(`Successfully connected to collection: ${gamesCollection.collectionName}`);
 });
 exports.connectToDatabase = connectToDatabase;
 //# sourceMappingURL=database.service.js.map

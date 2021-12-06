@@ -2,6 +2,7 @@ import { Button, TextField, Typography } from '@mui/material'
 import React, { useEffect } from 'react'
 
 import { Socket } from 'socket.io-client'
+import { useParams } from 'react-router'
 
 //TODO: users should show up w messages
 
@@ -14,6 +15,7 @@ type sChat = {
 }
 
 const Chat = (props: Props): React.ReactElement => {
+  const { id } = useParams()
   const [msg, setMsg] = React.useState<string>('');
   const [messages, setMessages] = React.useState<string[]>([]);
 
@@ -29,8 +31,6 @@ const Chat = (props: Props): React.ReactElement => {
         socket.off("chat");
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  
   }, [socket]);
 
   const sendChat = () => {
@@ -38,7 +38,8 @@ const Chat = (props: Props): React.ReactElement => {
     setMsg('');
     // addMsg(message);
     if (socket) socket.emit('chat', {
-      msg: message
+      msg: message,
+      room: id
     })
     else (alert("no socket"))
   }

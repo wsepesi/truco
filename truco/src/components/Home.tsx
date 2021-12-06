@@ -1,12 +1,12 @@
 import Games from './Games'
 import Host from './Host'
-import { Link } from 'react-router-dom'
 import Navbar from './Navbar'
 import React from 'react'
-import { SocketContext } from '../hooks/socket-context'
+import { Socket } from 'socket.io-client'
+import { Typography } from '@mui/material'
 
 type Props = {
-  
+  socket: Socket | null
 }
 const Home = (props: Props) :React.ReactElement => {
   const[loggedIn, setLoggedIn] = React.useState(false)
@@ -14,26 +14,21 @@ const Home = (props: Props) :React.ReactElement => {
 
   return (
     <div>
-      <SocketContext.Consumer>
-        { socket =>
-          <Navbar
-            loggedIn={loggedIn}
-            setLoggedIn={setLoggedIn}
-            currentUser={currentUser}
-            setCurrentUser={setCurrentUser}
-            socket={socket}
-          />
-        }
-        </SocketContext.Consumer>
+        <Navbar
+          loggedIn={loggedIn}
+          setLoggedIn={setLoggedIn}
+          currentUser={currentUser}
+          setCurrentUser={setCurrentUser}
+          socket={props.socket}
+        />
         {loggedIn ? (
           <div>
             <Host
-              currentUser={currentUser}
+              socket={props.socket}
             />
-            <Games />
-            <Link to="/test">Test</Link>
+            <Games socket={props.socket}/>
           </div>
-        ) : null}
+        ) : <Typography>Please log in</Typography>}
     </div>
   )
 }

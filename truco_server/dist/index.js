@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -9,6 +18,7 @@ const cors_1 = __importDefault(require("cors"));
 const http_1 = require("http");
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
+const routesUtils_1 = require("./src/routes/routesUtils");
 const truco_router_1 = require("./src/routes/truco.router");
 dotenv_1.default.config({ path: './config.env' });
 const app = (0, express_1.default)();
@@ -30,10 +40,22 @@ io.on("connection", (socket) => {
         socket.emit('ping', 'pong');
     });
     socket.on("chat", (data) => {
-        console.log("chat");
-        io.emit("chat", {
+        console.log("chat", data.room);
+        io.in(data.room).emit("chat", {
             msg: data.msg
         });
+    });
+    // UPDATE ROOMS LIST
+    socket.on("updateRooms", () => __awaiter(void 0, void 0, void 0, function* () {
+        // GET ROOMS FROM DB
+        const rooms = yield (0, routesUtils_1.getRooms)();
+        console.log("got rooms", rooms);
+        // SEND ROOMS TO CLIENT
+        io.emit("rooms", rooms);
+    }));
+    // JOIN ROOM
+    socket.on('joinRoom', (roomId) => {
+        socket.join(roomId);
     });
 });
 httpServer.listen(4000);
@@ -53,7 +75,7 @@ app.get('/', (_, res) => {
 // });
 (0, database_service_1.connectToDatabase)()
     .then(() => {
-    app.use("/truco", truco_router_1.trucoRouter);
+    app.use("/db", truco_router_1.trucoRouter);
     app.listen(port, () => {
         console.log(`Running on port ${port}`);
     });

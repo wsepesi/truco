@@ -6,4 +6,8 @@ export default class User {
         public socketId: string,
         public id?: ObjectId
     ) {}
+
+    public isEqual(user: User): boolean {
+        return this.id === user.id;
+    }
 }

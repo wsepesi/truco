@@ -6,6 +6,9 @@ class User {
         this.socketId = socketId;
         this.id = id;
     }
+    isEqual(user) {
+        return this.id === user.id;
+    }
 }
 exports.default = User;
 //# sourceMappingURL=user.js.map
