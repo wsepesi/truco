@@ -11,7 +11,7 @@ export type Room = {
     _id?: string
 }
 
-export type Card = {
+export type TrucoCard = {
     number: number;
     suit: String;
     id: number;
@@ -27,14 +27,14 @@ export type Game = {
     hostPoints: number;
     otherPoints: number;
 
-    deck: Card[];
+    deck: TrucoCard[];
 
-    hostCards: Card[];
-    otherCards: Card[];
+    hostCards: TrucoCard[];
+    otherCards: TrucoCard[];
     cardsPlayedInHand: number;
-    trick1Cards: Card[];
-    trick2Cards: Card[];
-    trick3Cards: Card[];
+    trick1Cards: TrucoCard[];
+    trick2Cards: TrucoCard[];
+    trick3Cards: TrucoCard[];
 
     hostHasDeck: boolean;
     hostTurn: boolean;
@@ -66,4 +66,47 @@ export type Game = {
     otherCanEnvidoRespond2: boolean;
     hostHasFlor: boolean;
     otherHasFlor: boolean;
+}
+
+export enum CardIds {
+    Swords1 = 1,
+    Swords2,
+    Swords3,
+    Swords4,
+    Swords5,
+    Swords6,
+    Swords7,
+    Swords10,
+    Swords11,
+    Swords12,
+    Pickles1,
+    Pickles2,
+    Pickles3,
+    Pickles4,
+    Pickles5,
+    Pickles6,
+    Pickles7,
+    Pickles10,
+    Pickles11,
+    Pickles12,
+    Coins1,
+    Coins2,
+    Coins3,
+    Coins4,
+    Coins5,
+    Coins6,
+    Coins7,
+    Coins10,
+    Coins11,
+    Coins12,
+    Cups1,
+    Cups2,
+    Cups3,
+    Cups4,
+    Cups5,
+    Cups6,
+    Cups7,
+    Cups10,
+    Cups11,
+    Cups12,
 }

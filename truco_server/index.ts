@@ -71,7 +71,21 @@ io.on("connection", (socket) => {
     await updateGame(game);
 
     // UPDATE CLIENTS IN ROOM
-    io.in(game.gameId).emit("startGame", game, id);
+    io.in(game.gameId).emit("startGame", game);
+  });
+
+  socket.on('playCard', async (data) => {
+    const { gameId, playerId, cardId } = data;
+    // GET GAME FROM DB
+    const game: Game = await getGame(gameId);
+    game.playCard(cardId, playerId);
+
+    // UPDATE GAME IN DB
+    await updateGame(game);
+
+    // UPDATE CLIENTS IN ROOM
+    io.in(game.gameId).emit("updateAll", game);
+
   });
 
   socket.on('trucoCalled', async (data) => {

@@ -1,4 +1,4 @@
-import { createGame, getGames, getRooms } from "./routesUtils";
+import { createGame, getGame, getGames, getRooms } from "./routesUtils";
 import express, { Request, Response } from "express";
 
 import Game from "../gameLogic";
@@ -178,6 +178,7 @@ trucoRouter.put("/rooms/:id", async (req: Request, res: Response) => {
         const room = roomData ? new Room(roomData.name, roomData.host) : null;
         const playerQuery = { socketId: playerId };
         const user = collections.users ? (await collections.users.findOne(playerQuery)) as unknown as User : null;
+        console.log(room, user);
         if (!room || !user) throw new Error("Room not found");
 
         console.log(room, user);
@@ -222,8 +223,9 @@ trucoRouter.get("/games", async (_: Request, res: Response) => {
 trucoRouter.get("/games/:id", async (req: Request, res: Response) => {
     const id = req?.params?.id;
     try {
-        const query = { _id: new ObjectId(id) };
-        const game = collections.games ? (await collections.games.findOne(query)) as unknown as Game : null; //FIXME:
+        const game = getGame(id);
+        // const query = { _id: new ObjectId(id) };
+        // const game = collections.games ? (await collections.games.findOne(query)) as unknown as Game : null; //FIXME:
         
         if(!game) throw new Error("Game not found / databsae error");
         res.status(200).send(game);

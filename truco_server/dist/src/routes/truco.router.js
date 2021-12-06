@@ -181,6 +181,7 @@ exports.trucoRouter.put("/rooms/:id", (req, res) => __awaiter(void 0, void 0, vo
         const room = roomData ? new room_1.default(roomData.name, roomData.host) : null;
         const playerQuery = { socketId: playerId };
         const user = database_service_1.collections.users ? (yield database_service_1.collections.users.findOne(playerQuery)) : null;
+        console.log(room, user);
         if (!room || !user)
             throw new Error("Room not found");
         console.log(room, user);
@@ -223,8 +224,9 @@ exports.trucoRouter.get("/games/:id", (req, res) => __awaiter(void 0, void 0, vo
     var _f;
     const id = (_f = req === null || req === void 0 ? void 0 : req.params) === null || _f === void 0 ? void 0 : _f.id;
     try {
-        const query = { _id: new mongodb_1.ObjectId(id) };
-        const game = database_service_1.collections.games ? (yield database_service_1.collections.games.findOne(query)) : null; //FIXME:
+        const game = (0, routesUtils_1.getGame)(id);
+        // const query = { _id: new ObjectId(id) };
+        // const game = collections.games ? (await collections.games.findOne(query)) as unknown as Game : null; //FIXME:
         if (!game)
             throw new Error("Game not found / databsae error");
         res.status(200).send(game);

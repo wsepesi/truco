@@ -10,6 +10,12 @@ type sChat = {
     msg: string,
 }
 
+type playCardData = {
+    gameId: string,
+    playerId: string,
+    cardId: number
+}
+
 type basicCallData = {
     gameId: string
     userId: string
@@ -127,7 +133,7 @@ export interface ServerToClientEvents {
     basicEmit: (a: number, b: string, c: Buffer) => void;
     withAck: (d: string, callback: (e: number) => void) => void;
     rooms: (rooms: Room[]) => void;
-    startGame: (game: Game, id: String) => void;
+    startGame: (game: Game) => void;
     updateAll: (game: Game) => void;
   }
   
@@ -137,6 +143,7 @@ export interface ClientToServerEvents {
     updateRooms: () => void;
     joinRoom: (roomId: string) => void;
     startGame: (id: string) => void;
+    playCard: (data: playCardData) => void;
     trucoCalled: (data: basicCallData) => void;
     envidoCalled: (data: basicCallData) => void;
     trucoQuieroCalled: (data: basicCallData) => void;

@@ -1,11 +1,11 @@
-import { Typography } from '@mui/material'
 import React from 'react'
+import { Typography } from '@mui/material'
 
 type Props = {
-  hostPoints: number
-  otherPoints: number
-  handTrucoPoints: number
-  handEnvidoPoints: number
+  hostPoints: number | undefined
+  otherPoints: number | undefined
+  handTrucoPoints: number | undefined
+  handEnvidoPoints: number | undefined
 }
 
 const PointTracker = (props:Props) :React.ReactElement => {

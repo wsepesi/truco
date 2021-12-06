@@ -322,32 +322,34 @@ export default class Game {
     }
 
     //will receive the index of which card the user clicked on
-    playCard = (index: number, playerId: string) => {
+    playCard = (cardId: number, playerId: string) => {
         //host cards
         if (playerId === this.hostId) {
             if (this.cardsPlayedInHand === 0 || this.cardsPlayedInHand === 1) {
-                this.trick1Cards[HOST_TOKEN_VALUE] = this.hostCards[index];
+                this.trick1Cards[HOST_TOKEN_VALUE] = this.hostCards.find(card => card.id === cardId);
             }
             if (this.cardsPlayedInHand === 2 || this.cardsPlayedInHand === 3) {
-                this.trick2Cards[HOST_TOKEN_VALUE] = this.hostCards[index];
+                this.trick2Cards[HOST_TOKEN_VALUE] = this.hostCards.find(card => card.id === cardId);;
             }
             if (this.cardsPlayedInHand === 4 || this.cardsPlayedInHand === 5) {
-                this.trick3Cards[HOST_TOKEN_VALUE] = this.hostCards[index];
+                this.trick3Cards[HOST_TOKEN_VALUE] = this.hostCards.find(card => card.id === cardId);;
             }
-            this.hostCards.splice(index, 1);
+            this.hostCards.filter(card => card.id !== cardId);
+            // this.hostCards.splice(index, 1);
         }
         //other cards
         else {
             if (this.cardsPlayedInHand === 0 || this.cardsPlayedInHand === 1) {
-                this.trick1Cards[OTHER_TOKEN_VALUE] = this.otherCards[index];
+                this.trick1Cards[OTHER_TOKEN_VALUE] = this.otherCards.find(card => card.id === cardId);
             }
             if (this.cardsPlayedInHand === 2 || this.cardsPlayedInHand === 3) {
-                this.trick2Cards[OTHER_TOKEN_VALUE] = this.otherCards[index];
+                this.trick2Cards[OTHER_TOKEN_VALUE] = this.otherCards.find(card => card.id === cardId);
             }
             if (this.cardsPlayedInHand === 4 || this.cardsPlayedInHand === 5) {
-                this.trick3Cards[OTHER_TOKEN_VALUE] = this.otherCards[index];
+                this.trick3Cards[OTHER_TOKEN_VALUE] = this.otherCards.find(card => card.id === cardId);
             }
-            this.otherCards.splice(index, 1);
+            this.otherCards.filter(card => card.id !== cardId);
+            // this.otherCards.splice(index, 1);
         }
         this.cardsPlayedInHand++;
         this.changeTurn();

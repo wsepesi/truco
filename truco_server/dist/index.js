@@ -58,7 +58,7 @@ io.on("connection", (socket) => {
         socket.join(roomId);
     });
     // START GAME
-    socket.on('startHand', (id) => __awaiter(void 0, void 0, void 0, function* () {
+    socket.on('startGame', (id) => __awaiter(void 0, void 0, void 0, function* () {
         // GET GAME FROM DB
         const game = yield (0, routesUtils_1.getGame)(id);
         // START HAND ON OBJECT
@@ -66,7 +66,73 @@ io.on("connection", (socket) => {
         // SEND GAME TO DB
         yield (0, routesUtils_1.updateGame)(game);
         // UPDATE CLIENTS IN ROOM
-        io.in(game.gameId).emit("startHand", game);
+        io.in(game.gameId).emit("startGame", game);
+    }));
+    socket.on('trucoCalled', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const game = yield (0, routesUtils_1.getGame)(data.gameId);
+        game.handleTrucoCalledBy(data.userId);
+        yield (0, routesUtils_1.updateGame)(game);
+        io.in(game.gameId).emit("updateAll", game);
+    }));
+    socket.on('envidoCalled', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const game = yield (0, routesUtils_1.getGame)(data.gameId);
+        game.handleEnvidoCalledBy(data.userId);
+        yield (0, routesUtils_1.updateGame)(game);
+        io.in(game.gameId).emit("updateAll", game);
+    }));
+    socket.on('trucoQuieroCalled', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const game = yield (0, routesUtils_1.getGame)(data.gameId);
+        game.handleTrucoQuieroBy(data.userId);
+        yield (0, routesUtils_1.updateGame)(game);
+        io.in(game.gameId).emit("updateAll", game);
+    }));
+    socket.on('trucoNoQuieroCalled', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const game = yield (0, routesUtils_1.getGame)(data.gameId);
+        game.handleTrucoNoQuieroBy(data.userId);
+        yield (0, routesUtils_1.updateGame)(game);
+        io.in(game.gameId).emit("updateAll", game);
+    }));
+    socket.on('retrucoCalled', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const game = yield (0, routesUtils_1.getGame)(data.gameId);
+        game.handleRetrucoBy(data.userId);
+        yield (0, routesUtils_1.updateGame)(game);
+        io.in(game.gameId).emit("updateAll", game);
+    }));
+    socket.on('quieroConCalled', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const game = yield (0, routesUtils_1.getGame)(data.gameId);
+        game.handleEnvidoQuieroConBy(data.userId, data.number);
+        yield (0, routesUtils_1.updateGame)(game);
+        io.in(game.gameId).emit("updateAll", game);
+    }));
+    socket.on('envidoNoQuieroCalled', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const game = yield (0, routesUtils_1.getGame)(data.gameId);
+        game.handleEnvidoNoQuieroBy(data.userId);
+        yield (0, routesUtils_1.updateGame)(game);
+        io.in(game.gameId).emit("updateAll", game);
+    }));
+    socket.on('quieroConFlorCalled', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const game = yield (0, routesUtils_1.getGame)(data.gameId);
+        game.handleEnvidoQuieroConFlorBy(data.userId);
+        yield (0, routesUtils_1.updateGame)(game);
+        io.in(game.gameId).emit("updateAll", game);
+    }));
+    socket.on('esMejorCalled', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const game = yield (0, routesUtils_1.getGame)(data.gameId);
+        game.handleEsMejorBy(data.userId);
+        yield (0, routesUtils_1.updateGame)(game);
+        io.in(game.gameId).emit("updateAll", game);
+    }));
+    socket.on('tengoCalled', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const game = yield (0, routesUtils_1.getGame)(data.gameId);
+        game.handleTengoBy(data.userId, data.number);
+        yield (0, routesUtils_1.updateGame)(game);
+        io.in(game.gameId).emit("updateAll", game);
+    }));
+    socket.on('tengoFlorTambienCalled', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const game = yield (0, routesUtils_1.getGame)(data.gameId);
+        game.handleFlorTambienBy(data.userId);
+        yield (0, routesUtils_1.updateGame)(game);
+        io.in(game.gameId).emit("updateAll", game);
     }));
 });
 httpServer.listen(4000);

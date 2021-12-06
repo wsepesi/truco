@@ -1,50 +1,21 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Typography } from '@mui/material'
-import React from 'react'
-import { useParams } from 'react-router'
-import { Socket } from 'socket.io-client'
-import { isPropertySignature } from 'typescript'
-import { Card } from '../configs/types'
+import { Game, TrucoCard } from '../configs/types'
+
 import Cards from './Cards'
 import CardsPlayed from './CardsPlayed'
+import React from 'react'
+import { Socket } from 'socket.io-client'
 
 type Props = {
   socket: Socket | null;
-  hostId: String;
-  otherId: String;
-  gameId: String;
-
-  hostCards: Card[];
-  otherCards: Card[];
-  trick1Cards: Card[];
-  trick2Cards: Card[];
-  trick3Cards: Card[];
-
-  hostHasDeck: boolean;
-  hostTurn: boolean;
-  canPlayCards: boolean;
-
-  hostCalledEnvido: boolean;
-  otherCalledEnvido: boolean;
-  hostEnvidoCon: number;
-  otherEnvidoCon: number;
-
-  canCallTruco: boolean;
-  canCallEnvido: boolean;
-  tempCanCallTruco: boolean;
-  tempCanCallEnvido: boolean;
-  hostCanTrucoRespond: boolean;
-  otherCanTrucoRespond: boolean;
-  hostCanRetrucoAfterQuiero: boolean;
-  otherCanRetrucoAfterQuiero: boolean;
-  hostCanEnvidoRespond1: boolean;
-  otherCanEnvidoRespond1: boolean;
-  hostCanEnvidoRespond2: boolean;
-  otherCanEnvidoRespond2: boolean;
+  game: Game | undefined
 }
 
 const Board = (props: Props) :React.ReactElement => {
-  const socket = props.socket;
-  const { id } = useParams()
+  const { socket, game } = props
+  if(!game) throw new Error('Game not defined');
+  const id = socket ? socket.id : '';
+  const isHost = game ? game.hostId === id : false;
 
   const [quieroConOpen, setQuieroConOpen] = React.useState<boolean>(false);
   const [quieroConNumber, setQuieroConNumber] = React.useState<number>(0);
@@ -74,15 +45,15 @@ const Board = (props: Props) :React.ReactElement => {
   }
   const closeTengoSuccess = () => {
     setTengoOpen(false)
-    if (id === props.hostId) {
-      if (tengoNumber < props.otherEnvidoCon || (tengoNumber === props.otherEnvidoCon && !props.hostHasDeck) || tengoNumber > 33) {
+    if (isHost) {
+      if (tengoNumber < game.otherEnvidoCon || (tengoNumber === game.otherEnvidoCon && !game.hostHasDeck) || tengoNumber > 33) {
         alert("Invalid Tengo Number");
         setTengoNumber(0);
         return;
       }
     }
-    if (id === props.otherId) {
-      if (tengoNumber < props.hostEnvidoCon || (tengoNumber === props.hostEnvidoCon && props.hostHasDeck) || tengoNumber > 33) {
+    else {
+      if (tengoNumber < game.hostEnvidoCon || (tengoNumber === game.hostEnvidoCon && game.hostHasDeck) || tengoNumber > 33) {
         alert("Invalid Tengo Number");
         setTengoNumber(0);
         return;
@@ -91,20 +62,20 @@ const Board = (props: Props) :React.ReactElement => {
     handleTengo(tengoNumber);
   }
 
-  let opponentCards: Card[] = [];
-  let yourCards: Card[] = [];
-  if (id === props.hostId) {
-    opponentCards = props.otherCards;
-    yourCards = props.hostCards;
+  let opponentCards: TrucoCard[] = [];
+  let yourCards: TrucoCard[] = [];
+  if (isHost) {
+    opponentCards = game.otherCards;
+    yourCards = game.hostCards;
   }
   else {
-    opponentCards = props.hostCards;
-    yourCards = props.otherCards;
+    opponentCards = game.hostCards;
+    yourCards = game.otherCards;
   }
 
   const trucoCalled = () => {
     if (socket) socket.emit('trucoCalled', {
-      gameId: props.gameId,
+      gameId: game.gameId,
       userId: id
     })
     else (alert("no socket"))
@@ -112,7 +83,7 @@ const Board = (props: Props) :React.ReactElement => {
 
   const envidoCalled = () => {
     if (socket) socket.emit('envidoCalled', {
-      gameId: props.gameId,
+      gameId: game.gameId,
       userId: id
     })
     else (alert("no socket"))
@@ -120,7 +91,7 @@ const Board = (props: Props) :React.ReactElement => {
 
   const trucoQuieroCalled = () => {
     if (socket) socket.emit('trucoQuieroCalled', {
-      gameId: props.gameId,
+      gameId: game.gameId,
       userId: id
     })
     else (alert("no socket"))
@@ -128,7 +99,7 @@ const Board = (props: Props) :React.ReactElement => {
 
   const trucoNoQuieroCalled = () => {
     if (socket) socket.emit('trucoNoQuieroCalled', {
-      gameId: props.gameId,
+      gameId: game.gameId,
       userId: id
     })
     else (alert("no socket"))
@@ -136,7 +107,7 @@ const Board = (props: Props) :React.ReactElement => {
 
   const retrucoCalled = () => {
     if (socket) socket.emit('retrucoCalled', {
-      gameId: props.gameId,
+      gameId: game.gameId,
       userId: id
     })
     else (alert("no socket"))
@@ -144,7 +115,7 @@ const Board = (props: Props) :React.ReactElement => {
 
   const handleQuieroCon = (quieroConNumber: number) => {
     if (socket) socket.emit('quieroConCalled', {
-      gameId: props.gameId,
+      gameId: game.gameId,
       userId: id,
       number: quieroConNumber
     })
@@ -153,7 +124,7 @@ const Board = (props: Props) :React.ReactElement => {
 
   const envidoNoQuieroCalled = () => {
     if (socket) socket.emit('envidoNoQuieroCalled', {
-      gameId: props.gameId,
+      gameId: game.gameId,
       userId: id
     })
     else (alert("no socket"))
@@ -161,7 +132,7 @@ const Board = (props: Props) :React.ReactElement => {
 
   const quieroConFlorCalled = () => {
     if (socket) socket.emit('quieroConFlorCalled', {
-      gameId: props.gameId,
+      gameId: game.gameId,
       userId: id
     })
     else (alert("no socket"))
@@ -169,7 +140,7 @@ const Board = (props: Props) :React.ReactElement => {
 
   const esMejorCalled = () => {
     if (socket) socket.emit('esMejorCalled', {
-      gameId: props.gameId,
+      gameId: game.gameId,
       userId: id
     })
     else (alert("no socket"))
@@ -177,7 +148,7 @@ const Board = (props: Props) :React.ReactElement => {
 
   const handleTengo = (tengoNumber: number) => {
     if (socket) socket.emit('quieroConCalled', {
-      gameId: props.gameId,
+      gameId: game.gameId,
       userId: id,
       number: tengoNumber
     })
@@ -186,7 +157,7 @@ const Board = (props: Props) :React.ReactElement => {
 
   const tengoFlorTambienCalled = () => {
     if (socket) socket.emit('tengoFlorTambienCalled', {
-      gameId: props.gameId,
+      gameId: game.gameId,
       userId: id
     })
     else (alert("no socket"))
@@ -197,8 +168,10 @@ const Board = (props: Props) :React.ReactElement => {
         <div style={{width: "90%"}}>
           <div style={{paddingTop: "35px"}}>
             <Typography variant="h5" align="center">Opponent's Cards</Typography>
-            <Cards
-              // cards={opponentCards}
+            <Cards 
+              socket={socket}
+              other={true}
+              cards={opponentCards}
             />
           </div>
           <div>
@@ -207,25 +180,27 @@ const Board = (props: Props) :React.ReactElement => {
           <div>
             <Typography variant="h5" align="center">Your Cards</Typography>
             <Cards
-              // cards={yourCards}
+              socket={socket}
+              other={false}
+              cards={yourCards}
             />
           </div>
         </div>
         <div style={{width: "10%"}}>
           <Typography variant="h5">Calls</Typography>
           <div>
-            <Button disabled={!(props.canCallTruco && props.tempCanCallTruco)} onClick={trucoCalled}>"Truco!"</Button>
-            <Button disabled={!(props.canCallEnvido && props.tempCanCallEnvido)} onClick={envidoCalled}>"Envido!"</Button>
+            <Button disabled={!(game.canCallTruco && game.tempCanCallTruco)} onClick={trucoCalled}>"Truco!"</Button>
+            <Button disabled={!(game.canCallEnvido && game.tempCanCallEnvido)} onClick={envidoCalled}>"Envido!"</Button>
           </div>
           <Typography variant="h5">Truco Responses</Typography>
           <div>
-            <Button disabled={!(id === props.hostId && props.hostCanTrucoRespond) || !(id === props.otherId && props.otherCanTrucoRespond)} onClick={trucoQuieroCalled}>"Quiero!"</Button>
-            <Button disabled={!(id === props.hostId && props.hostCanTrucoRespond) || !(id === props.otherId && props.otherCanTrucoRespond)} onClick={trucoNoQuieroCalled}>"No Quiero!"</Button>
-            <Button disabled={!(id === props.hostId && (props.hostCanTrucoRespond || props.hostCanRetrucoAfterQuiero)) || !(id === props.otherId && (props.otherCanTrucoRespond || props.otherCanRetrucoAfterQuiero))} onClick={retrucoCalled}>"Retruco!"</Button>
+            <Button disabled={!(isHost && game.hostCanTrucoRespond) || !(!isHost && game.otherCanTrucoRespond)} onClick={trucoQuieroCalled}>"Quiero!"</Button>
+            <Button disabled={!(isHost && game.hostCanTrucoRespond) || !(!isHost && game.otherCanTrucoRespond)} onClick={trucoNoQuieroCalled}>"No Quiero!"</Button>
+            <Button disabled={!(isHost && (game.hostCanTrucoRespond || game.hostCanRetrucoAfterQuiero)) || !(!isHost && (game.otherCanTrucoRespond || game.otherCanRetrucoAfterQuiero))} onClick={retrucoCalled}>"Retruco!"</Button>
           </div>
           <Typography variant="h5">Envido Responses 1</Typography>
           <div>
-            <Button disabled={!(id === props.hostId && props.hostCanEnvidoRespond1) || !(id === props.otherId && props.otherCanEnvidoRespond1)} onClick={quieroConClick}>"Quiero Con..."</Button>
+            <Button disabled={!(isHost && game.hostCanEnvidoRespond1) || !(!isHost && game.otherCanEnvidoRespond1)} onClick={quieroConClick}>"Quiero Con..."</Button>
             <Dialog open={quieroConOpen} onClose={closeQuieroConCancel}>
               <DialogTitle>Quiero Con...</DialogTitle>
               <DialogContent>
@@ -247,13 +222,13 @@ const Board = (props: Props) :React.ReactElement => {
                   <Button onClick={closeQuieroConSuccess}>Send</Button>
                 </DialogActions>
             </Dialog>
-            <Button disabled={!(id === props.hostId && props.hostCanEnvidoRespond1) || !(id === props.otherId && props.otherCanEnvidoRespond1)} onClick={envidoNoQuieroCalled}>"No Quiero!"</Button>
-            <Button disabled={!(id === props.hostId && props.hostCanEnvidoRespond1) || !(id === props.otherId && props.otherCanEnvidoRespond1)} onClick={quieroConFlorCalled}>"Quiero Con Flor!"</Button>
+            <Button disabled={!(isHost && game.hostCanEnvidoRespond1) || !(!isHost && game.otherCanEnvidoRespond1)} onClick={envidoNoQuieroCalled}>"No Quiero!"</Button>
+            <Button disabled={!(isHost && game.hostCanEnvidoRespond1) || !(!isHost && game.otherCanEnvidoRespond1)} onClick={quieroConFlorCalled}>"Quiero Con Flor!"</Button>
           </div>
           <Typography variant="h5">Envido Responses 2</Typography>
           <div>
-            <Button disabled={!(id === props.hostId && props.hostCanEnvidoRespond2) || !(id === props.otherId && props.otherCanEnvidoRespond2)} onClick={esMejorCalled}>"Es Mejor!"</Button>
-            <Button disabled={!(id === props.hostId && props.hostCanEnvidoRespond2) || !(id === props.otherId && props.otherCanEnvidoRespond2)} onClick={tengoClick}>"Tengo..."</Button>
+            <Button disabled={!(isHost && game.hostCanEnvidoRespond2) || !(!isHost && game.otherCanEnvidoRespond2)} onClick={esMejorCalled}>"Es Mejor!"</Button>
+            <Button disabled={!(isHost && game.hostCanEnvidoRespond2) || !(!isHost && game.otherCanEnvidoRespond2)} onClick={tengoClick}>"Tengo..."</Button>
             <Dialog open={tengoOpen} onClose={closeTengoCancel}>
               <DialogTitle>Tengo...</DialogTitle>
               <DialogContent>
@@ -275,7 +250,7 @@ const Board = (props: Props) :React.ReactElement => {
                   <Button onClick={closeTengoSuccess}>Send</Button>
                 </DialogActions>
             </Dialog>
-            <Button disabled={!(id === props.hostId && props.hostCanEnvidoRespond2) || !(id === props.otherId && props.otherCanEnvidoRespond2)} onClick={tengoFlorTambienCalled}>"Tengo Flor Tambien!"</Button>
+            <Button disabled={!(isHost && game.hostCanEnvidoRespond2) || !(!isHost && game.otherCanEnvidoRespond2)} onClick={tengoFlorTambienCalled}>"Tengo Flor Tambien!"</Button>
           </div>
         </div>
     </div>
