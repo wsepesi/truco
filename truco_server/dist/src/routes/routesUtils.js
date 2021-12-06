@@ -12,9 +12,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createGame = exports.getGame = exports.getGames = exports.getRooms = void 0;
+exports.createGame = exports.updateGame = exports.getGame = exports.getGames = exports.getRooms = void 0;
 const gameLogic_1 = __importDefault(require("../gameLogic"));
-const mongodb_1 = require("mongodb");
 const database_service_1 = require("../services/database.service");
 const getRooms = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -40,8 +39,9 @@ const getGames = () => __awaiter(void 0, void 0, void 0, function* () {
 exports.getGames = getGames;
 const getGame = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const query = { _id: new mongodb_1.ObjectId(id) };
-        const game = database_service_1.collections.games ? (yield database_service_1.collections.games.findOne(query)) : null;
+        const query = { gameId: id };
+        const gameData = database_service_1.collections.games ? (yield database_service_1.collections.games.findOne(query)) : null;
+        const game = new gameLogic_1.default(gameData.gameId, gameData.hostId, gameData.otherId);
         if (!game)
             throw new Error("Game not found");
         return game;
@@ -51,6 +51,16 @@ const getGame = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getGame = getGame;
+const updateGame = (game) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const query = { gameId: game.gameId };
+        const result = yield database_service_1.collections.games.updateOne(query, { $set: game });
+    }
+    catch (error) {
+        throw new Error(error);
+    }
+});
+exports.updateGame = updateGame;
 const createGame = (gameId, hostId, otherId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log(gameId, hostId, otherId);

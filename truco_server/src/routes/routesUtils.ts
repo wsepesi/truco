@@ -28,7 +28,8 @@ export const getGames = async (): Promise<Game[]> => {
 export const getGame = async (id: string): Promise<Game> => {
     try {
         const query = { gameId: id };
-        const game = collections.games ? (await collections.games.findOne(query)) as unknown as Game : null;
+        const gameData = collections.games ? (await collections.games.findOne(query)) as unknown as Game : null;
+        const game = new Game(gameData.gameId, gameData.hostId, gameData.otherId);
         if (!game) throw new Error("Game not found");
         return game;
     } catch (error) {

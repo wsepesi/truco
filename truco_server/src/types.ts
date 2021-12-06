@@ -10,6 +10,17 @@ type sChat = {
     msg: string,
 }
 
+type basicCallData = {
+    gameId: string
+    userId: string
+}
+
+type numericCallData = {
+    gameId: string
+    userId: string
+    number: number
+}
+
 export class Card {
     number: number;
     suit: String;
@@ -116,7 +127,8 @@ export interface ServerToClientEvents {
     basicEmit: (a: number, b: string, c: Buffer) => void;
     withAck: (d: string, callback: (e: number) => void) => void;
     rooms: (rooms: Room[]) => void;
-    startHand: (game: Game) => void;
+    startGame: (game: Game, id: String) => void;
+    updateAll: (game: Game) => void;
   }
   
 export interface ClientToServerEvents {
@@ -124,7 +136,18 @@ export interface ClientToServerEvents {
     chat: (data: cChat) => void;
     updateRooms: () => void;
     joinRoom: (roomId: string) => void;
-    startHand: (id: string) => void;
+    startGame: (id: string) => void;
+    trucoCalled: (data: basicCallData) => void;
+    envidoCalled: (data: basicCallData) => void;
+    trucoQuieroCalled: (data: basicCallData) => void;
+    trucoNoQuieroCalled: (data: basicCallData) => void;
+    retrucoCalled: (data: basicCallData) => void;
+    quieroConCalled: (data: numericCallData) => void;
+    envidoNoQuieroCalled: (data: basicCallData) => void;
+    quieroConFlorCalled: (data: basicCallData) => void;
+    esMejorCalled: (data: basicCallData) => void;
+    tengoCalled: (data: numericCallData) => void;
+    tengoFlorTambienCalled: (data: basicCallData) => void;
 }
 
 export interface InterServerEvents {

@@ -12,13 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const routesUtils_1 = require("./src/routes/routesUtils");
 const socket_io_1 = require("socket.io");
 const database_service_1 = require("./src/services/database.service");
 const cors_1 = __importDefault(require("cors"));
 const http_1 = require("http");
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
-const routesUtils_1 = require("./src/routes/routesUtils");
 const truco_router_1 = require("./src/routes/truco.router");
 dotenv_1.default.config({ path: './config.env' });
 const app = (0, express_1.default)();
@@ -57,6 +57,17 @@ io.on("connection", (socket) => {
     socket.on('joinRoom', (roomId) => {
         socket.join(roomId);
     });
+    // START GAME
+    socket.on('startHand', (id) => __awaiter(void 0, void 0, void 0, function* () {
+        // GET GAME FROM DB
+        const game = yield (0, routesUtils_1.getGame)(id);
+        // START HAND ON OBJECT
+        game.startHand();
+        // SEND GAME TO DB
+        yield (0, routesUtils_1.updateGame)(game);
+        // UPDATE CLIENTS IN ROOM
+        io.in(game.gameId).emit("startHand", game);
+    }));
 });
 httpServer.listen(4000);
 app.get('/', (_, res) => {

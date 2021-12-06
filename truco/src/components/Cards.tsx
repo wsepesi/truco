@@ -1,7 +1,13 @@
 import { Card, CardActionArea, CardMedia } from '@mui/material'
 import React from 'react'
+// import { Card } from '../configs/types' FIXME:
 
-const Cards = () :React.ReactElement => {
+type Props = {
+    // cards: Card[]
+    // FIXME: THE THING FROM MUI IS CALLED CARD, SO WE CANT IMPORT OUR DATA TYPE CALLED CARD
+}
+
+const Cards = (props: Props) :React.ReactElement => {
     const playCard = () => {
         //FIXME:
     }

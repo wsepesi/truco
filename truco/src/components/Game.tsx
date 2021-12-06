@@ -52,7 +52,7 @@ const Game = (props:Props) :React.ReactElement => {
     setRedirect(`/room/${id}`);
 
     // SIGNAL TO START
-    socket.emit('startHand', id);
+    socket.emit('startGame', id);
   }
 
   return (

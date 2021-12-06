@@ -197,31 +197,13 @@ export default class Game {
 
     //deal three cards to each player
     dealAll = () => {
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 3; i++) {
             this.hostCards.push(this.dealOne());
         }
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 3; i++) {
             this.otherCards.push(this.dealOne());
         }
         this.checkForFlor();
-    }
-
-    //display the cards
-    displayCards = () => {
-        //socket send to host this.hostCards
-        //socket send to other this.otherCards
-        //socket send to both this.trick1Cards, this.trick2Cards, this.trick3Cards
-    }
-
-    //send if users can play, call truco, etc.
-    updateGameState = () => {
-        //socket send to host this.hostCanTrucoRespond, this.hostCanRetrucoAfterQuiero, this.hostCanEnvidoRespond1, this.hostHasFlor
-        //socket send to other this.otherCanTrucoRespond, this.otherCanRetrucoAfterQuiero, this.otherCanEnvidoRespond1, this.otherHasFlor
-        //socket send to both this.canCallTruco, this.canCallEnvido, this.handTrucoPoints, this.handEnvidoPoints, this.tempCanCallTruco, this.tempCanCallEnvido
-        //NOTE: only can call truco if both this.canCallTruco and this.tempCanCallTruco are true, same for envido
-        //NOTE: if this.hostHasFlor, change EnvidoResponses1 so that they can't do quieroCon number, just quieroCon flor, same for other
-        //socket send to both this.canPlayCards, this.hostTurn
-        //in the response, host can only play if this.canPlayCards && this.hostTurn, other can only play if this.canPlayCards && this.hostTurn
     }
 
     //change who has the deck
@@ -242,7 +224,6 @@ export default class Game {
         this.dealAll();
         this.changeDeck();
         this.hostHasDeck ? this.hostTurn : !this.hostTurn;
-        this.displayCards();
 
         this.canPlayCards = true;
         this.canCallTruco = true;
@@ -257,8 +238,6 @@ export default class Game {
         this.otherHasFlor = false;
         this.hostFlorNumber = 0;
         this.otherFlorNumber = 0;
-        
-        this.updateGameState();
     }
 
     checkLyingPoints = () => {
@@ -371,9 +350,7 @@ export default class Game {
             this.otherCards.splice(index, 1);
         }
         this.cardsPlayedInHand++;
-        this.displayCards();
         this.changeTurn();
-        this.updateGameState();
         this.checkIfTrucoWinner();
     }
 
@@ -381,14 +358,13 @@ export default class Game {
     handleTrucoCalledBy = (playerId: string) => {
         this.canCallTruco = false;
         this.tempCanCallEnvido = false;
+        this.canPlayCards = false;
         playerId === this.hostId ? this.otherCanTrucoRespond = true : this.hostCanTrucoRespond = true;
-        this.updateGameState();
     }
 
     //ends the hand
     handleTrucoNoQuieroBy = (playerId: string) => {
         playerId === this.hostId ? this.handTrucoWinnerId = this.otherId : this.handTrucoWinnerId = this.hostId;
-        this.updateGameState();
         this.endHand();
     }
 
@@ -405,7 +381,6 @@ export default class Game {
             if (this.otherCanRetrucoAfterQuiero) this.otherCanRetrucoAfterQuiero = false;
         }
         this.handTrucoPoints++;
-        this.updateGameState();
     }
 
     //ensures only the player who accepted can again call retruco
@@ -418,15 +393,16 @@ export default class Game {
             this.otherCanTrucoRespond = false;
             this.otherCanRetrucoAfterQuiero = true;
         }
+        this.canPlayCards = true;
         this.tempCanCallEnvido = true;
         this.handTrucoPoints++;
-        this.updateGameState();
     }
 
     //allow the other player to respond
     handleEnvidoCalledBy = (playerId: string) => {
         this.tempCanCallTruco = false;
         this.canCallEnvido = false;
+        this.canPlayCards = false;
         if (playerId === this.hostId) {
             this.hostCalledEnvido = true;
             this.otherCanEnvidoRespond1 = true
@@ -436,22 +412,17 @@ export default class Game {
             this.hostCanEnvidoRespond1 = true;
         }
         this.handEnvidoPoints++;
-        this.updateGameState();
     }
 
     //assign the envido hand winner, allow users to call truco again
     handleEnvidoNoQuieroBy = (playerId: string) => {
         playerId === this.hostId ? this.handEnvidoWinnerId = this.otherId : this.handEnvidoWinnerId = this.hostId;
         this.tempCanCallTruco = true;
-        this.updateGameState();
+        this.canPlayCards = true;
     }
 
     //change whose turn it is to respond
     handleEnvidoQuieroConBy = (playerId: string, envidoNumber: number) => {
-        if (envidoNumber < 20 || envidoNumber > 33) {
-            //TODO: RE-PROMPT THE USER
-            return;
-        }
         if (playerId === this.hostId) {
             this.hostCanEnvidoRespond1 = false;
             this.hostCalledEnvido = true;
@@ -465,7 +436,6 @@ export default class Game {
             this.hostCanEnvidoRespond2 = true;
         }
         this.handEnvidoPoints++;
-        this.updateGameState();
     }
 
     handleEnvidoQuieroConFlorBy = (playerId: string) => {
@@ -480,7 +450,6 @@ export default class Game {
             this.hostCanEnvidoRespond2 = true;
         }
         this.handEnvidoPoints++;
-        this.updateGameState();
     }
 
     handleEsMejorBy = (playerId: string) => {
@@ -493,37 +462,28 @@ export default class Game {
             this.handEnvidoWinnerId = this.hostId;
         }
         this.tempCanCallTruco = true;
-        this.updateGameState();
+        this.canPlayCards = true;
     }
 
     handleTengoBy = (playerId: string, envidoNumber: number) => {
         if (playerId === this.hostId) {
-            //TODO: PROBABLY PUT THIS CLIENT-SIDE
-            if (envidoNumber < this.otherEnvidoCon || (envidoNumber === this.otherEnvidoCon && !this.hostHasDeck) || envidoNumber > 33) {
-                //TODO: RE-PROMPT THE USER
-                return;
-            }
             this.hostCanEnvidoRespond2 = false;
             this.hostEnvidoCon = envidoNumber;
             this.handEnvidoWinnerId = this.hostId;
         }
         else {
-            if (envidoNumber < this.hostEnvidoCon || (envidoNumber === this.hostEnvidoCon && this.hostHasDeck) || envidoNumber > 33) {
-                //TODO: RE-PROMPT THE USER
-                return;
-            }
             this.otherCanEnvidoRespond2 = false;
             this.otherEnvidoCon = envidoNumber;
             this.handEnvidoWinnerId = this.otherId;
         }
         this.tempCanCallTruco = true;
-        this.updateGameState();
+        this.canPlayCards = true;
     }
 
     handleFlorTambienBy = (playerId: string) => {
         playerId === this.hostId ? this.hostCanEnvidoRespond2 = false : this.otherCanEnvidoRespond2 = false;
         this.hostFlorNumber > this.otherFlorNumber ? this.handEnvidoWinnerId = this.hostId : this.handEnvidoWinnerId = this.otherId;
         this.tempCanCallTruco = true;
-        this.updateGameState();
+        this.canPlayCards = true;
     }
 }

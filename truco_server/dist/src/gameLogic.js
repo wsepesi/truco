@@ -95,10 +95,10 @@ class Game {
         };
         //deal three cards to each player
         this.dealAll = () => {
-            for (let i = 0; i < 2; i++) {
+            for (let i = 0; i < 3; i++) {
                 this.hostCards.push(this.dealOne());
             }
-            for (let i = 0; i < 2; i++) {
+            for (let i = 0; i < 3; i++) {
                 this.otherCards.push(this.dealOne());
             }
             this.checkForFlor();

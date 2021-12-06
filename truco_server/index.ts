@@ -60,7 +60,7 @@ io.on("connection", (socket) => {
   })
 
   // START GAME
-  socket.on('startHand', async (id) => {
+  socket.on('startGame', async (id) => {
     // GET GAME FROM DB
     const game: Game = await getGame(id);
 
@@ -71,8 +71,85 @@ io.on("connection", (socket) => {
     await updateGame(game);
 
     // UPDATE CLIENTS IN ROOM
-    io.in(game.gameId).emit("startHand", game);
+    io.in(game.gameId).emit("startGame", game, id);
   });
+
+  socket.on('trucoCalled', async (data) => {
+      const game: Game = await getGame(data.gameId);
+      game.handleTrucoCalledBy(data.userId);
+      await updateGame(game);
+      io.in(game.gameId).emit("updateAll", game);
+  })
+
+  socket.on('envidoCalled', async (data) => {
+    const game: Game = await getGame(data.gameId);
+    game.handleEnvidoCalledBy(data.userId);
+    await updateGame(game);
+    io.in(game.gameId).emit("updateAll", game);
+  })
+
+  socket.on('trucoQuieroCalled', async (data) => {
+    const game: Game = await getGame(data.gameId);
+    game.handleTrucoQuieroBy(data.userId);
+    await updateGame(game);
+    io.in(game.gameId).emit("updateAll", game);
+  })
+
+  socket.on('trucoNoQuieroCalled', async (data) => {
+    const game: Game = await getGame(data.gameId);
+    game.handleTrucoNoQuieroBy(data.userId);
+    await updateGame(game);
+    io.in(game.gameId).emit("updateAll", game);
+  })
+
+  socket.on('retrucoCalled', async (data) => {
+    const game: Game = await getGame(data.gameId);
+    game.handleRetrucoBy(data.userId);
+    await updateGame(game);
+    io.in(game.gameId).emit("updateAll", game);
+  })
+
+  socket.on('quieroConCalled', async (data) => {
+    const game: Game = await getGame(data.gameId);
+    game.handleEnvidoQuieroConBy(data.userId, data.number);
+    await updateGame(game);
+    io.in(game.gameId).emit("updateAll", game);
+  })
+
+  socket.on('envidoNoQuieroCalled', async (data) => {
+    const game: Game = await getGame(data.gameId);
+    game.handleEnvidoNoQuieroBy(data.userId);
+    await updateGame(game);
+    io.in(game.gameId).emit("updateAll", game);
+  })
+
+  socket.on('quieroConFlorCalled', async (data) => {
+    const game: Game = await getGame(data.gameId);
+    game.handleEnvidoQuieroConFlorBy(data.userId);
+    await updateGame(game);
+    io.in(game.gameId).emit("updateAll", game);
+  })
+
+  socket.on('esMejorCalled', async (data) => {
+    const game: Game = await getGame(data.gameId);
+    game.handleEsMejorBy(data.userId);
+    await updateGame(game);
+    io.in(game.gameId).emit("updateAll", game);
+  })
+
+  socket.on('tengoCalled', async (data) => {
+    const game: Game = await getGame(data.gameId);
+    game.handleTengoBy(data.userId, data.number);
+    await updateGame(game);
+    io.in(game.gameId).emit("updateAll", game);
+  })
+
+  socket.on('tengoFlorTambienCalled', async (data) => {
+    const game: Game = await getGame(data.gameId);
+    game.handleFlorTambienBy(data.userId);
+    await updateGame(game);
+    io.in(game.gameId).emit("updateAll", game);
+  })
 })
 
 httpServer.listen(4000);
