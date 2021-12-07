@@ -32,11 +32,13 @@ export class Card {
     suit: String;
     id: number;
     order: number;
+    envidoWorth: number;
     constructor (number: number, suit: String, id: number, order: number) {
         this.number = number;
         this.suit = suit;
         this.id = id;
         this.order = order;
+        this.envidoWorth = this.number > 9 ? 0 : this.number;
     }
 }
 
