@@ -37,8 +37,6 @@ export const updateRoom = async (id: string, room: Room) => {
     }
 }
 
-
-
 export const getGames = async (): Promise<Game[]> => { 
     try {
         const games = collections.games ? (await collections.games.find({}).toArray()) as unknown as Game[] : null;
