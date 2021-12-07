@@ -92,6 +92,25 @@ trucoRouter.delete("/users/:id", async (req: Request, res: Response) => {
     }
 });
 
+// DELETE ALL USERS
+trucoRouter.delete("/users", async (req: Request, res: Response) => {
+    try {
+        const result = collections.users ? await collections.users.deleteMany({}) : null;
+
+        if (result && result.deletedCount) {
+            res.status(202).send(`Successfully removed ${result.deletedCount} users`);
+        } else if (!result) {
+            res.status(400).send(`Failed to remove all users`);
+        } else if (!result.deletedCount) {
+            res.status(404).send(`No users to remove`);
+        }
+    } catch (error: any) {
+        console.error(error.message);
+        res.status(400).send(error.message);
+    }
+});
+
+
 // PUT EXAMPLE
 // gamesRouter.put("/:id", async (req: Request, res: Response) => {
 //     const id = req?.params?.id;
@@ -208,6 +227,25 @@ trucoRouter.put("/rooms/:id", async (req: Request, res: Response) => {
     }
 });
 
+// DELETE ALL ROOMS
+trucoRouter.delete("/rooms", async (_: Request, res: Response) => {
+    try {
+        const result = collections.rooms ? await collections.rooms.deleteMany({}) : null;
+
+        if (result && result.deletedCount) {
+            res.status(202).send(`Successfully removed ${result.deletedCount} rooms`);
+        } else if (!result) {
+            res.status(400).send(`Failed to remove all rooms`);
+        } else if (!result.deletedCount) {
+            res.status(404).send(`No rooms to remove`);
+        }
+    } catch (error: any) {
+        console.error(error.message);
+
+        res.status(400).send(error.message);
+    }
+});
+
 // GET GAMES
 trucoRouter.get("/games", async (_: Request, res: Response) => {
     try {
@@ -253,5 +291,24 @@ trucoRouter.post("/games", async (req: Request, res: Response) => {
         res.status(400).send(error);
     }
 });
+
+// DEELTE ALL GAMES
+trucoRouter.delete("/games", async (_: Request, res: Response) => {
+    try {
+        const result = collections.games ? await collections.games.deleteMany({}) : null;
+        
+        if (result && result.deletedCount) {
+            res.status(202).send(`Successfully removed ${result.deletedCount} games`);
+        } else if (!result) {
+            res.status(400).send(`Failed to remove all games`);
+        } else if (!result.deletedCount) {
+            res.status(404).send(`No games to remove`);
+        }
+    } catch (error: any) {
+
+        res.status(400).send(error.message);
+    }
+});
+
 
 //

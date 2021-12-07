@@ -246,8 +246,8 @@ const Board = (props: Props) :React.ReactElement => {
                 </DialogActions>
             </Dialog>
             <Button disabled={!(isHost && game.hostCanEnvidoRespond1) && !(!isHost && game.otherCanEnvidoRespond1)} onClick={envidoNoQuieroCalled}>"No Quiero!"</Button>
-            {/* FIXME: ALWAYS DISABLE BUTTON BELOW IF game.personHasFlor IS FALSE (YOU SHOULD ONLY BE ABLE TO SAY YOU HAVE FLOR IF YOU ACTUALLY DO) */}
-            <Button disabled={!(isHost && game.hostCanEnvidoRespond1) && !(!isHost && game.otherCanEnvidoRespond1)} onClick={quieroConFlorCalled}>"Quiero Con Flor!"</Button>
+            {/* TODO: check if works */}
+            <Button disabled={(!(isHost && game.hostCanEnvidoRespond1) && !(!isHost && game.otherCanEnvidoRespond1)) || (isHost ? !game.hostHasFlor : !game.otherHasFlor)} onClick={quieroConFlorCalled}>"Quiero Con Flor!"</Button>
           </div>
           <Typography variant="h5">Envido Responses 2</Typography>
           <div>
@@ -274,8 +274,8 @@ const Board = (props: Props) :React.ReactElement => {
                   <Button onClick={closeTengoSuccess}>Send</Button>
                 </DialogActions>
             </Dialog>
-            {/* FIXME: ALWAYS DISABLE BUTTON BELOW IF game.personHasFlor IS FALSE (YOU SHOULD ONLY BE ABLE TO SAY YOU HAVE FLOR IF YOU ACTUALLY DO) */}
-            <Button disabled={!(isHost && game.hostCanEnvidoRespond2) || !(!isHost && game.otherCanEnvidoRespond2)} onClick={tengoFlorTambienCalled}>"Tengo Flor Tambien!"</Button>
+            {/* TODO: check if works */}
+            <Button disabled={(!(isHost && game.hostCanEnvidoRespond2) || !(!isHost && game.otherCanEnvidoRespond2)) || (isHost ? !game.hostHasFlor : !game.otherHasFlor)} onClick={tengoFlorTambienCalled}>"Tengo Flor Tambien!"</Button>
           </div>
         </div>
     </div>

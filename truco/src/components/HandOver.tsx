@@ -28,13 +28,12 @@ const HandOver = (props: Props): React.ReactElement => {
             <Typography>
                 Hand Over!
             </Typography>
-            {/* FIXME: CHANGE THESE TERNARIES SO THEY DONT SAY "OTHER" IF NOBODY GOT THOSE POINTS */}
             <Typography>
                 { handTrucoWinnerId === hostId ? 'Host' : 'Other' } won { handTrucoPoints } Truco points
             </Typography>
-            <Typography>
+            { handEnvidoPoints !== 0 &&  <Typography>
                 { handEnvidoWinnerId === hostId ? 'Host' : 'Other' } won { handEnvidoPoints } Envido points
-            </Typography>
+            </Typography>}
             <Typography>
                 { handLiarId === hostId ? 'Host lied, Other received 1 Lying point' : '' }
                 { handLiarId === otherId ? 'Other lied, Host received 1 Lying point' : ''}

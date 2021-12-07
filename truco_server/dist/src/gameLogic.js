@@ -4,7 +4,7 @@ const types_1 = require("./types");
 const HOST_TOKEN_VALUE = 0;
 const OTHER_TOKEN_VALUE = 1;
 class Game {
-    constructor(gameId, hostId, otherId, hostPoints, otherPoints, deck, hostCards, otherCards, cardsPlayedInHand, trick1Cards, trick2Cards, trick3Cards, hostHasDeck, hostTurn, canPlayCards, handTrucoPoints, handEnvidoPoints, handTrucoWinnerId, handEnvidoWinnerId, hostCalledEnvido, otherCalledEnvido, hostEnvidoCon, otherEnvidoCon, hostFlorNumber, otherFlorNumber, canCallTruco, canCallEnvido, tempCanCallTruco, tempCanCallEnvido, hostCanTrucoRespond, otherCanTrucoRespond, hostCanRetrucoAfterQuiero, otherCanRetrucoAfterQuiero, hostCanEnvidoRespond1, otherCanEnvidoRespond1, hostCanEnvidoRespond2, otherCanEnvidoRespond2, hostHasFlor, otherHasFlor, endOfHand, endOfGame) {
+    constructor(gameId, hostId, otherId, hostPoints, otherPoints, deck, hostCards, otherCards, cardsPlayedInHand, trick1Cards, trick2Cards, trick3Cards, hostHasDeck, hostTurn, canPlayCards, handTrucoPoints, handEnvidoPoints, handTrucoWinnerId, handEnvidoWinnerId, handLiarId, hostCalledEnvido, otherCalledEnvido, hostEnvidoCon, otherEnvidoCon, hostFlorNumber, otherFlorNumber, canCallTruco, canCallEnvido, tempCanCallTruco, tempCanCallEnvido, hostCanTrucoRespond, otherCanTrucoRespond, hostCanRetrucoAfterQuiero, otherCanRetrucoAfterQuiero, hostCanEnvidoRespond1, otherCanEnvidoRespond1, hostCanEnvidoRespond2, otherCanEnvidoRespond2, hostHasFlor, otherHasFlor, endOfHand, endOfGame) {
         this.gameId = gameId;
         this.hostId = hostId;
         this.otherId = otherId;
@@ -24,6 +24,7 @@ class Game {
         this.handEnvidoPoints = handEnvidoPoints;
         this.handTrucoWinnerId = handTrucoWinnerId;
         this.handEnvidoWinnerId = handEnvidoWinnerId;
+        this.handLiarId = handLiarId;
         this.hostCalledEnvido = hostCalledEnvido;
         this.otherCalledEnvido = otherCalledEnvido;
         this.hostEnvidoCon = hostEnvidoCon;
@@ -159,14 +160,11 @@ class Game {
         this.changeDeck = () => {
             this.hostHasDeck = !this.hostHasDeck;
         };
-        //after a player plays a card
-        this.changeTurn = () => {
-            this.hostTurn = !this.hostTurn;
-        };
         //initialize the hand
         this.startHand = () => {
             this.handEnvidoWinnerId = '';
             this.handTrucoWinnerId = '';
+            this.handLiarId = '';
             this.resetDeck();
             this.shuffle();
             this.dealAll();
@@ -188,9 +186,173 @@ class Game {
             this.otherFlorNumber = 0;
         };
         this.checkLyingPoints = () => {
-            //TODO:
+            let hostLied = false;
+            let otherLied = false;
+            //player called envido, but did not actually have envido
+            if (this.hostCalledEnvido) {
+                if (this.trick3Cards[HOST_TOKEN_VALUE] !== null) {
+                    if (this.trick1Cards[HOST_TOKEN_VALUE].suit !== this.trick2Cards[HOST_TOKEN_VALUE].suit &&
+                        this.trick1Cards[HOST_TOKEN_VALUE].suit !== this.trick3Cards[HOST_TOKEN_VALUE].suit &&
+                        this.trick2Cards[HOST_TOKEN_VALUE].suit !== this.trick3Cards[HOST_TOKEN_VALUE].suit) {
+                        hostLied = true;
+                    }
+                }
+            }
+            if (this.otherCalledEnvido) {
+                if (this.trick3Cards[OTHER_TOKEN_VALUE] !== null) {
+                    if (this.trick1Cards[OTHER_TOKEN_VALUE].suit !== this.trick2Cards[OTHER_TOKEN_VALUE].suit &&
+                        this.trick1Cards[OTHER_TOKEN_VALUE].suit !== this.trick3Cards[OTHER_TOKEN_VALUE].suit &&
+                        this.trick2Cards[OTHER_TOKEN_VALUE].suit !== this.trick3Cards[OTHER_TOKEN_VALUE].suit) {
+                        otherLied = true;
+                    }
+                }
+            }
+            //player called envido with a number, but cannot actually have that envido
+            if (this.hostEnvidoCon !== 0) {
+                //did not have an envido at all
+                if (this.trick3Cards[HOST_TOKEN_VALUE] !== null) {
+                    if (this.trick1Cards[HOST_TOKEN_VALUE].suit !== this.trick2Cards[HOST_TOKEN_VALUE].suit &&
+                        this.trick1Cards[HOST_TOKEN_VALUE].suit !== this.trick3Cards[HOST_TOKEN_VALUE].suit &&
+                        this.trick2Cards[HOST_TOKEN_VALUE].suit !== this.trick3Cards[HOST_TOKEN_VALUE].suit) {
+                        hostLied = true;
+                    }
+                }
+                //had a different number
+                if (this.trick2Cards[HOST_TOKEN_VALUE] !== null) {
+                    //on first two tricks
+                    if (this.trick1Cards[HOST_TOKEN_VALUE].suit === this.trick2Cards[HOST_TOKEN_VALUE].suit &&
+                        20 + this.trick1Cards[HOST_TOKEN_VALUE].number + this.trick2Cards[HOST_TOKEN_VALUE].number !== this.hostEnvidoCon) {
+                        hostLied = true;
+                    }
+                }
+                if (this.trick3Cards[HOST_TOKEN_VALUE] !== null) {
+                    //on 1 and 3 or 2 and 3
+                    if ((this.trick1Cards[HOST_TOKEN_VALUE].suit === this.trick3Cards[HOST_TOKEN_VALUE].suit &&
+                        20 + this.trick1Cards[HOST_TOKEN_VALUE].number + this.trick3Cards[HOST_TOKEN_VALUE].number !== this.hostEnvidoCon) || (this.trick2Cards[HOST_TOKEN_VALUE].suit === this.trick3Cards[HOST_TOKEN_VALUE].suit &&
+                        20 + this.trick2Cards[HOST_TOKEN_VALUE].number + this.trick3Cards[HOST_TOKEN_VALUE].number !== this.hostEnvidoCon)) {
+                        hostLied = true;
+                    }
+                }
+                //cannot have number
+                if (this.trick2Cards[HOST_TOKEN_VALUE] !== null) {
+                    //would need too large a number
+                    if (this.hostEnvidoCon - 20 - this.trick1Cards[HOST_TOKEN_VALUE].number > 7 &&
+                        this.hostEnvidoCon - 20 - this.trick2Cards[HOST_TOKEN_VALUE].number > 7) {
+                        hostLied = true;
+                    }
+                    //other has necessary card case 1
+                    if (this.trick1Cards[HOST_TOKEN_VALUE].suit === this.trick1Cards[OTHER_TOKEN_VALUE].suit) {
+                        if (this.hostEnvidoCon - 20 - this.trick2Cards[HOST_TOKEN_VALUE].number > 7 &&
+                            this.hostEnvidoCon - 20 - this.trick1Cards[HOST_TOKEN_VALUE].number === this.trick1Cards[OTHER_TOKEN_VALUE].number) {
+                            hostLied = true;
+                        }
+                    }
+                    //other has necessary card case 2
+                    if (this.trick1Cards[HOST_TOKEN_VALUE].suit === this.trick2Cards[OTHER_TOKEN_VALUE].suit) {
+                        if (this.hostEnvidoCon - 20 - this.trick2Cards[HOST_TOKEN_VALUE].number > 7 &&
+                            this.hostEnvidoCon - 20 - this.trick1Cards[HOST_TOKEN_VALUE].number === this.trick2Cards[OTHER_TOKEN_VALUE].number) {
+                            hostLied = true;
+                        }
+                    }
+                    //other has necessary card case 3
+                    if (this.trick2Cards[HOST_TOKEN_VALUE].suit === this.trick1Cards[OTHER_TOKEN_VALUE].suit) {
+                        if (this.hostEnvidoCon - 20 - this.trick1Cards[HOST_TOKEN_VALUE].number > 7 &&
+                            this.hostEnvidoCon - 20 - this.trick2Cards[HOST_TOKEN_VALUE].number === this.trick1Cards[OTHER_TOKEN_VALUE].number) {
+                            hostLied = true;
+                        }
+                    }
+                    //other has necessary card case 4
+                    if (this.trick2Cards[HOST_TOKEN_VALUE].suit === this.trick2Cards[OTHER_TOKEN_VALUE].suit) {
+                        if (this.hostEnvidoCon - 20 - this.trick1Cards[HOST_TOKEN_VALUE].number > 7 &&
+                            this.hostEnvidoCon - 20 - this.trick2Cards[HOST_TOKEN_VALUE].number === this.trick2Cards[OTHER_TOKEN_VALUE].number) {
+                            hostLied = true;
+                        }
+                    }
+                }
+            }
+            if (this.otherEnvidoCon !== 0) {
+                //did not have an envido at all
+                if (this.trick3Cards[OTHER_TOKEN_VALUE] !== null) {
+                    if (this.trick1Cards[OTHER_TOKEN_VALUE].suit !== this.trick2Cards[OTHER_TOKEN_VALUE].suit &&
+                        this.trick1Cards[OTHER_TOKEN_VALUE].suit !== this.trick3Cards[OTHER_TOKEN_VALUE].suit &&
+                        this.trick2Cards[OTHER_TOKEN_VALUE].suit !== this.trick3Cards[OTHER_TOKEN_VALUE].suit) {
+                        otherLied = true;
+                    }
+                }
+                //had a different number
+                if (this.trick2Cards[OTHER_TOKEN_VALUE] !== null) {
+                    //on first two tricks
+                    if (this.trick1Cards[OTHER_TOKEN_VALUE].suit === this.trick2Cards[OTHER_TOKEN_VALUE].suit &&
+                        20 + this.trick1Cards[OTHER_TOKEN_VALUE].number + this.trick2Cards[OTHER_TOKEN_VALUE].number !== this.hostEnvidoCon) {
+                        otherLied = true;
+                    }
+                }
+                if (this.trick3Cards[OTHER_TOKEN_VALUE] !== null) {
+                    //on 1 and 3 or 2 and 3
+                    if ((this.trick1Cards[OTHER_TOKEN_VALUE].suit === this.trick3Cards[OTHER_TOKEN_VALUE].suit &&
+                        20 + this.trick1Cards[OTHER_TOKEN_VALUE].number + this.trick3Cards[OTHER_TOKEN_VALUE].number !== this.hostEnvidoCon) || (this.trick2Cards[OTHER_TOKEN_VALUE].suit === this.trick3Cards[OTHER_TOKEN_VALUE].suit &&
+                        20 + this.trick2Cards[OTHER_TOKEN_VALUE].number + this.trick3Cards[OTHER_TOKEN_VALUE].number !== this.hostEnvidoCon)) {
+                        otherLied = true;
+                    }
+                }
+                //cannot have number
+                if (this.trick2Cards[OTHER_TOKEN_VALUE] !== null) {
+                    //would need too large a number
+                    if (this.hostEnvidoCon - 20 - this.trick1Cards[OTHER_TOKEN_VALUE].number > 7 &&
+                        this.hostEnvidoCon - 20 - this.trick2Cards[OTHER_TOKEN_VALUE].number > 7) {
+                        otherLied = true;
+                    }
+                    //host has necessary card case 1
+                    if (this.trick1Cards[OTHER_TOKEN_VALUE].suit === this.trick1Cards[HOST_TOKEN_VALUE].suit) {
+                        if (this.hostEnvidoCon - 20 - this.trick2Cards[HOST_TOKEN_VALUE].number > 7 &&
+                            this.hostEnvidoCon - 20 - this.trick1Cards[HOST_TOKEN_VALUE].number === this.trick1Cards[HOST_TOKEN_VALUE].number) {
+                            otherLied = true;
+                        }
+                    }
+                    //host has necessary card case 2
+                    if (this.trick1Cards[OTHER_TOKEN_VALUE].suit === this.trick2Cards[HOST_TOKEN_VALUE].suit) {
+                        if (this.hostEnvidoCon - 20 - this.trick2Cards[OTHER_TOKEN_VALUE].number > 7 &&
+                            this.hostEnvidoCon - 20 - this.trick1Cards[OTHER_TOKEN_VALUE].number === this.trick2Cards[HOST_TOKEN_VALUE].number) {
+                            otherLied = true;
+                        }
+                    }
+                    //host has necessary card case 3
+                    if (this.trick2Cards[OTHER_TOKEN_VALUE].suit === this.trick1Cards[HOST_TOKEN_VALUE].suit) {
+                        if (this.hostEnvidoCon - 20 - this.trick1Cards[OTHER_TOKEN_VALUE].number > 7 &&
+                            this.hostEnvidoCon - 20 - this.trick2Cards[OTHER_TOKEN_VALUE].number === this.trick1Cards[HOST_TOKEN_VALUE].number) {
+                            otherLied = true;
+                        }
+                    }
+                    //host has necessary card case 4
+                    if (this.trick2Cards[OTHER_TOKEN_VALUE].suit === this.trick2Cards[HOST_TOKEN_VALUE].suit) {
+                        if (this.hostEnvidoCon - 20 - this.trick1Cards[OTHER_TOKEN_VALUE].number > 7 &&
+                            this.hostEnvidoCon - 20 - this.trick2Cards[OTHER_TOKEN_VALUE].number === this.trick2Cards[HOST_TOKEN_VALUE].number) {
+                            otherLied = true;
+                        }
+                    }
+                }
+            }
+            if (hostLied && otherLied) {
+                this.handEnvidoPoints = 0;
+                this.handEnvidoWinnerId = '';
+                this.handLiarId = "both";
+            }
+            else if (hostLied) {
+                this.handLiarId = this.hostId;
+                if (this.otherCalledEnvido) {
+                    this.handEnvidoWinnerId = this.otherId;
+                }
+            }
+            else if (otherLied) {
+                this.handLiarId = this.otherId;
+                if (this.hostCalledEnvido) {
+                    this.handEnvidoWinnerId = this.hostId;
+                }
+            }
         };
         this.checkIfTrucoWinner = () => {
+            if (this.cardsPlayedInHand < 4 || this.cardsPlayedInHand === 5)
+                return;
             if (this.trick2Cards.length !== 2)
                 return;
             const isThirdTrick = this.trick3Cards.length === 2;
@@ -208,7 +370,10 @@ class Game {
                 this.trick1Cards[HOST_TOKEN_VALUE].order === this.trick1Cards[OTHER_TOKEN_VALUE].order &&
                 this.trick2Cards[HOST_TOKEN_VALUE].order === this.trick2Cards[OTHER_TOKEN_VALUE].order &&
                 this.trick3Cards[HOST_TOKEN_VALUE].order === this.trick3Cards[OTHER_TOKEN_VALUE].order &&
-                this.hostHasDeck)) {
+                this.hostHasDeck) || ( //win the first trick, tie the third trick
+            isThirdTrick &&
+                this.trick1Cards[HOST_TOKEN_VALUE].order < this.trick1Cards[OTHER_TOKEN_VALUE].order &&
+                this.trick3Cards[HOST_TOKEN_VALUE].order === this.trick3Cards[OTHER_TOKEN_VALUE].order)) {
                 this.handTrucoWinnerId = this.hostId;
                 this.endHand();
             }
@@ -294,10 +459,34 @@ class Game {
                     this.trick3Cards[OTHER_TOKEN_VALUE] = this.otherCards.find(card => card.id === cardId);
                 }
                 this.otherCards = this.otherCards.filter(card => card.id !== cardId);
-                // this.otherCards.splice(index, 1);
             }
             this.cardsPlayedInHand++;
-            this.changeTurn();
+            if (this.cardsPlayedInHand === 2) {
+                console.log('case a');
+                if (this.trick1Cards[HOST_TOKEN_VALUE].order < this.trick1Cards[OTHER_TOKEN_VALUE].order || (this.trick1Cards[HOST_TOKEN_VALUE].order === this.trick1Cards[OTHER_TOKEN_VALUE].order && playerId === this.hostId)) {
+                    console.log('case ai');
+                    this.hostTurn = true;
+                }
+                else {
+                    console.log('case aii');
+                    this.hostTurn = false;
+                }
+            }
+            else if (this.cardsPlayedInHand === 4) {
+                console.log('case b');
+                if (this.trick2Cards[HOST_TOKEN_VALUE].order < this.trick2Cards[OTHER_TOKEN_VALUE].order || (this.trick2Cards[HOST_TOKEN_VALUE].order === this.trick2Cards[OTHER_TOKEN_VALUE].order && playerId === this.hostId)) {
+                    console.log('case bi');
+                    this.hostTurn = true;
+                }
+                else {
+                    console.log('case bii');
+                    this.hostTurn = false;
+                }
+            }
+            else {
+                console.log('case c');
+                this.hostTurn = !this.hostTurn;
+            }
             this.checkIfTrucoWinner();
         };
         //will update the state of allowing players to respond
@@ -426,11 +615,11 @@ class Game {
         };
     }
     static fromDb(game) {
-        const { gameId, hostId, otherId, hostPoints, otherPoints, deck, hostCards, otherCards, cardsPlayedInHand, trick1Cards, trick2Cards, trick3Cards, hostHasDeck, hostTurn, canPlayCards, handTrucoPoints, handEnvidoPoints, handTrucoWinnerId, handEnvidoWinnerId, hostCalledEnvido, otherCalledEnvido, hostEnvidoCon, otherEnvidoCon, hostFlorNumber, otherFlorNumber, canCallTruco, canCallEnvido, tempCanCallTruco, tempCanCallEnvido, hostCanTrucoRespond, otherCanTrucoRespond, hostCanRetrucoAfterQuiero, otherCanRetrucoAfterQuiero, hostCanEnvidoRespond1, otherCanEnvidoRespond1, hostCanEnvidoRespond2, otherCanEnvidoRespond2, hostHasFlor, otherHasFlor, endOfHand, endOfGame } = game;
-        return new Game(gameId, hostId, otherId, hostPoints, otherPoints, deck, hostCards, otherCards, cardsPlayedInHand, trick1Cards, trick2Cards, trick3Cards, hostHasDeck, hostTurn, canPlayCards, handTrucoPoints, handEnvidoPoints, handTrucoWinnerId, handEnvidoWinnerId, hostCalledEnvido, otherCalledEnvido, hostEnvidoCon, otherEnvidoCon, hostFlorNumber, otherFlorNumber, canCallTruco, canCallEnvido, tempCanCallTruco, tempCanCallEnvido, hostCanTrucoRespond, otherCanTrucoRespond, hostCanRetrucoAfterQuiero, otherCanRetrucoAfterQuiero, hostCanEnvidoRespond1, otherCanEnvidoRespond1, hostCanEnvidoRespond2, otherCanEnvidoRespond2, hostHasFlor, otherHasFlor, endOfHand, endOfGame);
+        const { gameId, hostId, otherId, hostPoints, otherPoints, deck, hostCards, otherCards, cardsPlayedInHand, trick1Cards, trick2Cards, trick3Cards, hostHasDeck, hostTurn, canPlayCards, handTrucoPoints, handEnvidoPoints, handTrucoWinnerId, handEnvidoWinnerId, handLiarId, hostCalledEnvido, otherCalledEnvido, hostEnvidoCon, otherEnvidoCon, hostFlorNumber, otherFlorNumber, canCallTruco, canCallEnvido, tempCanCallTruco, tempCanCallEnvido, hostCanTrucoRespond, otherCanTrucoRespond, hostCanRetrucoAfterQuiero, otherCanRetrucoAfterQuiero, hostCanEnvidoRespond1, otherCanEnvidoRespond1, hostCanEnvidoRespond2, otherCanEnvidoRespond2, hostHasFlor, otherHasFlor, endOfHand, endOfGame } = game;
+        return new Game(gameId, hostId, otherId, hostPoints, otherPoints, deck, hostCards, otherCards, cardsPlayedInHand, trick1Cards, trick2Cards, trick3Cards, hostHasDeck, hostTurn, canPlayCards, handTrucoPoints, handEnvidoPoints, handTrucoWinnerId, handEnvidoWinnerId, handLiarId, hostCalledEnvido, otherCalledEnvido, hostEnvidoCon, otherEnvidoCon, hostFlorNumber, otherFlorNumber, canCallTruco, canCallEnvido, tempCanCallTruco, tempCanCallEnvido, hostCanTrucoRespond, otherCanTrucoRespond, hostCanRetrucoAfterQuiero, otherCanRetrucoAfterQuiero, hostCanEnvidoRespond1, otherCanEnvidoRespond1, hostCanEnvidoRespond2, otherCanEnvidoRespond2, hostHasFlor, otherHasFlor, endOfHand, endOfGame);
     }
     static newGame(gameId, hostId, otherId) {
-        const game = new Game(gameId, hostId, otherId, 0, 0, [], [], [], 0, [], [], [], false, true, true, 1, 0, '', '', false, false, 0, 0, 0, 0, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false);
+        const game = new Game(gameId, hostId, otherId, 0, 0, [], [], [], 0, [], [], [], false, true, true, 1, 0, '', '', '', false, false, 0, 0, 0, 0, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false);
         game.resetDeck();
         return game;
     }

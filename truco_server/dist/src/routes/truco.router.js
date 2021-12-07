@@ -101,6 +101,25 @@ exports.trucoRouter.delete("/users/:id", (req, res) => __awaiter(void 0, void 0,
         res.status(400).send(error.message);
     }
 }));
+// DELETE ALL USERS
+exports.trucoRouter.delete("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = database_service_1.collections.users ? yield database_service_1.collections.users.deleteMany({}) : null;
+        if (result && result.deletedCount) {
+            res.status(202).send(`Successfully removed ${result.deletedCount} users`);
+        }
+        else if (!result) {
+            res.status(400).send(`Failed to remove all users`);
+        }
+        else if (!result.deletedCount) {
+            res.status(404).send(`No users to remove`);
+        }
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(400).send(error.message);
+    }
+}));
 // PUT EXAMPLE
 // gamesRouter.put("/:id", async (req: Request, res: Response) => {
 //     const id = req?.params?.id;
@@ -207,6 +226,25 @@ exports.trucoRouter.put("/rooms/:id", (req, res) => __awaiter(void 0, void 0, vo
         res.status(400).send(error);
     }
 }));
+// DELETE ALL ROOMS
+exports.trucoRouter.delete("/rooms", (_, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = database_service_1.collections.rooms ? yield database_service_1.collections.rooms.deleteMany({}) : null;
+        if (result && result.deletedCount) {
+            res.status(202).send(`Successfully removed ${result.deletedCount} rooms`);
+        }
+        else if (!result) {
+            res.status(400).send(`Failed to remove all rooms`);
+        }
+        else if (!result.deletedCount) {
+            res.status(404).send(`No rooms to remove`);
+        }
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(400).send(error.message);
+    }
+}));
 // GET GAMES
 exports.trucoRouter.get("/games", (_, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -252,6 +290,24 @@ exports.trucoRouter.post("/games", (req, res) => __awaiter(void 0, void 0, void 
     catch (error) {
         console.error(error);
         res.status(400).send(error);
+    }
+}));
+// DEELTE ALL GAMES
+exports.trucoRouter.delete("/games", (_, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = database_service_1.collections.games ? yield database_service_1.collections.games.deleteMany({}) : null;
+        if (result && result.deletedCount) {
+            res.status(202).send(`Successfully removed ${result.deletedCount} games`);
+        }
+        else if (!result) {
+            res.status(400).send(`Failed to remove all games`);
+        }
+        else if (!result.deletedCount) {
+            res.status(404).send(`No games to remove`);
+        }
+    }
+    catch (error) {
+        res.status(400).send(error.message);
     }
 }));
 //

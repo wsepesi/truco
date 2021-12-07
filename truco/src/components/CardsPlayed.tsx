@@ -14,57 +14,73 @@ export const OTHER_TOKEN_VALUE = 1;
 const CardsPlayed = (props: Props) :React.ReactElement => {
   const isHost = props.id ? props.game.hostId === props.id : false;
   const { trick1Cards, trick2Cards, trick3Cards } = props.game;
-  // if (isHost) {
-  //   trick1Cards.reverse();
-  //   trick2Cards.reverse();
-  //   trick3Cards.reverse();
-  // }
+  const tricks = [trick1Cards, trick2Cards, trick3Cards];
   return (
     <div>
       <Box sx={{padding: "30px 0px 30px 0px", height: "330px"}}>
         <div style={{ display: "flex", justifyContent: "space-between", padding: "0px 35px 5px 35px"}}>
-          <div style={{ display: "flex", flexDirection: isHost ? "column-reverse" : "column", alignItems: "center"}}>
-            {trick1Cards.map((card) => {
-              return (
-                <Card key={card.id} sx={{ width: 120 }}>
-                  <CardMedia
-                      component="img"
-                      image={`/TrucoCards/${card.suit}${card.number}.jpg`}
-                      alt={CardIds[card.id]}
-                      height="160px"
-                  />
-                </Card>
-              )
-            })}
-          </div>
-          <div style={{ display: "flex", flexDirection: isHost ? "column-reverse" : "column", alignItems: "center"}}>
-            {trick2Cards.map((card) => {
-                return (
-                  <Card key={card.id} sx={{ width: 120 }}>
-                    <CardMedia
-                        component="img"
-                        image={`/TrucoCards/${card.suit}${card.number}.jpg`}
-                        alt={CardIds[card.id]}
-                        height="160px"
-                    />
-                  </Card>
-                )
-              })}
-          </div>
-          <div style={{ display: "flex", flexDirection: isHost ? "column-reverse" : "column", alignItems: "center"}}>
-            {trick3Cards.map((card) => {
-                return (
-                  <Card key={card.id} sx={{ width: 120 }}>
-                    <CardMedia
-                        component="img"
-                        image={`/TrucoCards/${card.suit}${card.number}.jpg`}
-                        alt={CardIds[card.id]}
-                        height="160px"
-                    />
-                  </Card>
-                )
-              })}
-          </div>
+          {tricks.map((trick, index) => {
+            return (
+              <div key={index} style={{ display: "flex", flexDirection: isHost ? "column-reverse" : "column", alignItems: "center"}}>
+                {trick.map((card) => {
+                  console.log(card);
+                  return (card !== null) ? (
+                    <Card key={card.id} sx={{ width: 120 }}>
+                      <CardMedia
+                          component="img"
+                          image={`/TrucoCards/${card.suit}${card.number}.jpg`}
+                          alt={CardIds[card.id]}
+                          height="160px"
+                      />
+                    </Card>
+                  ) : null
+                })}
+              </div>
+            )
+          })}
+          {/* <div style={{ display: "flex", flexDirection: isHost ? "column-reverse" : "column", alignItems: "center"}}>
+          //   {trick1Cards.map((card) => { 
+          //     console.log(card);
+          //     return (card !== null) ? (
+          //       <Card key={card.id} sx={{ width: 120 }}>
+          //         <CardMedia
+          //             component="img"
+          //             image={`/TrucoCards/${card.suit}${card.number}.jpg`}
+          //             alt={CardIds[card.id]}
+          //             height="160px"
+          //         />
+          //       </Card>
+          //     ) : null
+          //   })}
+          // </div>
+          // <div style={{ display: "flex", flexDirection: isHost ? "column-reverse" : "column", alignItems: "center"}}>
+          //   {trick2Cards.map((card) => {
+          //       return (
+          //         <Card key={card.id} sx={{ width: 120 }}>
+          //           <CardMedia
+          //               component="img"
+          //               image={`/TrucoCards/${card.suit}${card.number}.jpg`}
+          //               alt={CardIds[card.id]}
+          //               height="160px"
+          //           />
+          //         </Card>
+          //       )
+          //     })}
+          // </div>
+          // <div style={{ display: "flex", flexDirection: isHost ? "column-reverse" : "column", alignItems: "center"}}>
+          //   {trick3Cards.map((card) => {
+          //       return (
+          //         <Card key={card.id} sx={{ width: 120 }}>
+          //           <CardMedia
+          //               component="img"
+          //               image={`/TrucoCards/${card.suit}${card.number}.jpg`}
+          //               alt={CardIds[card.id]}
+          //               height="160px"
+          //           />
+          //         </Card>
+          //       )
+          //     })}
+          // </div>
           {/* <Card sx={{ width: 120 }}>
             <CardMedia
                 component="img"

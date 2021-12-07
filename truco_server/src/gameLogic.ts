@@ -560,6 +560,7 @@ export default class Game {
     }
 
     checkIfTrucoWinner = () => {
+        if(this.cardsPlayedInHand < 4 || this.cardsPlayedInHand === 5) return;
         if(this.trick2Cards.length !== 2) return;
         const isThirdTrick = this.trick3Cards.length === 2;
         //host wins
@@ -684,22 +685,29 @@ export default class Game {
         }
         this.cardsPlayedInHand++;
         if (this.cardsPlayedInHand === 2) {
+            console.log('case a')
             if (this.trick1Cards[HOST_TOKEN_VALUE].order < this.trick1Cards[OTHER_TOKEN_VALUE].order || (this.trick1Cards[HOST_TOKEN_VALUE].order === this.trick1Cards[OTHER_TOKEN_VALUE].order && playerId===this.hostId)) {
+                console.log('case ai')
                 this.hostTurn = true;
             }
             else {
+                console.log('case aii')
                 this.hostTurn = false;
             }
         }
         else if (this.cardsPlayedInHand === 4) {
+            console.log('case b')
             if (this.trick2Cards[HOST_TOKEN_VALUE].order < this.trick2Cards[OTHER_TOKEN_VALUE].order || (this.trick2Cards[HOST_TOKEN_VALUE].order === this.trick2Cards[OTHER_TOKEN_VALUE].order && playerId===this.hostId)) {
+                console.log('case bi')
                 this.hostTurn = true;
             }
             else {
+                console.log('case bii')
                 this.hostTurn = false;
             }
         }
         else {
+            console.log('case c')
             this.hostTurn = !this.hostTurn;
         }
         this.checkIfTrucoWinner();
