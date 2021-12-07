@@ -323,6 +323,8 @@ export default class Game {
 
     //initialize the hand
     startHand = () => {
+        this.handEnvidoWinnerId = '';
+        this.handTrucoWinnerId = '';
         this.resetDeck();
         this.shuffle();
         this.dealAll();
@@ -408,14 +410,14 @@ export default class Game {
         if (this.handTrucoWinnerId === this.hostId) this.hostPoints += this.handTrucoPoints;
         if (this.handTrucoWinnerId === this.otherId) this.otherPoints += this.handTrucoPoints;
         this.handTrucoPoints = 1;
-        this.handTrucoWinnerId = '';
+        
     }
 
     distributeEnvidoPoints = () => {
         if (this.handEnvidoWinnerId === this.hostId) this.hostPoints += this.handEnvidoPoints;
         if (this.handEnvidoWinnerId === this.otherId) this.otherPoints += this.handEnvidoPoints;
         this.handEnvidoPoints = 0;
-        this.handEnvidoWinnerId = '';
+       
     }
 
     //end the hand
