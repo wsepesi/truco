@@ -6,6 +6,7 @@ class Room {
         this.name = name;
         this.host = host;
         this.users.push(host);
+        this.readyCount = 0;
     }
     joinRoom(user) {
         if (this.users.length === 1) {

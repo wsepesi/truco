@@ -155,6 +155,7 @@ export interface ClientToServerEvents {
     esMejorCalled: (data: basicCallData) => void;
     tengoCalled: (data: numericCallData) => void;
     tengoFlorTambienCalled: (data: basicCallData) => void;
+    ready: (data: string) => void;
 }
 
 export interface InterServerEvents {
@@ -164,4 +165,57 @@ export interface InterServerEvents {
 export interface SocketData {
 name: string;
 age: number;
+}
+
+export type GameType = {
+    gameId: string;
+
+    hostId: string;
+    otherId: string;
+
+    hostPoints: number;
+    otherPoints: number;
+
+    deck: Card[];
+
+    hostCards: Card[];
+    otherCards: Card[];
+    cardsPlayedInHand: number;
+    trick1Cards: Card[];
+    trick2Cards: Card[];
+    trick3Cards: Card[];
+
+    hostHasDeck: boolean;
+    hostTurn: boolean;
+    canPlayCards: boolean;
+
+    handTrucoPoints: number;
+    handEnvidoPoints: number;
+    handTrucoWinnerId: string;
+    handEnvidoWinnerId: string;
+
+    hostCalledEnvido: boolean;
+    otherCalledEnvido: boolean;
+    hostEnvidoCon: number;
+    otherEnvidoCon: number;
+    hostFlorNumber: number;
+    otherFlorNumber: number;
+
+    canCallTruco: boolean;
+    canCallEnvido: boolean;
+    tempCanCallTruco: boolean;
+    tempCanCallEnvido: boolean;
+    hostCanTrucoRespond: boolean;
+    otherCanTrucoRespond: boolean;
+    hostCanRetrucoAfterQuiero: boolean;
+    otherCanRetrucoAfterQuiero: boolean;
+    hostCanEnvidoRespond1: boolean;
+    otherCanEnvidoRespond1: boolean;
+    hostCanEnvidoRespond2: boolean;
+    otherCanEnvidoRespond2: boolean;
+    hostHasFlor: boolean;
+    otherHasFlor: boolean;
+
+    endOfHand: boolean;
+    endOfGame: boolean;
 }

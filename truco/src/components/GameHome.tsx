@@ -3,6 +3,8 @@ import React, { useEffect } from 'react'
 import Board from './Board';
 import Chat from './Chat';
 import { Game } from '../configs/types';
+import GameOver from './GameOver';
+import HandOver from './HandOver';
 import PointTracker from './PointTracker';
 import { Socket } from 'socket.io-client';
 import { SocketContext } from '../hooks/socket-context';
@@ -21,79 +23,11 @@ const GameHome = (props: Props) :React.ReactElement => {
 
     const [game, setGame] = React.useState<Game>();
 
-    // const[hostId, setHostId] = React.useState<String>("");
-    // const[otherId, setOtherId] = React.useState<String>("");
-    // const[gameId, setGameId] = React.useState<String>(id ? id : "");
-    
-    // const[hostPoints, setHostPoints] = React.useState<number>(0);
-    // const[otherPoints, setOtherPoints] = React.useState<number>(0);
-
-    // const[hostCards, setHostCards] = React.useState<TrucoCard[]>([]);
-    // const[otherCards, setOtherCards] = React.useState<TrucoCard[]>([]);
-    // const[trick1Cards, setTrick1Cards] = React.useState<TrucoCard[]>([]);
-    // const[trick2Cards, setTrick2Cards] = React.useState<TrucoCard[]>([]);
-    // const[trick3Cards, setTrick3Cards] = React.useState<TrucoCard[]>([]);
-
-    // const[hostHasDeck, setHostHasDeck] = React.useState<boolean>(false);
-    // const[hostTurn, setHostTurn] = React.useState<boolean>(true);
-    // const[canPlayCards, setCanPlayCards] = React.useState<boolean>(true);
-
-    // const[handTrucoPoints, setHandTrucoPoints] = React.useState<number>(1);
-    // const[handEnvidoPoints, setHandEnvidoPoints] = React.useState<number>(0);
-
-    // const[hostCalledEnvido, setHostCalledEnvido] = React.useState<boolean>(false);
-    // const[otherCalledEnvido, setOtherCalledEnvido] = React.useState<boolean>(false);
-    // const[hostEnvidoCon, setHostEnvidoCon] = React.useState<number>(0);
-    // const[otherEnvidoCon, setOtherEnvidoCon] = React.useState<number>(0);
-
-    // const[canCallTruco, setCanCallTruco] = React.useState<boolean>(false);
-    // const[canCallEnvido, setCanCallEnvido] = React.useState<boolean>(false);
-    // const[tempCanCallTruco, setTempCanCallTruco] = React.useState<boolean>(true);
-    // const[tempCanCallEnvido, setTempCanCallEnvido] = React.useState<boolean>(true);
-    // const[hostCanTrucoRespond, setHostCanTrucoRespond] = React.useState<boolean>(false);
-    // const[otherCanTrucoRespond, setOtherCanTrucoRespond] = React.useState<boolean>(false);
-    // const[hostCanRetrucoAfterQuiero, setHostCanRetrucoAfterQuiero] = React.useState<boolean>(false);
-    // const[otherCanRetrucoAfterQuiero, setOtherCanRetrucoAfterQuiero] = React.useState<boolean>(false);
-    // const[hostCanEnvidoRespond1, setHostCanEnvidoRespond1] = React.useState<boolean>(false);
-    // const[otherCanEnvidoRespond1, setOtherCanEnvidoRespond1] = React.useState<boolean>(false);
-    // const[hostCanEnvidoRespond2, setHostCanEnvidoRespond2] = React.useState<boolean>(false);
-    // const[otherCanEnvidoRespond2, setOtherCanEnvidoRespond2] = React.useState<boolean>(false);
+    const endOfGame = game ? game.endOfGame : false;
+    const endOfHand = game ? game.endOfHand : false;
 
     const updateAllStates = (game: Game) => {
         setGame(game);
-        // setHostPoints(game.hostPoints);
-        // setOtherPoints(game.otherPoints);
-
-        // setHostCards(game.hostCards);
-        // setOtherCards(game.otherCards);
-        // setTrick1Cards(game.trick1Cards);
-        // setTrick2Cards(game.trick2Cards);
-        // setTrick3Cards(game.trick3Cards);
-
-        // setHostHasDeck(game.hostHasDeck);
-        // setHostTurn(game.hostTurn);
-        // setCanPlayCards(game.canPlayCards);
-
-        // setHandTrucoPoints(game.handTrucoPoints);
-        // setHandEnvidoPoints(game.handEnvidoPoints);
-
-        // setHostCalledEnvido(game.hostCalledEnvido);
-        // setOtherCalledEnvido(game.otherCalledEnvido);
-        // setHostEnvidoCon(game.hostEnvidoCon);
-        // setOtherEnvidoCon(game.otherEnvidoCon);
-        
-        // setCanCallTruco(game.canCallTruco);
-        // setCanCallEnvido(game.canCallEnvido);
-        // setTempCanCallTruco(game.tempCanCallTruco);
-        // setTempCanCallEnvido(game.tempCanCallEnvido);
-        // setHostCanTrucoRespond(game.hostCanTrucoRespond);
-        // setOtherCanTrucoRespond(game.otherCanTrucoRespond);
-        // setHostCanRetrucoAfterQuiero(game.hostCanRetrucoAfterQuiero);
-        // setOtherCanRetrucoAfterQuiero(game.otherCanRetrucoAfterQuiero);
-        // setHostCanEnvidoRespond1(game.hostCanEnvidoRespond1);
-        // setOtherCanEnvidoRespond1(game.otherCanEnvidoRespond1);
-        // setHostCanEnvidoRespond2(game.hostCanEnvidoRespond2);
-        // setOtherCanEnvidoRespond2(game.otherCanEnvidoRespond2);
     }
 
     useEffect(() => {
@@ -127,7 +61,7 @@ const GameHome = (props: Props) :React.ReactElement => {
             />}
         </div>
         <div style={{width: "70vw", borderLeft: "2px solid black", borderRight: "2px solid black"}}>
-            {game && <SocketContext.Consumer>
+            {(game && !(endOfGame || endOfHand)) && <SocketContext.Consumer>
                 {socket =>
                     <Board
                         socket={socket}
@@ -135,6 +69,9 @@ const GameHome = (props: Props) :React.ReactElement => {
                     />
                 }
             </SocketContext.Consumer>}
+            {(game && endOfHand) && <HandOver game={game} socket={socket}/>}
+            {(game && endOfGame) && <GameOver game={game} socket={socket}/>}
+            {!game && <div>Loading...</div>}
         </div>
         <div style={{width: "15vw"}}>
             <SocketContext.Consumer>

@@ -6,6 +6,7 @@ export default class Room {
     public users: User[];
     public host: User;
     public other: User;
+    public readyCount: number;
     public id?: ObjectId;
 
     constructor(name: string, host: User) {
@@ -13,6 +14,7 @@ export default class Room {
         this.name = name;
         this.host = host;
         this.users.push(host);
+        this.readyCount = 0;
     }
 
     public joinRoom(user: User): void {

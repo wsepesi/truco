@@ -12,8 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createGame = exports.updateGame = exports.getGame = exports.getGames = exports.getRooms = void 0;
+exports.createGame = exports.updateGame = exports.getGame = exports.getGames = exports.updateRoom = exports.getRoom = exports.getRooms = void 0;
 const gameLogic_1 = __importDefault(require("../gameLogic"));
+const mongodb_1 = require("mongodb");
 const database_service_1 = require("../services/database.service");
 const getRooms = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -27,6 +28,30 @@ const getRooms = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getRooms = getRooms;
+const getRoom = (roomId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        console.log(roomId);
+        const room = database_service_1.collections.rooms ? yield database_service_1.collections.rooms.findOne({ _id: new mongodb_1.ObjectId(roomId) }) : null;
+        console.log(room);
+        return room;
+    }
+    catch (error) {
+        return null;
+    }
+});
+exports.getRoom = getRoom;
+const updateRoom = (id, room) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const query = { _id: new mongodb_1.ObjectId(id) };
+        const result = yield database_service_1.collections.rooms.updateOne(query, { $set: room });
+        if (!result)
+            throw new Error("Unable to update room");
+    }
+    catch (error) {
+        throw error;
+    }
+});
+exports.updateRoom = updateRoom;
 const getGames = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const games = database_service_1.collections.games ? (yield database_service_1.collections.games.find({}).toArray()) : null;
@@ -41,7 +66,9 @@ const getGame = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const query = { gameId: id };
         const gameData = database_service_1.collections.games ? (yield database_service_1.collections.games.findOne(query)) : null;
-        const game = new gameLogic_1.default(gameData.gameId, gameData.hostId, gameData.otherId);
+        const game = gameLogic_1.default.fromDb(gameData);
+        console.log("game", game);
+        // const game = new Game(gameData.gameId, gameData.hostId, gameData.otherId);
         if (!game)
             throw new Error("Game not found");
         return game;
@@ -55,6 +82,8 @@ const updateGame = (game) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const query = { gameId: game.gameId };
         const result = yield database_service_1.collections.games.updateOne(query, { $set: game });
+        if (!result)
+            throw new Error("Game not found");
     }
     catch (error) {
         throw new Error(error);
@@ -64,7 +93,7 @@ exports.updateGame = updateGame;
 const createGame = (gameId, hostId, otherId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log(gameId, hostId, otherId);
-        const game = new gameLogic_1.default(gameId, hostId, otherId);
+        const game = gameLogic_1.default.newGame(gameId, hostId, otherId);
         const result = database_service_1.collections.games ? yield database_service_1.collections.games.insertOne(game) : null;
         if (!result)
             throw new Error('Game not created');

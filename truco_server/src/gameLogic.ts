@@ -1,107 +1,197 @@
-import { Card, CardIds, CardOrder } from "./types";
-
-// import { ObjectId } from "mongodb";
+import { Card, CardIds, CardOrder, GameType } from "./types";
 
 const HOST_TOKEN_VALUE = 0;
 const OTHER_TOKEN_VALUE = 1;
 
 export default class Game {
-    gameId: string;
+    constructor(
+        public gameId: string,
 
-    hostId: string;
-    otherId: string;
+        public hostId: string,
+        public otherId: string,
+    
+        public hostPoints: number,
+        public otherPoints: number,
+    
+        public deck: Card[],
+    
+        public hostCards: Card[],
+        public otherCards: Card[],
+        public cardsPlayedInHand: number,
+        public trick1Cards: Card[],
+        public trick2Cards: Card[],
+        public trick3Cards: Card[],
+    
+        public hostHasDeck: boolean,
+        public hostTurn: boolean,
+        public canPlayCards: boolean,
+    
+        public handTrucoPoints: number,
+        public handEnvidoPoints: number,
+        public handTrucoWinnerId: string,
+        public handEnvidoWinnerId: string,
+    
+        public hostCalledEnvido: boolean,
+        public otherCalledEnvido: boolean,
+        public hostEnvidoCon: number,
+        public otherEnvidoCon: number,
+        public hostFlorNumber: number,
+        public otherFlorNumber: number,
+    
+        public canCallTruco: boolean,
+        public canCallEnvido: boolean,
+        public tempCanCallTruco: boolean,
+        public tempCanCallEnvido: boolean,
+        public hostCanTrucoRespond: boolean,
+        public otherCanTrucoRespond: boolean,
+        public hostCanRetrucoAfterQuiero: boolean,
+        public otherCanRetrucoAfterQuiero: boolean,
+        public hostCanEnvidoRespond1: boolean,
+        public otherCanEnvidoRespond1: boolean,
+        public hostCanEnvidoRespond2: boolean,
+        public otherCanEnvidoRespond2: boolean,
+        public hostHasFlor: boolean,
+        public otherHasFlor: boolean,
 
-    hostPoints: number;
-    otherPoints: number;
+        public endOfHand: boolean,
+        public endOfGame: boolean
+    ) {}
 
-    deck: Card[];
+    static fromDb(game: GameType): Game {
+        const {
+            gameId,
+            hostId,
+            otherId,
+            hostPoints,
+            otherPoints,
+            deck,
+            hostCards,
+            otherCards,
+            cardsPlayedInHand,
+            trick1Cards,
+            trick2Cards,
+            trick3Cards,
+            hostHasDeck,
+            hostTurn,
+            canPlayCards,
+            handTrucoPoints,
+            handEnvidoPoints,
+            handTrucoWinnerId,
+            handEnvidoWinnerId,
+            hostCalledEnvido,
+            otherCalledEnvido,
+            hostEnvidoCon,
+            otherEnvidoCon,
+            hostFlorNumber,
+            otherFlorNumber,
+            canCallTruco,
+            canCallEnvido,
+            tempCanCallTruco,
+            tempCanCallEnvido,
+            hostCanTrucoRespond,
+            otherCanTrucoRespond,
+            hostCanRetrucoAfterQuiero,
+            otherCanRetrucoAfterQuiero,
+            hostCanEnvidoRespond1,
+            otherCanEnvidoRespond1,
+            hostCanEnvidoRespond2,
+            otherCanEnvidoRespond2,
+            hostHasFlor,
+            otherHasFlor,
+            endOfHand,
+            endOfGame
+        } = game;
+        return new Game(
+            gameId,
+            hostId,
+            otherId,
+            hostPoints,
+            otherPoints,
+            deck,
+            hostCards,
+            otherCards,
+            cardsPlayedInHand,
+            trick1Cards,
+            trick2Cards,
+            trick3Cards,
+            hostHasDeck,
+            hostTurn,
+            canPlayCards,
+            handTrucoPoints,
+            handEnvidoPoints,
+            handTrucoWinnerId,
+            handEnvidoWinnerId,
+            hostCalledEnvido,
+            otherCalledEnvido,
+            hostEnvidoCon,
+            otherEnvidoCon,
+            hostFlorNumber,
+            otherFlorNumber,
+            canCallTruco,
+            canCallEnvido,
+            tempCanCallTruco,
+            tempCanCallEnvido,
+            hostCanTrucoRespond,
+            otherCanTrucoRespond,
+            hostCanRetrucoAfterQuiero,
+            otherCanRetrucoAfterQuiero,
+            hostCanEnvidoRespond1,
+            otherCanEnvidoRespond1,
+            hostCanEnvidoRespond2,
+            otherCanEnvidoRespond2,
+            hostHasFlor,
+            otherHasFlor,
+            endOfHand,
+            endOfGame
+        );
+    }
 
-    hostCards: Card[];
-    otherCards: Card[];
-    cardsPlayedInHand: number;
-    trick1Cards: Card[];
-    trick2Cards: Card[];
-    trick3Cards: Card[];
-
-    hostHasDeck: boolean;
-    hostTurn: boolean;
-    canPlayCards: boolean;
-
-    handTrucoPoints: number;
-    handEnvidoPoints: number;
-    handTrucoWinnerId: string;
-    handEnvidoWinnerId: string;
-
-    hostCalledEnvido: boolean;
-    otherCalledEnvido: boolean;
-    hostEnvidoCon: number;
-    otherEnvidoCon: number;
-    hostFlorNumber: number;
-    otherFlorNumber: number;
-
-    canCallTruco: boolean;
-    canCallEnvido: boolean;
-    tempCanCallTruco: boolean;
-    tempCanCallEnvido: boolean;
-    hostCanTrucoRespond: boolean;
-    otherCanTrucoRespond: boolean;
-    hostCanRetrucoAfterQuiero: boolean;
-    otherCanRetrucoAfterQuiero: boolean;
-    hostCanEnvidoRespond1: boolean;
-    otherCanEnvidoRespond1: boolean;
-    hostCanEnvidoRespond2: boolean;
-    otherCanEnvidoRespond2: boolean;
-    hostHasFlor: boolean;
-    otherHasFlor: boolean;
-
-    constructor (gameId: string, hostId: string, otherId: string) {
-        this.gameId = gameId;
-
-        this.hostId = hostId;
-        this.otherId = otherId;
-
-        this.hostPoints = 0;
-        this.otherPoints = 0;
-
-        this.resetDeck();
-
-        this.hostCards = [];
-        this.otherCards = [];
-        this.cardsPlayedInHand = 0;
-        this.trick1Cards = [];
-        this.trick2Cards = [];
-        this.trick3Cards = [];
-
-        this.hostHasDeck = false;
-        this.hostTurn = true;
-        this.canPlayCards = true;
-
-        this.handTrucoPoints = 1;
-        this.handEnvidoPoints = 0;
-        this.handTrucoWinnerId = '';
-        this.handEnvidoWinnerId = '';
-
-        this.hostCalledEnvido = false;
-        this.otherCalledEnvido = false;
-        this.hostEnvidoCon = 0;
-        this.otherEnvidoCon = 0;
-        this.hostFlorNumber = 0;
-        this.otherFlorNumber = 0;
-
-        this.canCallTruco = true;
-        this.canCallEnvido = true;
-        this.tempCanCallTruco = true;
-        this.tempCanCallEnvido = true;
-        this.hostCanTrucoRespond = false;
-        this.otherCanTrucoRespond = false;
-        this.hostCanRetrucoAfterQuiero = false;
-        this.otherCanRetrucoAfterQuiero = false;
-        this.hostCanEnvidoRespond1 = false;
-        this.otherCanEnvidoRespond1 = false;
-        this.hostCanEnvidoRespond2 = false;
-        this.otherCanEnvidoRespond2 = false;
-        this.hostHasFlor = false;
-        this.otherHasFlor = false;
+    static newGame(gameId: string, hostId: string, otherId: string): Game {
+        const game = new Game(
+            gameId,
+            hostId,
+            otherId,
+            0,
+            0,
+            [],
+            [],
+            [],
+            0,
+            [],
+            [],
+            [],
+            false,
+            true,
+            true,
+            1,
+            0,
+            '',
+            '',
+            false,
+            false,
+            0,
+            0,
+            0,
+            0,
+            true,
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+        );
+        game.resetDeck();
+        return game;
     }
 
     resetDeck = () => {
@@ -147,6 +237,20 @@ export default class Game {
             new Card(11, "Cups", CardIds.Cups11, CardOrder.Cups11),
             new Card(12, "Cups", CardIds.Cups12, CardOrder.Cups12),
         ];
+    }
+
+    isHandOver = () => {
+        return this.endOfHand;
+    }
+
+    isGameOver = () => {
+        if (this.hostPoints < 24 || this.otherPoints < 24) {
+            this.endOfGame = false;
+        }
+        else {
+            const absDiff = Math.abs(this.hostPoints - this.otherPoints);
+            this.endOfGame = absDiff >= 2;
+        }
     }
 
     //shuffle the deck
@@ -214,7 +318,7 @@ export default class Game {
 
     //after a player plays a card
     changeTurn = () => {
-        this.hostTurn ? !this.hostTurn : this.hostTurn;
+        this.hostTurn = !this.hostTurn;
     }
 
     //initialize the hand
@@ -223,6 +327,7 @@ export default class Game {
         this.shuffle();
         this.dealAll();
         this.changeDeck();
+        this.endOfHand = false;
         this.hostHasDeck ? this.hostTurn : !this.hostTurn;
 
         this.canPlayCards = true;
@@ -245,12 +350,15 @@ export default class Game {
     }
 
     checkIfTrucoWinner = () => {
+        if(this.trick2Cards.length !== 2) return;
+        const isThirdTrick = this.trick3Cards.length === 2;
         //host wins
         if (
             (//win the first two tricks
             this.trick1Cards[HOST_TOKEN_VALUE].order < this.trick1Cards[OTHER_TOKEN_VALUE].order &&
             this.trick2Cards[HOST_TOKEN_VALUE].order < this.trick2Cards[OTHER_TOKEN_VALUE].order
             ) || (//win the third trick
+            isThirdTrick &&
             this.trick3Cards[HOST_TOKEN_VALUE].order < this.trick3Cards[OTHER_TOKEN_VALUE].order
             ) || (//tie the first trick, win the second trick
             this.trick1Cards[HOST_TOKEN_VALUE].order === this.trick1Cards[OTHER_TOKEN_VALUE].order &&
@@ -259,6 +367,7 @@ export default class Game {
             this.trick1Cards[HOST_TOKEN_VALUE].order < this.trick1Cards[OTHER_TOKEN_VALUE].order &&
             this.trick2Cards[HOST_TOKEN_VALUE].order === this.trick2Cards[OTHER_TOKEN_VALUE].order
             ) || (//tie all three tricks with deck
+            isThirdTrick &&
             this.trick1Cards[HOST_TOKEN_VALUE].order === this.trick1Cards[OTHER_TOKEN_VALUE].order &&
             this.trick2Cards[HOST_TOKEN_VALUE].order === this.trick2Cards[OTHER_TOKEN_VALUE].order &&
             this.trick3Cards[HOST_TOKEN_VALUE].order === this.trick3Cards[OTHER_TOKEN_VALUE].order &&
@@ -274,6 +383,7 @@ export default class Game {
                 this.trick1Cards[HOST_TOKEN_VALUE].order > this.trick1Cards[OTHER_TOKEN_VALUE].order &&
                 this.trick2Cards[HOST_TOKEN_VALUE].order > this.trick2Cards[OTHER_TOKEN_VALUE].order
                 ) || (//win the third trick
+                isThirdTrick &&
                 this.trick3Cards[HOST_TOKEN_VALUE].order > this.trick3Cards[OTHER_TOKEN_VALUE].order
                 ) || (//tie the first trick, win the second trick
                 this.trick1Cards[HOST_TOKEN_VALUE].order === this.trick1Cards[OTHER_TOKEN_VALUE].order &&
@@ -282,6 +392,7 @@ export default class Game {
                 this.trick1Cards[HOST_TOKEN_VALUE].order > this.trick1Cards[OTHER_TOKEN_VALUE].order &&
                 this.trick2Cards[HOST_TOKEN_VALUE].order === this.trick2Cards[OTHER_TOKEN_VALUE].order
                 ) || (//tie all three tricks with deck
+                isThirdTrick &&
                 this.trick1Cards[HOST_TOKEN_VALUE].order === this.trick1Cards[OTHER_TOKEN_VALUE].order &&
                 this.trick2Cards[HOST_TOKEN_VALUE].order === this.trick2Cards[OTHER_TOKEN_VALUE].order &&
                 this.trick3Cards[HOST_TOKEN_VALUE].order === this.trick3Cards[OTHER_TOKEN_VALUE].order &&
@@ -313,18 +424,23 @@ export default class Game {
         this.distributeTrucoPoints();
         this.distributeEnvidoPoints();
 
+        this.endOfHand = true;
+
         this.hostCards = [];
         this.otherCards = [];
         this.cardsPlayedInHand = 0;
         this.trick1Cards = [];
         this.trick2Cards = [];
         this.trick3Cards = [];
+        this.isGameOver();
     }
 
     //will receive the index of which card the user clicked on
     playCard = (cardId: number, playerId: string) => {
+        console.log('playCard', cardId, playerId);
         //host cards
         if (playerId === this.hostId) {
+            console.log(this.hostCards)
             if (this.cardsPlayedInHand === 0 || this.cardsPlayedInHand === 1) {
                 this.trick1Cards[HOST_TOKEN_VALUE] = this.hostCards.find(card => card.id === cardId);
             }
@@ -334,11 +450,12 @@ export default class Game {
             if (this.cardsPlayedInHand === 4 || this.cardsPlayedInHand === 5) {
                 this.trick3Cards[HOST_TOKEN_VALUE] = this.hostCards.find(card => card.id === cardId);;
             }
-            this.hostCards.filter(card => card.id !== cardId);
+            this.hostCards = this.hostCards.filter(card => card.id !== cardId);
             // this.hostCards.splice(index, 1);
         }
         //other cards
         else {
+            console.log(this.otherCards)
             if (this.cardsPlayedInHand === 0 || this.cardsPlayedInHand === 1) {
                 this.trick1Cards[OTHER_TOKEN_VALUE] = this.otherCards.find(card => card.id === cardId);
             }
@@ -348,7 +465,7 @@ export default class Game {
             if (this.cardsPlayedInHand === 4 || this.cardsPlayedInHand === 5) {
                 this.trick3Cards[OTHER_TOKEN_VALUE] = this.otherCards.find(card => card.id === cardId);
             }
-            this.otherCards.filter(card => card.id !== cardId);
+            this.otherCards = this.otherCards.filter(card => card.id !== cardId);
             // this.otherCards.splice(index, 1);
         }
         this.cardsPlayedInHand++;

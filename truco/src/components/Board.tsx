@@ -1,8 +1,8 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Typography } from '@mui/material'
-import { Game, TrucoCard } from '../configs/types'
 
 import Cards from './Cards'
 import CardsPlayed from './CardsPlayed'
+import { Game } from '../configs/types'
 import React from 'react'
 import { Socket } from 'socket.io-client'
 
@@ -12,6 +12,9 @@ type Props = {
 }
 
 const Board = (props: Props) :React.ReactElement => {
+  // const [endOfHand, setEndOfHand] = React.useState(false)
+  // const [endOfGame, setEndOfGame] = React.useState(false)
+
   const { socket, game } = props
   if(!game) throw new Error('Game not defined');
   const id = socket ? socket.id : '';
@@ -21,6 +24,23 @@ const Board = (props: Props) :React.ReactElement => {
   const [quieroConNumber, setQuieroConNumber] = React.useState<number>(0);
   const [tengoOpen, setTengoOpen] = React.useState<boolean>(false);
   const [tengoNumber, setTengoNumber] = React.useState<number>(0);
+
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.on("handOver", (data: Game) => {
+        
+  //     })
+
+  //     socket.on("gameOver", (data: Game) => {
+        
+  //     })
+
+  //     return () => {
+  //       socket.off("handOver");
+  //       socket.off("gameOver");
+  //     }
+  //   }
+  // }, [socket]);
 
   const quieroConClick = () => {
     setQuieroConOpen(true);
@@ -62,16 +82,17 @@ const Board = (props: Props) :React.ReactElement => {
     handleTengo(tengoNumber);
   }
 
-  let opponentCards: TrucoCard[] = [];
-  let yourCards: TrucoCard[] = [];
-  if (isHost) {
-    opponentCards = game.otherCards;
-    yourCards = game.hostCards;
-  }
-  else {
-    opponentCards = game.hostCards;
-    yourCards = game.otherCards;
-  }
+  //FIXME:
+  // let opponentCards: TrucoCard[] = [];
+  // let yourCards: TrucoCard[] = [];
+  // if (isHost) {
+  //   opponentCards = game.otherCards;
+  //   yourCards = game.hostCards;
+  // }
+  // else {
+  //   opponentCards = game.hostCards;
+  //   yourCards = game.otherCards;
+  // }
 
   const trucoCalled = () => {
     if (socket) socket.emit('trucoCalled', {
@@ -171,18 +192,20 @@ const Board = (props: Props) :React.ReactElement => {
             <Cards 
               socket={socket}
               other={true}
-              cards={opponentCards}
+              game={game}
+              isHost={isHost}
             />
           </div>
           <div>
-            <CardsPlayed />
+            <CardsPlayed game={game} id={socket?.id}/*FIXME: */ /> 
           </div>
           <div>
             <Typography variant="h5" align="center">Your Cards</Typography>
             <Cards
               socket={socket}
               other={false}
-              cards={yourCards}
+              game={game}
+              isHost={isHost}
             />
           </div>
         </div>
@@ -194,9 +217,9 @@ const Board = (props: Props) :React.ReactElement => {
           </div>
           <Typography variant="h5">Truco Responses</Typography>
           <div>
-            <Button disabled={!(isHost && game.hostCanTrucoRespond) || !(!isHost && game.otherCanTrucoRespond)} onClick={trucoQuieroCalled}>"Quiero!"</Button>
-            <Button disabled={!(isHost && game.hostCanTrucoRespond) || !(!isHost && game.otherCanTrucoRespond)} onClick={trucoNoQuieroCalled}>"No Quiero!"</Button>
-            <Button disabled={!(isHost && (game.hostCanTrucoRespond || game.hostCanRetrucoAfterQuiero)) || !(!isHost && (game.otherCanTrucoRespond || game.otherCanRetrucoAfterQuiero))} onClick={retrucoCalled}>"Retruco!"</Button>
+            <Button disabled={!(isHost && game.hostCanTrucoRespond) && !(!isHost && game.otherCanTrucoRespond)} onClick={trucoQuieroCalled}>"Quiero!"</Button>
+            <Button disabled={!(isHost && game.hostCanTrucoRespond) && !(!isHost && game.otherCanTrucoRespond)} onClick={trucoNoQuieroCalled}>"No Quiero!"</Button>
+            <Button disabled={!(isHost && (game.hostCanTrucoRespond || game.hostCanRetrucoAfterQuiero)) && !(!isHost && (game.otherCanTrucoRespond || game.otherCanRetrucoAfterQuiero))} onClick={retrucoCalled}>"Retruco!"</Button>
           </div>
           <Typography variant="h5">Envido Responses 1</Typography>
           <div>

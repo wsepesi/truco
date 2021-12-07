@@ -1,5 +1,5 @@
 import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "./src/types";
-import { getGame, getRooms, updateGame } from "./src/routes/routesUtils";
+import { getGame, getRoom, getRooms, updateGame, updateRoom } from "./src/routes/routesUtils";
 
 import Game from "./src/gameLogic";
 import Room from "./src/models/room";
@@ -78,6 +78,7 @@ io.on("connection", (socket) => {
     const { gameId, playerId, cardId } = data;
     // GET GAME FROM DB
     const game: Game = await getGame(gameId);
+    console.log(game);
     game.playCard(cardId, playerId);
 
     // UPDATE GAME IN DB
@@ -85,7 +86,6 @@ io.on("connection", (socket) => {
 
     // UPDATE CLIENTS IN ROOM
     io.in(game.gameId).emit("updateAll", game);
-
   });
 
   socket.on('trucoCalled', async (data) => {
@@ -163,6 +163,21 @@ io.on("connection", (socket) => {
     game.handleFlorTambienBy(data.userId);
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
+  })
+
+  socket.on('ready', async (data) => {
+    const room: Room = await getRoom(data);
+    room.readyCount++;
+    if(room.readyCount === 2) {
+      // START NEXT HAND
+      const game: Game = await getGame(data);
+      game.startHand();
+      await updateGame(game);
+      io.in(game.gameId).emit("updateAll", game);
+      room.readyCount = 0;
+    }
+    await updateRoom(data, room);
+
   })
 })
 

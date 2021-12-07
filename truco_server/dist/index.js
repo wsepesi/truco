@@ -68,6 +68,17 @@ io.on("connection", (socket) => {
         // UPDATE CLIENTS IN ROOM
         io.in(game.gameId).emit("startGame", game);
     }));
+    socket.on('playCard', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const { gameId, playerId, cardId } = data;
+        // GET GAME FROM DB
+        const game = yield (0, routesUtils_1.getGame)(gameId);
+        console.log(game);
+        game.playCard(cardId, playerId);
+        // UPDATE GAME IN DB
+        yield (0, routesUtils_1.updateGame)(game);
+        // UPDATE CLIENTS IN ROOM
+        io.in(game.gameId).emit("updateAll", game);
+    }));
     socket.on('trucoCalled', (data) => __awaiter(void 0, void 0, void 0, function* () {
         const game = yield (0, routesUtils_1.getGame)(data.gameId);
         game.handleTrucoCalledBy(data.userId);
@@ -133,6 +144,19 @@ io.on("connection", (socket) => {
         game.handleFlorTambienBy(data.userId);
         yield (0, routesUtils_1.updateGame)(game);
         io.in(game.gameId).emit("updateAll", game);
+    }));
+    socket.on('ready', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const room = yield (0, routesUtils_1.getRoom)(data);
+        room.readyCount++;
+        if (room.readyCount === 2) {
+            // START NEXT HAND
+            const game = yield (0, routesUtils_1.getGame)(data);
+            game.startHand();
+            yield (0, routesUtils_1.updateGame)(game);
+            io.in(game.gameId).emit("updateAll", game);
+            room.readyCount = 0;
+        }
+        yield (0, routesUtils_1.updateRoom)(data, room);
     }));
 });
 httpServer.listen(4000);

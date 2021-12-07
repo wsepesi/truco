@@ -66,6 +66,9 @@ export type Game = {
     otherCanEnvidoRespond2: boolean;
     hostHasFlor: boolean;
     otherHasFlor: boolean;
+
+    endOfHand: boolean;
+    endOfGame: boolean;
 }
 
 export enum CardIds {
