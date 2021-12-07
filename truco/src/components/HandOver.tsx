@@ -13,7 +13,7 @@ type Props = {
 const HandOver = (props: Props): React.ReactElement => {
     const { id } = useParams();
     const { game, socket } = props;
-    const { handTrucoWinnerId, handEnvidoWinnerId, hostId, handTrucoPoints, handEnvidoPoints} = game;
+    const { handTrucoWinnerId, handEnvidoWinnerId, hostId, handTrucoPoints, handEnvidoPoints, handLiarId, otherId } = game;
     const [ready, setReady] = React.useState(false);
 
     const handleClick = () => {
@@ -28,11 +28,18 @@ const HandOver = (props: Props): React.ReactElement => {
             <Typography>
                 Hand Over!
             </Typography>
+            {/* FIXME: CHANGE THESE TERNARIES SO THEY DONT SAY "OTHER" IF NOBODY GOT THOSE POINTS */}
             <Typography>
-                { handTrucoWinnerId === hostId ? 'Host' : 'Other' } won { handTrucoPoints } points with Truco
-                { handEnvidoWinnerId === hostId ? 'Host' : 'Other' } won { handEnvidoPoints } points with Envido
-                { /* LYING POINTS */}
+                { handTrucoWinnerId === hostId ? 'Host' : 'Other' } won { handTrucoPoints } Truco points
             </Typography>
+            <Typography>
+                { handEnvidoWinnerId === hostId ? 'Host' : 'Other' } won { handEnvidoPoints } Envido points
+            </Typography>
+            <Typography>
+                { handLiarId === hostId ? 'Host lied, Other received 1 Lying point' : '' }
+                { handLiarId === otherId ? 'Other lied, Host received 1 Lying point' : ''}
+            </Typography>
+            { handLiarId === "both" ? <Typography>Both lied! No lying points</Typography> : ''}
             <Typography>
                 Ready for next hand?
             </Typography>

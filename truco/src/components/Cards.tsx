@@ -37,7 +37,7 @@ const Cards = (props: Props) :React.ReactElement => {
                     <CardActionArea disabled={other || !game.canPlayCards || !yourTurn} onClick={() => playCard(card.id)}>
                         <CardMedia
                             component="img"
-                            image={other ? 'back' : 'ahhh'} //TODO: replace w real card image
+                            image={other ? '/back.png' : `/TrucoCards/${card.suit}${card.number}.jpg`}
                             alt={other ? 'back' : CardIds[card.id]}
                             height="200"
                         />

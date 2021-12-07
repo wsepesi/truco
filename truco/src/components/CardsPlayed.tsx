@@ -29,8 +29,7 @@ const CardsPlayed = (props: Props) :React.ReactElement => {
                 <Card key={card.id} sx={{ width: 120 }}>
                   <CardMedia
                       component="img"
-                      // TODO: FIX LINK
-                      image="./images/testcard.jpg"
+                      image={`/TrucoCards/${card.suit}${card.number}.jpg`}
                       alt={CardIds[card.id]}
                       height="160px"
                   />
@@ -44,8 +43,7 @@ const CardsPlayed = (props: Props) :React.ReactElement => {
                   <Card key={card.id} sx={{ width: 120 }}>
                     <CardMedia
                         component="img"
-                        // TODO: FIX LINK
-                        image="./images/testcard.jpg"
+                        image={`/TrucoCards/${card.suit}${card.number}.jpg`}
                         alt={CardIds[card.id]}
                         height="160px"
                     />
@@ -59,8 +57,7 @@ const CardsPlayed = (props: Props) :React.ReactElement => {
                   <Card key={card.id} sx={{ width: 120 }}>
                     <CardMedia
                         component="img"
-                        // TODO: FIX LINK
-                        image="./images/testcard.jpg"
+                        image={`/TrucoCards/${card.suit}${card.number}.jpg`}
                         alt={CardIds[card.id]}
                         height="160px"
                     />

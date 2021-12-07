@@ -168,7 +168,7 @@ const Board = (props: Props) :React.ReactElement => {
   }
 
   const handleTengo = (tengoNumber: number) => {
-    if (socket) socket.emit('quieroConCalled', {
+    if (socket) socket.emit('tengoCalled', {
       gameId: game.gameId,
       userId: id,
       number: tengoNumber
@@ -223,7 +223,7 @@ const Board = (props: Props) :React.ReactElement => {
           </div>
           <Typography variant="h5">Envido Responses 1</Typography>
           <div>
-            <Button disabled={!(isHost && game.hostCanEnvidoRespond1) || !(!isHost && game.otherCanEnvidoRespond1)} onClick={quieroConClick}>"Quiero Con..."</Button>
+            <Button disabled={!(isHost && game.hostCanEnvidoRespond1) && !(!isHost && game.otherCanEnvidoRespond1)} onClick={quieroConClick}>"Quiero Con..."</Button>
             <Dialog open={quieroConOpen} onClose={closeQuieroConCancel}>
               <DialogTitle>Quiero Con...</DialogTitle>
               <DialogContent>
@@ -245,13 +245,14 @@ const Board = (props: Props) :React.ReactElement => {
                   <Button onClick={closeQuieroConSuccess}>Send</Button>
                 </DialogActions>
             </Dialog>
-            <Button disabled={!(isHost && game.hostCanEnvidoRespond1) || !(!isHost && game.otherCanEnvidoRespond1)} onClick={envidoNoQuieroCalled}>"No Quiero!"</Button>
-            <Button disabled={!(isHost && game.hostCanEnvidoRespond1) || !(!isHost && game.otherCanEnvidoRespond1)} onClick={quieroConFlorCalled}>"Quiero Con Flor!"</Button>
+            <Button disabled={!(isHost && game.hostCanEnvidoRespond1) && !(!isHost && game.otherCanEnvidoRespond1)} onClick={envidoNoQuieroCalled}>"No Quiero!"</Button>
+            {/* FIXME: ALWAYS DISABLE BUTTON BELOW IF game.personHasFlor IS FALSE (YOU SHOULD ONLY BE ABLE TO SAY YOU HAVE FLOR IF YOU ACTUALLY DO) */}
+            <Button disabled={!(isHost && game.hostCanEnvidoRespond1) && !(!isHost && game.otherCanEnvidoRespond1)} onClick={quieroConFlorCalled}>"Quiero Con Flor!"</Button>
           </div>
           <Typography variant="h5">Envido Responses 2</Typography>
           <div>
-            <Button disabled={!(isHost && game.hostCanEnvidoRespond2) || !(!isHost && game.otherCanEnvidoRespond2)} onClick={esMejorCalled}>"Es Mejor!"</Button>
-            <Button disabled={!(isHost && game.hostCanEnvidoRespond2) || !(!isHost && game.otherCanEnvidoRespond2)} onClick={tengoClick}>"Tengo..."</Button>
+            <Button disabled={!(isHost && game.hostCanEnvidoRespond2) && !(!isHost && game.otherCanEnvidoRespond2)} onClick={esMejorCalled}>"Es Mejor!"</Button>
+            <Button disabled={!(isHost && game.hostCanEnvidoRespond2) && !(!isHost && game.otherCanEnvidoRespond2)} onClick={tengoClick}>"Tengo..."</Button>
             <Dialog open={tengoOpen} onClose={closeTengoCancel}>
               <DialogTitle>Tengo...</DialogTitle>
               <DialogContent>
@@ -273,6 +274,7 @@ const Board = (props: Props) :React.ReactElement => {
                   <Button onClick={closeTengoSuccess}>Send</Button>
                 </DialogActions>
             </Dialog>
+            {/* FIXME: ALWAYS DISABLE BUTTON BELOW IF game.personHasFlor IS FALSE (YOU SHOULD ONLY BE ABLE TO SAY YOU HAVE FLOR IF YOU ACTUALLY DO) */}
             <Button disabled={!(isHost && game.hostCanEnvidoRespond2) || !(!isHost && game.otherCanEnvidoRespond2)} onClick={tengoFlorTambienCalled}>"Tengo Flor Tambien!"</Button>
           </div>
         </div>

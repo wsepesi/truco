@@ -30,6 +30,7 @@ export default class Game {
         public handEnvidoPoints: number,
         public handTrucoWinnerId: string,
         public handEnvidoWinnerId: string,
+        public handLiarId: string,
     
         public hostCalledEnvido: boolean,
         public otherCalledEnvido: boolean,
@@ -78,6 +79,7 @@ export default class Game {
             handEnvidoPoints,
             handTrucoWinnerId,
             handEnvidoWinnerId,
+            handLiarId,
             hostCalledEnvido,
             otherCalledEnvido,
             hostEnvidoCon,
@@ -121,6 +123,7 @@ export default class Game {
             handEnvidoPoints,
             handTrucoWinnerId,
             handEnvidoWinnerId,
+            handLiarId,
             hostCalledEnvido,
             otherCalledEnvido,
             hostEnvidoCon,
@@ -165,6 +168,7 @@ export default class Game {
             true,
             1,
             0,
+            '',
             '',
             '',
             false,
@@ -312,25 +316,20 @@ export default class Game {
 
     //change who has the deck
     changeDeck = () => {
-        this.hostHasDeck ? !this.hostHasDeck : this.hostHasDeck;
-        //socket send to both this.hostHasDeck (to show on the screen who has deck)
-    }
-
-    //after a player plays a card
-    changeTurn = () => {
-        this.hostTurn = !this.hostTurn;
+        this.hostHasDeck = !this.hostHasDeck;
     }
 
     //initialize the hand
     startHand = () => {
         this.handEnvidoWinnerId = '';
         this.handTrucoWinnerId = '';
+        this.handLiarId = '';
         this.resetDeck();
         this.shuffle();
         this.dealAll();
         this.changeDeck();
         this.endOfHand = false;
-        this.hostHasDeck ? this.hostTurn : !this.hostTurn;
+        this.hostTurn = this.hostHasDeck;
 
         this.canPlayCards = true;
         this.canCallTruco = true;
@@ -348,7 +347,216 @@ export default class Game {
     }
 
     checkLyingPoints = () => {
-        //TODO:
+        let hostLied = false
+        let otherLied = false
+
+        //player called envido, but did not actually have envido
+        if (this.hostCalledEnvido) {
+            if (this.trick3Cards[HOST_TOKEN_VALUE] !== null) {
+                if (
+                    this.trick1Cards[HOST_TOKEN_VALUE].suit !== this.trick2Cards[HOST_TOKEN_VALUE].suit &&
+                    this.trick1Cards[HOST_TOKEN_VALUE].suit !== this.trick3Cards[HOST_TOKEN_VALUE].suit &&
+                    this.trick2Cards[HOST_TOKEN_VALUE].suit !== this.trick3Cards[HOST_TOKEN_VALUE].suit
+                    ) {
+                        hostLied = true;
+                }
+            }
+        }
+        if (this.otherCalledEnvido) {
+            if (this.trick3Cards[OTHER_TOKEN_VALUE] !== null) {
+                if (
+                    this.trick1Cards[OTHER_TOKEN_VALUE].suit !== this.trick2Cards[OTHER_TOKEN_VALUE].suit &&
+                    this.trick1Cards[OTHER_TOKEN_VALUE].suit !== this.trick3Cards[OTHER_TOKEN_VALUE].suit &&
+                    this.trick2Cards[OTHER_TOKEN_VALUE].suit !== this.trick3Cards[OTHER_TOKEN_VALUE].suit
+                    ) {
+                        otherLied = true;
+                }
+            }
+        }
+
+        //player called envido with a number, but cannot actually have that envido
+        if (this.hostEnvidoCon !== 0) {
+            //did not have an envido at all
+            if (this.trick3Cards[HOST_TOKEN_VALUE] !== null) {
+                if (
+                    this.trick1Cards[HOST_TOKEN_VALUE].suit !== this.trick2Cards[HOST_TOKEN_VALUE].suit &&
+                    this.trick1Cards[HOST_TOKEN_VALUE].suit !== this.trick3Cards[HOST_TOKEN_VALUE].suit &&
+                    this.trick2Cards[HOST_TOKEN_VALUE].suit !== this.trick3Cards[HOST_TOKEN_VALUE].suit
+                    ) {
+                        hostLied = true;
+                }
+            }
+
+            //had a different number
+            if (this.trick2Cards[HOST_TOKEN_VALUE] !== null) {
+                //on first two tricks
+                if (
+                    this.trick1Cards[HOST_TOKEN_VALUE].suit === this.trick2Cards[HOST_TOKEN_VALUE].suit &&
+                    20 + this.trick1Cards[HOST_TOKEN_VALUE].number + this.trick2Cards[HOST_TOKEN_VALUE].number !== this.hostEnvidoCon
+                    ) {
+                        hostLied = true;
+                }
+            }
+            if (this.trick3Cards[HOST_TOKEN_VALUE] !== null) {
+                //on 1 and 3 or 2 and 3
+                if ((
+                    this.trick1Cards[HOST_TOKEN_VALUE].suit === this.trick3Cards[HOST_TOKEN_VALUE].suit &&
+                    20 + this.trick1Cards[HOST_TOKEN_VALUE].number + this.trick3Cards[HOST_TOKEN_VALUE].number !== this.hostEnvidoCon
+                    )||(
+                    this.trick2Cards[HOST_TOKEN_VALUE].suit === this.trick3Cards[HOST_TOKEN_VALUE].suit &&
+                    20 + this.trick2Cards[HOST_TOKEN_VALUE].number + this.trick3Cards[HOST_TOKEN_VALUE].number !== this.hostEnvidoCon
+                    )) {
+                        hostLied = true;
+                }
+            }
+
+            //cannot have number
+            if (this.trick2Cards[HOST_TOKEN_VALUE] !== null) {
+                //would need too large a number
+                if (
+                    this.hostEnvidoCon - 20 - this.trick1Cards[HOST_TOKEN_VALUE].number > 7 &&
+                    this.hostEnvidoCon - 20 - this.trick2Cards[HOST_TOKEN_VALUE].number > 7
+                    ) {
+                        hostLied = true;
+                }
+                //other has necessary card case 1
+                if (this.trick1Cards[HOST_TOKEN_VALUE].suit === this.trick1Cards[OTHER_TOKEN_VALUE].suit) {
+                    if (
+                        this.hostEnvidoCon - 20 - this.trick2Cards[HOST_TOKEN_VALUE].number > 7 &&
+                        this.hostEnvidoCon - 20 - this.trick1Cards[HOST_TOKEN_VALUE].number === this.trick1Cards[OTHER_TOKEN_VALUE].number
+                    ) {
+                        hostLied = true;
+                    }
+                }
+                //other has necessary card case 2
+                if (this.trick1Cards[HOST_TOKEN_VALUE].suit === this.trick2Cards[OTHER_TOKEN_VALUE].suit) {
+                    if (
+                        this.hostEnvidoCon - 20 - this.trick2Cards[HOST_TOKEN_VALUE].number > 7 &&
+                        this.hostEnvidoCon - 20 - this.trick1Cards[HOST_TOKEN_VALUE].number === this.trick2Cards[OTHER_TOKEN_VALUE].number
+                    ) {
+                        hostLied = true;
+                    }
+                }
+                //other has necessary card case 3
+                if (this.trick2Cards[HOST_TOKEN_VALUE].suit === this.trick1Cards[OTHER_TOKEN_VALUE].suit) {
+                    if (
+                        this.hostEnvidoCon - 20 - this.trick1Cards[HOST_TOKEN_VALUE].number > 7 &&
+                        this.hostEnvidoCon - 20 - this.trick2Cards[HOST_TOKEN_VALUE].number === this.trick1Cards[OTHER_TOKEN_VALUE].number
+                    ) {
+                        hostLied = true;
+                    }
+                }
+                //other has necessary card case 4
+                if (this.trick2Cards[HOST_TOKEN_VALUE].suit === this.trick2Cards[OTHER_TOKEN_VALUE].suit) {
+                    if (
+                        this.hostEnvidoCon - 20 - this.trick1Cards[HOST_TOKEN_VALUE].number > 7 &&
+                        this.hostEnvidoCon - 20 - this.trick2Cards[HOST_TOKEN_VALUE].number === this.trick2Cards[OTHER_TOKEN_VALUE].number
+                    ) {
+                        hostLied = true;
+                    }
+                }
+            }
+        }
+        if (this.otherEnvidoCon !== 0) {
+            //did not have an envido at all
+            if (this.trick3Cards[OTHER_TOKEN_VALUE] !== null) {
+                if (
+                    this.trick1Cards[OTHER_TOKEN_VALUE].suit !== this.trick2Cards[OTHER_TOKEN_VALUE].suit &&
+                    this.trick1Cards[OTHER_TOKEN_VALUE].suit !== this.trick3Cards[OTHER_TOKEN_VALUE].suit &&
+                    this.trick2Cards[OTHER_TOKEN_VALUE].suit !== this.trick3Cards[OTHER_TOKEN_VALUE].suit
+                    ) {
+                        otherLied = true;
+                }
+            }
+
+            //had a different number
+            if (this.trick2Cards[OTHER_TOKEN_VALUE] !== null) {
+                //on first two tricks
+                if (
+                    this.trick1Cards[OTHER_TOKEN_VALUE].suit === this.trick2Cards[OTHER_TOKEN_VALUE].suit &&
+                    20 + this.trick1Cards[OTHER_TOKEN_VALUE].number + this.trick2Cards[OTHER_TOKEN_VALUE].number !== this.hostEnvidoCon
+                    ) {
+                        otherLied = true;
+                }
+            }
+            if (this.trick3Cards[OTHER_TOKEN_VALUE] !== null) {
+                //on 1 and 3 or 2 and 3
+                if ((
+                    this.trick1Cards[OTHER_TOKEN_VALUE].suit === this.trick3Cards[OTHER_TOKEN_VALUE].suit &&
+                    20 + this.trick1Cards[OTHER_TOKEN_VALUE].number + this.trick3Cards[OTHER_TOKEN_VALUE].number !== this.hostEnvidoCon
+                    )||(
+                    this.trick2Cards[OTHER_TOKEN_VALUE].suit === this.trick3Cards[OTHER_TOKEN_VALUE].suit &&
+                    20 + this.trick2Cards[OTHER_TOKEN_VALUE].number + this.trick3Cards[OTHER_TOKEN_VALUE].number !== this.hostEnvidoCon
+                    )) {
+                        otherLied = true;
+                }
+            }
+
+            //cannot have number
+            if (this.trick2Cards[OTHER_TOKEN_VALUE] !== null) {
+                //would need too large a number
+                if (
+                    this.hostEnvidoCon - 20 - this.trick1Cards[OTHER_TOKEN_VALUE].number > 7 &&
+                    this.hostEnvidoCon - 20 - this.trick2Cards[OTHER_TOKEN_VALUE].number > 7
+                    ) {
+                        otherLied = true;
+                }
+                //host has necessary card case 1
+                if (this.trick1Cards[OTHER_TOKEN_VALUE].suit === this.trick1Cards[HOST_TOKEN_VALUE].suit) {
+                    if (
+                        this.hostEnvidoCon - 20 - this.trick2Cards[HOST_TOKEN_VALUE].number > 7 &&
+                        this.hostEnvidoCon - 20 - this.trick1Cards[HOST_TOKEN_VALUE].number === this.trick1Cards[HOST_TOKEN_VALUE].number
+                    ) {
+                        otherLied = true;
+                    }
+                }
+                //host has necessary card case 2
+                if (this.trick1Cards[OTHER_TOKEN_VALUE].suit === this.trick2Cards[HOST_TOKEN_VALUE].suit) {
+                    if (
+                        this.hostEnvidoCon - 20 - this.trick2Cards[OTHER_TOKEN_VALUE].number > 7 &&
+                        this.hostEnvidoCon - 20 - this.trick1Cards[OTHER_TOKEN_VALUE].number === this.trick2Cards[HOST_TOKEN_VALUE].number
+                    ) {
+                        otherLied = true;
+                    }
+                }
+                //host has necessary card case 3
+                if (this.trick2Cards[OTHER_TOKEN_VALUE].suit === this.trick1Cards[HOST_TOKEN_VALUE].suit) {
+                    if (
+                        this.hostEnvidoCon - 20 - this.trick1Cards[OTHER_TOKEN_VALUE].number > 7 &&
+                        this.hostEnvidoCon - 20 - this.trick2Cards[OTHER_TOKEN_VALUE].number === this.trick1Cards[HOST_TOKEN_VALUE].number
+                    ) {
+                        otherLied = true;
+                    }
+                }
+                //host has necessary card case 4
+                if (this.trick2Cards[OTHER_TOKEN_VALUE].suit === this.trick2Cards[HOST_TOKEN_VALUE].suit) {
+                    if (
+                        this.hostEnvidoCon - 20 - this.trick1Cards[OTHER_TOKEN_VALUE].number > 7 &&
+                        this.hostEnvidoCon - 20 - this.trick2Cards[OTHER_TOKEN_VALUE].number === this.trick2Cards[HOST_TOKEN_VALUE].number
+                    ) {
+                        otherLied = true;
+                    }
+                }
+            }
+        }
+
+        if (hostLied && otherLied) {
+            this.handEnvidoPoints = 0;
+            this.handEnvidoWinnerId = '';
+            this.handLiarId = "both";
+        }
+        else if (hostLied) {
+            this.handLiarId = this.hostId;
+            if (this.otherCalledEnvido) {
+                this.handEnvidoWinnerId = this.otherId;
+            }
+        }
+        else if (otherLied) {
+            this.handLiarId = this.otherId;
+            if (this.hostCalledEnvido) {
+                this.handEnvidoWinnerId = this.hostId;
+            }
+        }
     }
 
     checkIfTrucoWinner = () => {
@@ -374,6 +582,10 @@ export default class Game {
             this.trick2Cards[HOST_TOKEN_VALUE].order === this.trick2Cards[OTHER_TOKEN_VALUE].order &&
             this.trick3Cards[HOST_TOKEN_VALUE].order === this.trick3Cards[OTHER_TOKEN_VALUE].order &&
             this.hostHasDeck
+            ) || (//win the first trick, tie the third trick
+                isThirdTrick &&
+                this.trick1Cards[HOST_TOKEN_VALUE].order < this.trick1Cards[OTHER_TOKEN_VALUE].order &&
+                this.trick3Cards[HOST_TOKEN_VALUE].order === this.trick3Cards[OTHER_TOKEN_VALUE].order
             )
         ) {
             this.handTrucoWinnerId = this.hostId;
@@ -435,6 +647,7 @@ export default class Game {
         this.trick2Cards = [];
         this.trick3Cards = [];
         this.isGameOver();
+        if (this.endOfGame) this.endOfHand = false;
     }
 
     //will receive the index of which card the user clicked on
@@ -468,10 +681,27 @@ export default class Game {
                 this.trick3Cards[OTHER_TOKEN_VALUE] = this.otherCards.find(card => card.id === cardId);
             }
             this.otherCards = this.otherCards.filter(card => card.id !== cardId);
-            // this.otherCards.splice(index, 1);
         }
         this.cardsPlayedInHand++;
-        this.changeTurn();
+        if (this.cardsPlayedInHand === 2) {
+            if (this.trick1Cards[HOST_TOKEN_VALUE].order < this.trick1Cards[OTHER_TOKEN_VALUE].order || (this.trick1Cards[HOST_TOKEN_VALUE].order === this.trick1Cards[OTHER_TOKEN_VALUE].order && playerId===this.hostId)) {
+                this.hostTurn = true;
+            }
+            else {
+                this.hostTurn = false;
+            }
+        }
+        else if (this.cardsPlayedInHand === 4) {
+            if (this.trick2Cards[HOST_TOKEN_VALUE].order < this.trick2Cards[OTHER_TOKEN_VALUE].order || (this.trick2Cards[HOST_TOKEN_VALUE].order === this.trick2Cards[OTHER_TOKEN_VALUE].order && playerId===this.hostId)) {
+                this.hostTurn = true;
+            }
+            else {
+                this.hostTurn = false;
+            }
+        }
+        else {
+            this.hostTurn = !this.hostTurn;
+        }
         this.checkIfTrucoWinner();
     }
 

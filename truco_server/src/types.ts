@@ -193,6 +193,7 @@ export type GameType = {
     handEnvidoPoints: number;
     handTrucoWinnerId: string;
     handEnvidoWinnerId: string;
+    handLiarId: string;
 
     hostCalledEnvido: boolean;
     otherCalledEnvido: boolean;

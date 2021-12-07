@@ -157,8 +157,7 @@ class Game {
         };
         //change who has the deck
         this.changeDeck = () => {
-            this.hostHasDeck ? !this.hostHasDeck : this.hostHasDeck;
-            //socket send to both this.hostHasDeck (to show on the screen who has deck)
+            this.hostHasDeck = !this.hostHasDeck;
         };
         //after a player plays a card
         this.changeTurn = () => {
@@ -166,12 +165,14 @@ class Game {
         };
         //initialize the hand
         this.startHand = () => {
+            this.handEnvidoWinnerId = '';
+            this.handTrucoWinnerId = '';
             this.resetDeck();
             this.shuffle();
             this.dealAll();
             this.changeDeck();
             this.endOfHand = false;
-            this.hostHasDeck ? this.hostTurn : !this.hostTurn;
+            this.hostTurn = this.hostHasDeck;
             this.canPlayCards = true;
             this.canCallTruco = true;
             this.canCallEnvido = true;
@@ -236,7 +237,6 @@ class Game {
             if (this.handTrucoWinnerId === this.otherId)
                 this.otherPoints += this.handTrucoPoints;
             this.handTrucoPoints = 1;
-            this.handTrucoWinnerId = '';
         };
         this.distributeEnvidoPoints = () => {
             if (this.handEnvidoWinnerId === this.hostId)
@@ -244,7 +244,6 @@ class Game {
             if (this.handEnvidoWinnerId === this.otherId)
                 this.otherPoints += this.handEnvidoPoints;
             this.handEnvidoPoints = 0;
-            this.handEnvidoWinnerId = '';
         };
         //end the hand
         this.endHand = () => {
@@ -259,6 +258,8 @@ class Game {
             this.trick2Cards = [];
             this.trick3Cards = [];
             this.isGameOver();
+            if (this.endOfGame)
+                this.endOfHand = false;
         };
         //will receive the index of which card the user clicked on
         this.playCard = (cardId, playerId) => {
