@@ -102,6 +102,8 @@ const updateGame = (game) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const isOver = game.endOfGame;
         if (isOver) {
+            if (game.hostPoints === -1 && game.otherPoints === -1)
+                return;
             const winnerId = game.hostPoints > game.otherPoints ? game.hostId : game.otherId;
             // INCREASE WINS OF WINNER BY 1 IN DB
             const query = { socketId: winnerId };

@@ -99,10 +99,14 @@ io.on("connection", (socket) => {
         const card = types_1.CardIds[cardId];
         // UPDATE GAME IN DB
         yield (0, routesUtils_1.updateGame)(game);
+        const numRe = /\d+/;
+        const num = card.match(numRe);
+        const suitRe = /\D+/;
+        const suit = card.match(suitRe);
         // UPDATE CLIENTS IN ROOM
         io.in(game.gameId).emit("updateAll", game);
         io.in(game.gameId).emit("chat", {
-            msg: `${player} played ${card.slice(-1)} of ${card.slice(0, -1)}`,
+            msg: `${player} played ${num} of ${suit}`,
             id: utils_1.SERVER_TOKEN
         });
     }));
@@ -270,7 +274,7 @@ io.on("connection", (socket) => {
             yield (0, routesUtils_1.deleteGame)(data);
             (0, routesUtils_1.createGame)(data, room.host.socketId, room.other.socketId);
             const game = yield (0, routesUtils_1.getGame)(data);
-            console.log(game.gameId);
+            // console.log(game.gameId);
             game.startHand();
             yield (0, routesUtils_1.updateGame)(game);
             io.in(game.gameId).emit("startGame", game);

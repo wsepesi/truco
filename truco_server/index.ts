@@ -109,10 +109,15 @@ io.on("connection", (socket) => {
     // UPDATE GAME IN DB
     await updateGame(game);
 
+    const numRe = /\d+/
+    const num = card.match(numRe);
+    const suitRe = /\D+/
+    const suit = card.match(suitRe);
+
     // UPDATE CLIENTS IN ROOM
     io.in(game.gameId).emit("updateAll", game);
     io.in(game.gameId).emit("chat", {
-      msg: `${player} played ${card.slice(-1)} of ${card.slice(0, -1)}`,
+      msg: `${player} played ${num} of ${suit}`,
       id: SERVER_TOKEN
     });
   });
@@ -301,7 +306,7 @@ io.on("connection", (socket) => {
       await deleteGame(data);
       createGame(data, room.host.socketId, room.other.socketId);
       const game: Game = await getGame(data);
-      console.log(game.gameId);
+      // console.log(game.gameId);
       game.startHand();
       await updateGame(game);
       io.in(game.gameId).emit("startGame", game);
