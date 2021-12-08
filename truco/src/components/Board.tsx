@@ -229,20 +229,20 @@ const Board = (props: Props) :React.ReactElement => {
           </div>
         </div>
         <div style={{width: "10%"}}>
-          <Typography variant="h5">Calls</Typography>
+          <Typography variant="h5">Buttons</Typography>
           <div>
-            <Button disabled={!(game.canCallTruco && game.tempCanCallTruco)} onClick={trucoCalled}>"Truco!"</Button>
-            <Button disabled={!(game.canCallEnvido && game.tempCanCallEnvido)} onClick={envidoCalled}>"Envido!"</Button>
+            {(game.canCallTruco && game.tempCanCallTruco) && <Button onClick={trucoCalled}>"Truco!"</Button>}
+            {(game.canCallEnvido && game.tempCanCallEnvido) && <Button onClick={envidoCalled}>"Envido!"</Button>}
           </div>
-          <Typography variant="h5">Truco Responses</Typography>
+          {(isHost ? game.hostCanTrucoRespond : game.otherCanTrucoRespond) && <Typography variant="h5">Truco Responses</Typography>}
           <div>
-            <Button disabled={!(isHost && game.hostCanTrucoRespond) && !(!isHost && game.otherCanTrucoRespond)} onClick={trucoQuieroCalled}>"Quiero!"</Button>
-            <Button disabled={!(isHost && game.hostCanTrucoRespond) && !(!isHost && game.otherCanTrucoRespond)} onClick={trucoNoQuieroCalled}>"No Quiero!"</Button>
-            <Button disabled={!(isHost && (game.hostCanTrucoRespond || game.hostCanRetrucoAfterQuiero)) && !(!isHost && (game.otherCanTrucoRespond || game.otherCanRetrucoAfterQuiero))} onClick={retrucoCalled}>"Retruco!"</Button>
+            {(isHost ? game.hostCanTrucoRespond : game.otherCanTrucoRespond) && <Button onClick={trucoQuieroCalled}>"Quiero!"</Button>}
+            {(isHost ? game.hostCanTrucoRespond : game.otherCanTrucoRespond) && <Button onClick={trucoNoQuieroCalled}>"No Quiero!"</Button>}
+            {(isHost ? game.hostCanTrucoRespond || game.hostCanRetrucoAfterQuiero : game.otherCanTrucoRespond || game.otherCanRetrucoAfterQuiero) && <Button onClick={retrucoCalled}>"Retruco!"</Button>}
           </div>
-          <Typography variant="h5">Envido Responses 1</Typography>
+          {(isHost ? game.hostCanEnvidoRespond1 : game.otherCanEnvidoRespond1) && <Typography variant="h5">Envido Responses 1</Typography>}
           <div>
-            <Button disabled={!(isHost && game.hostCanEnvidoRespond1) && !(!isHost && game.otherCanEnvidoRespond1)} onClick={quieroConClick}>"Quiero Con..."</Button>
+            {(isHost ? game.hostCanEnvidoRespond1 : game.otherCanEnvidoRespond1) && <Button onClick={quieroConClick}>"Quiero Con..."</Button>}
             <Dialog open={quieroConOpen} onClose={closeQuieroConCancel}>
               <DialogTitle>Quiero Con...</DialogTitle>
               <DialogContent>
@@ -263,14 +263,13 @@ const Board = (props: Props) :React.ReactElement => {
                   <Button onClick={closeQuieroConSuccess}>Send</Button>
                 </DialogActions>
             </Dialog>
-            <Button disabled={!(isHost && game.hostCanEnvidoRespond1) && !(!isHost && game.otherCanEnvidoRespond1)} onClick={envidoNoQuieroCalled}>"No Quiero!"</Button>
-            {/* TODO: check if works */}
-            <Button disabled={(!(isHost && game.hostCanEnvidoRespond1) && !(!isHost && game.otherCanEnvidoRespond1)) || (isHost ? !game.hostHasFlor : !game.otherHasFlor)} onClick={quieroConFlorCalled}>"Quiero Con Flor!"</Button>
+            {(isHost ? game.hostCanEnvidoRespond1 : game.otherCanEnvidoRespond1) && <Button onClick={envidoNoQuieroCalled}>"No Quiero!"</Button>}
+            {(isHost ? game.hostCanEnvidoRespond1 && game.hostHasFlor : game.otherCanEnvidoRespond1 && game.otherHasFlor) && <Button onClick={quieroConFlorCalled}>"Quiero Con Flor!"</Button>}
           </div>
-          <Typography variant="h5">Envido Responses 2</Typography>
+          {(isHost ? game.hostCanEnvidoRespond2 : game.otherCanEnvidoRespond2) && <Typography variant="h5">Envido Responses 2</Typography>}
           <div>
-            <Button disabled={!(isHost && game.hostCanEnvidoRespond2) && !(!isHost && game.otherCanEnvidoRespond2)} onClick={esMejorCalled}>"Es Mejor!"</Button>
-            <Button disabled={!(isHost && game.hostCanEnvidoRespond2) && !(!isHost && game.otherCanEnvidoRespond2)} onClick={tengoClick}>"Tengo..."</Button>
+            {(isHost ? game.hostCanEnvidoRespond2 : game.otherCanEnvidoRespond2) && <Button onClick={esMejorCalled}>"Es Mejor!"</Button>}
+            {(isHost ? game.hostCanEnvidoRespond2 && !game.hostHasFlor : game.otherCanEnvidoRespond2 && !game.otherHasFlor) && <Button onClick={tengoClick}>"Tengo..."</Button>}
             <Dialog open={tengoOpen} onClose={closeTengoCancel}>
               <DialogTitle>Tengo...</DialogTitle>
               <DialogContent>
@@ -292,8 +291,8 @@ const Board = (props: Props) :React.ReactElement => {
                 </DialogActions>
             </Dialog>
             {/* TODO: check if works */}
-            <Button disabled={(!(isHost && game.hostCanEnvidoRespond2) && !(!isHost && game.otherCanEnvidoRespond2)) && (isHost ? !game.hostHasFlor : !game.otherHasFlor)} onClick={tengoFlor}>"Tengo Flor!"</Button>
-            <Button disabled={(!(isHost && game.hostCanEnvidoRespond2) && !(!isHost && game.otherCanEnvidoRespond2)) || (!game.hostHasFlor || !game.otherHasFlor)} onClick={tengoFlorTambienCalled}>"Tengo Flor Tambien!"</Button>
+            {(isHost ? game.hostCanEnvidoRespond2 && game.hostHasFlor : game.otherCanEnvidoRespond2 && game.otherHasFlor) && <Button disabled={(!(isHost && game.hostCanEnvidoRespond2) && !(!isHost && game.otherCanEnvidoRespond2)) && (isHost ? !game.hostHasFlor : !game.otherHasFlor)} onClick={tengoFlor}>"Tengo Flor!"</Button>}
+            {(isHost ? game.hostCanEnvidoRespond2 && game.hostHasFlor : game.otherCanEnvidoRespond2 && game.otherHasFlor) && <Button disabled={(!(isHost && game.hostCanEnvidoRespond2) && !(!isHost && game.otherCanEnvidoRespond2)) || (!game.hostHasFlor || !game.otherHasFlor)} onClick={tengoFlorTambienCalled}>"Tengo Flor Tambien!"</Button>}
           </div>
         </div>
     </div>
