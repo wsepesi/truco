@@ -102,7 +102,7 @@ io.on("connection", (socket) => {
     // UPDATE CLIENTS IN ROOM
     io.in(game.gameId).emit("updateAll", game);
     io.in(game.gameId).emit("chat", {
-      msg: `${player} played ${card}`,
+      msg: `${player} played ${card.slice(-1)} of ${card.slice(0, -1)}`,
       id: SERVER_TOKEN
     });
   });
@@ -112,7 +112,7 @@ io.on("connection", (socket) => {
       game.handleTrucoCalledBy(data.userId);
       await updateGame(game);
       io.in(game.gameId).emit("updateAll", game);
-      const player = game.hostId === data.userId ? "host" : "other";
+      const player = game.hostId === data.userId ? "Host" : "Guest";
       io.in(game.gameId).emit("chat", {
         msg: `${player} called truco`,
         id: SERVER_TOKEN
@@ -124,7 +124,7 @@ io.on("connection", (socket) => {
     game.handleEnvidoCalledBy(data.userId);
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
-    const player = game.hostId === data.userId ? "host" : "other";
+    const player = game.hostId === data.userId ? "Host" : "Guest";
     io.in(game.gameId).emit("chat", {
       msg: `${player} called envido`,
       id: SERVER_TOKEN
@@ -136,7 +136,7 @@ io.on("connection", (socket) => {
     game.handleTrucoQuieroBy(data.userId);
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
-    const player = game.hostId === data.userId ? "host" : "other";
+    const player = game.hostId === data.userId ? "Host" : "Guest";
     io.in(game.gameId).emit("chat", {
       msg: `${player} called quiero`,
       id: SERVER_TOKEN
@@ -148,7 +148,7 @@ io.on("connection", (socket) => {
     game.handleTrucoNoQuieroBy(data.userId);
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
-    const player = game.hostId === data.userId ? "host" : "other";
+    const player = game.hostId === data.userId ? "Host" : "Guest";
     io.in(game.gameId).emit("chat", {
       msg: `${player} called no quiero`,
       id: SERVER_TOKEN
@@ -161,7 +161,7 @@ io.on("connection", (socket) => {
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
 
-    const player = game.hostId === data.userId ? "host" : "other";
+    const player = game.hostId === data.userId ? "Host" : "Guest";
     io.in(game.gameId).emit("chat", {
       msg: `${player} called retruco`,
       id: SERVER_TOKEN
@@ -174,7 +174,7 @@ io.on("connection", (socket) => {
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
 
-    const player = game.hostId === data.userId ? "host" : "other";
+    const player = game.hostId === data.userId ? "Host" : "Guest";
     io.in(game.gameId).emit("chat", {
       msg: `${player} called quiero con ${data.number}`,
       id: SERVER_TOKEN
@@ -187,7 +187,7 @@ io.on("connection", (socket) => {
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
 
-    const player = game.hostId === data.userId ? "host" : "other";
+    const player = game.hostId === data.userId ? "Host" : "Guest";
     io.in(game.gameId).emit("chat", {
       msg: `${player} called no quiero`,
       id: SERVER_TOKEN
@@ -200,7 +200,7 @@ io.on("connection", (socket) => {
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
 
-    const player = game.hostId === data.userId ? "host" : "other";
+    const player = game.hostId === data.userId ? "Host" : "Guest";
     io.in(game.gameId).emit("chat", {
       msg: `${player} called flor`,
       id: SERVER_TOKEN
@@ -213,7 +213,7 @@ io.on("connection", (socket) => {
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
 
-    const player = game.hostId === data.userId ? "host" : "other";
+    const player = game.hostId === data.userId ? "Host" : "Guest";
     io.in(game.gameId).emit("chat", {
       msg: `${player} called es mejor`,
       id: SERVER_TOKEN
@@ -226,7 +226,7 @@ io.on("connection", (socket) => {
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
 
-    const player = game.hostId === data.userId ? "host" : "other";
+    const player = game.hostId === data.userId ? "Host" : "Guest";
     io.in(game.gameId).emit("chat", {
       msg: `${player} called tengo with ${data.number}`,
       id: SERVER_TOKEN
@@ -239,7 +239,7 @@ io.on("connection", (socket) => {
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
 
-    const player = game.hostId === data.userId ? "host" : "other";
+    const player = game.hostId === data.userId ? "Host" : "Guest";
     io.in(game.gameId).emit("chat", {
       msg: `${player} called flor`,
       id: SERVER_TOKEN
@@ -252,7 +252,7 @@ io.on("connection", (socket) => {
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
 
-    const player = game.hostId === data.userId ? "host" : "other";
+    const player = game.hostId === data.userId ? "Host" : "Guest";
     io.in(game.gameId).emit("chat", {
       msg: `${player} called flor`,
       id: SERVER_TOKEN
@@ -272,7 +272,7 @@ io.on("connection", (socket) => {
       io.in(game.gameId).emit("updateAll", game);
       room.readyCount = 0;
     } else {
-      const player = game.hostId === socket.id ? "host" : "other";
+      const player = game.hostId === socket.id ? "Host" : "Guest";
       io.in(game.gameId).emit("chat", {
         msg: `${player} is ready`,
         id: SERVER_TOKEN
