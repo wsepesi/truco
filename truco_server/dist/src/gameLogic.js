@@ -104,7 +104,7 @@ class Game {
             return this.endOfHand;
         };
         this.isGameOver = () => {
-            if (this.hostPoints < 24 || this.otherPoints < 24) {
+            if (this.hostPoints < 24 && this.otherPoints < 24) {
                 this.endOfGame = false;
             }
             else {
@@ -174,6 +174,10 @@ class Game {
             this.handTrucoPoints = 1;
             this.handEnvidoPoints = 0;
             this.handLiarId = '';
+            this.hostHasFlor = false;
+            this.otherHasFlor = false;
+            this.hostFlorNumber = 0;
+            this.otherFlorNumber = 0;
             this.resetDeck();
             this.shuffle();
             this.dealAll();
@@ -192,10 +196,6 @@ class Game {
             this.otherCanTrucoRespond = false;
             this.hostCanRetrucoAfterQuiero = false;
             this.otherCanRetrucoAfterQuiero = false;
-            this.hostHasFlor = false;
-            this.otherHasFlor = false;
-            this.hostFlorNumber = 0;
-            this.otherFlorNumber = 0;
         };
         this.checkLyingPoints = () => {
             let hostLied = false;

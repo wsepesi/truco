@@ -13,17 +13,12 @@ import { Socket } from 'socket.io-client';
 import { SocketContext } from '../hooks/socket-context';
 import { Typography } from '@mui/material';
 
-// import { useParams } from 'react-router';
-
 type Props = {
     socket: Socket | null
 }
 
-//TODO: ADD THE NAVBAR, BE ABLE TO PASS THE STATE VARIABLE LOGGED IN TO THIS PAGE
-
 const GameHome = (props: Props) :React.ReactElement => {
     const { socket } = props;
-    // const { id } = useParams();
 
     const [game, setGame] = React.useState<Game>();
 
@@ -37,7 +32,7 @@ const GameHome = (props: Props) :React.ReactElement => {
     useEffect(() => {
         if (socket) {
           socket.on("startGame", (game: Game) => {
-            console.log("startGame", game);
+            // console.log("startGame", game);
             updateAllStates(game);
           })
 
@@ -58,7 +53,6 @@ const GameHome = (props: Props) :React.ReactElement => {
         <GameBar socket={socket} game={game}/>
         <Box sx={{display: 'flex', flex: 'column', width: '100vw', minHeight: '85vh'}}>
             <Box style={{width: "15vw"}}>
-                {/* TODO: PASS THE USERNAMES TO THE POINT TRACKER TO DISPLAY IT */}
                 {game && <PointTracker
                     hostPoints={game.hostPoints}
                     otherPoints={game.otherPoints}

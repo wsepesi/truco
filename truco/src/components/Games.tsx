@@ -17,7 +17,7 @@ const Games = (props: Props): React.ReactElement => {
   useEffect(() => {
     if (socket) {
       socket.on("rooms", (rooms: Room[]) => {
-        console.log("setting rooms", rooms)
+        // console.log("setting rooms", rooms)
         setRooms(rooms);
       });
 

@@ -34,36 +34,15 @@ const Game = (props:Props) :React.ReactElement => {
   }, [socket]);
 
   const joinRoom = async () => {
-    console.log(room);
+    // console.log(room);
     const id = room._id;
-    console.log(id);
+    // console.log(id);
     if(!socket) {
       alert('No socket')
       return
     }
     // JOIN ROOM IN SOCKET
     socket.emit('joinRoom', id);
-
-    // JOIN ROOM IN DB
-    // const result: AxiosResponse<RoomResult> = await axios({
-    //   method: 'put',
-    //   url: `${BASE_URL}db/rooms/${id}`,
-    //   data: {
-    //     playerId: socket.id
-    //   }
-    // });
-
-    // if (!result.data.success) {
-    //   alert(result.data.msg);
-    //   return;
-    // }
-
-    // // REDIRECT TO GAME
-    // socket.emit('updateRooms');
-    // setRedirect(`/room/${id}`);
-
-    // // SIGNAL TO START
-    // socket.emit('startGame', id);
   }
 
   return (

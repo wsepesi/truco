@@ -25,7 +25,6 @@ const AppContent = (): React.ReactElement => {
                 </a>
                 {data && <p>{data.data}</p>}
                 <p>{status}</p>
-                {/* {isError && <p>{error}</p>} */}
             </header>
             <Link to="/test">Test</Link>
         </div>)

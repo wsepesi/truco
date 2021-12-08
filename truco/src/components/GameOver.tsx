@@ -19,7 +19,7 @@ const GameOver = (props: Props): React.ReactElement => {
 
     const handleClick = () => {
         if (props.socket) {
-            console.log(id);
+            // console.log(id);
             props.socket.emit('overReady', id);
             setReady(true);
         }
@@ -35,9 +35,7 @@ const GameOver = (props: Props): React.ReactElement => {
                 </Typography>
              ) : (
                 <Typography> 
-                    {hostPoints > otherPoints ? "Host" : "Guest"} player won the game, score was: \n
-                    Host: {hostPoints} \n
-                    Other: {otherPoints}
+                    {hostPoints > otherPoints ? "Host" : "Guest"} player won the game, Host had {hostPoints} points and Guest had {otherPoints} points.
                 </Typography>
             )}
             <Typography>

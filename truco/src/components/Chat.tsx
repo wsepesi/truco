@@ -4,8 +4,6 @@ import React, { useEffect } from 'react'
 import { Socket } from 'socket.io-client'
 import { useParams } from 'react-router'
 
-//TODO: users should show up w messages
-
 export const SERVER_TOKEN = 'SERVER_TOKEN';
 
 type Props = {

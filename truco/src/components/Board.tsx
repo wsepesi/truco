@@ -12,9 +12,6 @@ type Props = {
 }
 
 const Board = (props: Props) :React.ReactElement => {
-  // const [endOfHand, setEndOfHand] = React.useState(false)
-  // const [endOfGame, setEndOfGame] = React.useState(false)
-
   const { socket, game } = props
   if(!game) throw new Error('Game not defined');
   const id = socket ? socket.id : '';
@@ -24,23 +21,6 @@ const Board = (props: Props) :React.ReactElement => {
   const [quieroConNumber, setQuieroConNumber] = React.useState<number>(0);
   const [tengoOpen, setTengoOpen] = React.useState<boolean>(false);
   const [tengoNumber, setTengoNumber] = React.useState<number>(0);
-
-  // useEffect(() => {
-  //   if (socket) {
-  //     socket.on("handOver", (data: Game) => {
-        
-  //     })
-
-  //     socket.on("gameOver", (data: Game) => {
-        
-  //     })
-
-  //     return () => {
-  //       socket.off("handOver");
-  //       socket.off("gameOver");
-  //     }
-  //   }
-  // }, [socket]);
 
   const quieroConClick = () => {
     setQuieroConOpen(true);
@@ -76,6 +56,11 @@ const Board = (props: Props) :React.ReactElement => {
         setTengoNumber(0);
         return;
       }
+      if (game.otherHasFlor && !game.hostHasFlor) {
+        alert("Cannot use this function when you don't have flor and your opponent does");
+        setTengoNumber(0);
+        return;
+      }
     }
     else {
       if (tengoNumber < game.hostEnvidoCon || (tengoNumber === game.hostEnvidoCon && game.hostHasDeck) || tengoNumber > 33) {
@@ -88,21 +73,14 @@ const Board = (props: Props) :React.ReactElement => {
         setTengoNumber(0);
         return;
       }
+      if (game.hostHasFlor && !game.otherHasFlor) {
+        alert("Cannot use this function when you don't have flor and your opponent does");
+        setTengoNumber(0);
+        return;
+      }
     }
     handleTengo(tengoNumber);
   }
-
-  //FIXME:
-  // let opponentCards: TrucoCard[] = [];
-  // let yourCards: TrucoCard[] = [];
-  // if (isHost) {
-  //   opponentCards = game.otherCards;
-  //   yourCards = game.hostCards;
-  // }
-  // else {
-  //   opponentCards = game.hostCards;
-  //   yourCards = game.otherCards;
-  // }
 
   const trucoCalled = () => {
     if (socket) socket.emit('trucoCalled', {
@@ -170,7 +148,6 @@ const Board = (props: Props) :React.ReactElement => {
   }
 
   const esMejorCalled = () => {
-    //TODO: UPDATE FLOR SHIT
     if (socket) socket.emit('esMejorCalled', {
       gameId: game.gameId,
       userId: id
@@ -216,7 +193,7 @@ const Board = (props: Props) :React.ReactElement => {
             />
           </div>
           <div>
-            <CardsPlayed game={game} id={socket?.id}/*FIXME: */ /> 
+            <CardsPlayed game={game} id={socket?.id}/> 
           </div>
           <div>
             <Typography variant="h5" align="center">Your Cards{isHost ? game.hostHasDeck && " (you have deck)" : !game.hostHasDeck && " (you have deck)"}</Typography>
@@ -242,7 +219,7 @@ const Board = (props: Props) :React.ReactElement => {
           </div>
           {(isHost ? game.hostCanEnvidoRespond1 : game.otherCanEnvidoRespond1) && <Typography variant="h5">Envido Responses 1</Typography>}
           <div>
-            {(isHost ? game.hostCanEnvidoRespond1 : game.otherCanEnvidoRespond1) && <Button onClick={quieroConClick}>"Quiero Con..."</Button>}
+            {(isHost ? game.hostCanEnvidoRespond1 && !game.hostHasFlor : game.otherCanEnvidoRespond1 && !game.otherHasFlor) && <Button onClick={quieroConClick}>"Quiero Con..."</Button>}
             <Dialog open={quieroConOpen} onClose={closeQuieroConCancel}>
               <DialogTitle>Quiero Con...</DialogTitle>
               <DialogContent>
@@ -290,9 +267,8 @@ const Board = (props: Props) :React.ReactElement => {
                   <Button onClick={closeTengoSuccess}>Send</Button>
                 </DialogActions>
             </Dialog>
-            {/* TODO: check if works */}
-            {(isHost ? game.hostCanEnvidoRespond2 && game.hostHasFlor : game.otherCanEnvidoRespond2 && game.otherHasFlor) && <Button disabled={(!(isHost && game.hostCanEnvidoRespond2) && !(!isHost && game.otherCanEnvidoRespond2)) && (isHost ? !game.hostHasFlor : !game.otherHasFlor)} onClick={tengoFlor}>"Tengo Flor!"</Button>}
-            {(isHost ? game.hostCanEnvidoRespond2 && game.hostHasFlor : game.otherCanEnvidoRespond2 && game.otherHasFlor) && <Button disabled={(!(isHost && game.hostCanEnvidoRespond2) && !(!isHost && game.otherCanEnvidoRespond2)) || (!game.hostHasFlor || !game.otherHasFlor)} onClick={tengoFlorTambienCalled}>"Tengo Flor Tambien!"</Button>}
+            {(isHost ? game.hostCanEnvidoRespond2 && game.hostHasFlor : game.otherCanEnvidoRespond2 && game.otherHasFlor) && <Button onClick={tengoFlor}>"Tengo Flor!"</Button>}
+            {(isHost ? game.hostCanEnvidoRespond2 && game.hostHasFlor : game.otherCanEnvidoRespond2 && game.otherHasFlor) && <Button onClick={tengoFlorTambienCalled}>"Tengo Flor Tambien!"</Button>}
           </div>
         </div>
     </div>

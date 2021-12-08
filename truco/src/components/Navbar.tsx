@@ -6,13 +6,11 @@ import React from 'react'
 import { Socket } from 'socket.io-client';
 import { User } from '../configs/types';
 
-// import { Navigate } from 'react-router';
-
 type Props = {
   loggedIn: boolean
-  setLoggedIn: any //FIXME:
+  setLoggedIn: any
   currentUser: String
-  setCurrentUser: any //FIXME:
+  setCurrentUser: any
   socket: Socket | null
 }
 
@@ -26,7 +24,6 @@ const Navbar = (props:Props): React.ReactElement => {
   const { socket } = props;
   const [username, setUsername] = React.useState<string>('');
   const [loginOpen, setLoginOpen] = React.useState<boolean>(false);
-  // const [toRules, setToRules] = React.useState<boolean>(false);
 
   const loginClick = () => {
     setLoginOpen(true)
@@ -42,13 +39,13 @@ const Navbar = (props:Props): React.ReactElement => {
   }
 
   const serverLogin = async (username: string): Promise<boolean> => {
-    if (!socket) return false; //FIXME:
+    if (!socket) return false;
     const user: User = {
       name: username,
       socketId: socket.id,
       wins: 0
     }
-    console.log(user)
+    // console.log(user)
     const result: AxiosResponse<LoginResult> = await axios({
         method: 'post',
         url: `${BASE_URL}db/users`,
@@ -60,7 +57,7 @@ const Navbar = (props:Props): React.ReactElement => {
   }
 
   const closeLoginSuccess = async () => {
-    console.log("closeLoginSuccess")
+    // console.log("closeLoginSuccess")
     const res = await serverLogin(username);
     if (res) {
       setLoginOpen(false)
@@ -71,9 +68,6 @@ const Navbar = (props:Props): React.ReactElement => {
       alert("Login failed");
       setLoginOpen(false);
     }
-    
-    //TODO: CHECK IF THE USERNAME ALREADY EXISTS
-      //I AM NOT SURE HOW TO ACCESS THE FORM THAT THE USER IS TYPING INTO
   }
 
   return (
@@ -110,7 +104,6 @@ const Navbar = (props:Props): React.ReactElement => {
           </Toolbar>
         </AppBar>
       </Box>
-      {/* {toRules && <Navigate to="https://docs.google.com/document/d/1_HU9laefpcZ4aKuApETjx12t1oQdvwo0ophKL0Y8yyM/edit?usp=sharing" />} */}
     </div>
   )
 }

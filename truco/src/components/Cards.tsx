@@ -2,12 +2,10 @@ import { Card, CardActionArea, CardMedia } from '@mui/material'
 import { CardIds, Game, TrucoCard } from '../configs/types'
 
 import React from 'react'
-// import testCard from '../images/testcard.jpg'
 import { Socket } from 'socket.io-client'
 import { useParams } from 'react-router'
 
 type Props = {
-    // cards: TrucoCard[]
     game: Game
     other: boolean
     socket: Socket | null
@@ -26,7 +24,6 @@ const Cards = (props: Props) :React.ReactElement => {
             playerId: socket.id,
             cardId
         })
-        //FIXME:
     }
 
   return (

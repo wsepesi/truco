@@ -23,7 +23,6 @@ const CardsPlayed = (props: Props) :React.ReactElement => {
             return (
               <div key={index} style={{ display: "flex", flexDirection: isHost ? "column-reverse" : "column", alignItems: "center"}}>
                 {trick.map((card) => {
-                  console.log(card);
                   return (card !== null) ? (
                     <Card key={card.id} sx={{ width: 120 }}>
                       <CardMedia

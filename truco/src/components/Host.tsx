@@ -26,7 +26,7 @@ const Host = (props: Props): React.ReactElement => {
 
   const handleClick = async () => {
     // CREATE ROOM IN DATABASE
-    console.log('creating room');
+    // console.log('creating room');
     if (!socket) {
       alert('Socket is not connected');
       return;
@@ -39,14 +39,14 @@ const Host = (props: Props): React.ReactElement => {
       return;
     }
 
-    console.log(user);
+    // console.log(user);
 
     const room: Room = {
       name: roomName,
       host: user
     };
 
-    console.log(room);
+    // console.log(room);
 
     const result: AxiosResponse<RoomResult> = await axios({
       method: 'post',

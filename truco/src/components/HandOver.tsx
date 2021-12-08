@@ -29,14 +29,14 @@ const HandOver = (props: Props): React.ReactElement => {
                 Hand Over!
             </Typography>
             <Typography>
-                { handTrucoWinnerId === hostId ? 'Host' : 'Other' } won { handTrucoPoints } Truco points
+                { handTrucoWinnerId === hostId ? 'Host' : 'Guest' } won { handTrucoPoints } Truco point{handTrucoPoints !==1 && 's'}
             </Typography>
             { handEnvidoPoints !== 0 &&  <Typography>
-                { handEnvidoWinnerId === hostId ? 'Host' : 'Other' } won { handEnvidoPoints } Envido points
+                { handEnvidoWinnerId === hostId ? 'Host' : 'Guest' } won { handEnvidoPoints } Envido point{handEnvidoPoints !==1 && 's'}
             </Typography>}
             <Typography>
-                { handLiarId === hostId ? 'Host lied, Other received 1 Lying point' : '' }
-                { handLiarId === otherId ? 'Other lied, Host received 1 Lying point' : ''}
+                { handLiarId === hostId ? 'Host lied, Guest received 1 Lying point' : '' }
+                { handLiarId === otherId ? 'Guest lied, Host received 1 Lying point' : ''}
             </Typography>
             { handLiarId === "both" ? <Typography>Both lied! No lying points</Typography> : ''}
             <Typography>
