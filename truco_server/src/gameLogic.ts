@@ -435,58 +435,60 @@ export default class Game {
 
                 //if the number needed is 0, there are enough options such that the player cannot be lying
                 if (numberNeeded1 !== 0 && numberNeeded2 !== 0) {
+                    let hostMightLie = true;
                     let neededCard1 = new Card(numberNeeded1, this.trick1Cards[HOST_TOKEN_VALUE].suit, 91, 91);
                     let neededCard2 = new Card(numberNeeded2, this.trick2Cards[HOST_TOKEN_VALUE].suit, 92, 92);
                     if ((this.trick2Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit && this.trick2Cards[HOST_TOKEN_VALUE].number === neededCard1.number)
                         || (this.trick1Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit && this.trick1Cards[HOST_TOKEN_VALUE].number === neededCard2.number)
                         ) {
-                        return;
+                        hostMightLie = false;
                     }
-
-                    if (card1Possible && !card2Possible) {
-                        if ( (this.trick1Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick1Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit)
-                            || (this.trick2Cards[OTHER_TOKEN_VALUE] !== null && this.trick2Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick2Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit)
-                            ) {
-                            hostLied = true;
-                        }
-                        if (this.trick3Cards[OTHER_TOKEN_VALUE] !== null && this.trick3Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick3Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit) {
-                            hostLied = true;
-                        }
-                    }
-                    if (!card1Possible && card2Possible) {
-                        if ( (this.trick1Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick1Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit)
-                            || (this.trick2Cards[OTHER_TOKEN_VALUE] !== null && this.trick2Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick2Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit)
-                            ) {
-                            hostLied = true;
-                        }
-                        if (this.trick3Cards[OTHER_TOKEN_VALUE] !== null && this.trick3Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick3Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit) {
-                            hostLied = true;
-                        }
-                    }
-                    if (card1Possible && card2Possible) {
-                        if ((this.trick1Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick1Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit &&
-                                this.trick2Cards[OTHER_TOKEN_VALUE] !== null && this.trick2Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick2Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit) ||
-                            (this.trick2Cards[OTHER_TOKEN_VALUE] !== null && this.trick2Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick2Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit &&
-                                this.trick1Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick1Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit)
-                        ) {
-                            hostLied = true;
-                        }
-                        if (this.trick3Cards[OTHER_TOKEN_VALUE] !== null) {
-                            if ((this.trick1Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick1Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit &&
-                                    this.trick3Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick3Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit) ||
-                                (this.trick2Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick2Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit &&
-                                    this.trick3Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick3Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit) ||
-                                (this.trick3Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick3Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit &&
-                                    this.trick1Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick1Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit) ||
-                                (this.trick3Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick3Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit &&
-                                    this.trick2Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick2Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit)
-                            ) {
+                    if (hostMightLie) {
+                        if (card1Possible && !card2Possible) {
+                            if ( (this.trick1Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick1Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit)
+                                || (this.trick2Cards[OTHER_TOKEN_VALUE] !== null && this.trick2Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick2Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit)
+                                ) {
+                                hostLied = true;
+                            }
+                            if (this.trick3Cards[OTHER_TOKEN_VALUE] !== null && this.trick3Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick3Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit) {
                                 hostLied = true;
                             }
                         }
-                    }
-                    if (!card1Possible && !card2Possible) {
-                        hostLied = true;
+                        if (!card1Possible && card2Possible) {
+                            if ( (this.trick1Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick1Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit)
+                                || (this.trick2Cards[OTHER_TOKEN_VALUE] !== null && this.trick2Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick2Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit)
+                                ) {
+                                hostLied = true;
+                            }
+                            if (this.trick3Cards[OTHER_TOKEN_VALUE] !== null && this.trick3Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick3Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit) {
+                                hostLied = true;
+                            }
+                        }
+                        if (card1Possible && card2Possible) {
+                            if ((this.trick1Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick1Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit &&
+                                    this.trick2Cards[OTHER_TOKEN_VALUE] !== null && this.trick2Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick2Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit) ||
+                                (this.trick2Cards[OTHER_TOKEN_VALUE] !== null && this.trick2Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick2Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit &&
+                                    this.trick1Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick1Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit)
+                            ) {
+                                hostLied = true;
+                            }
+                            if (this.trick3Cards[OTHER_TOKEN_VALUE] !== null) {
+                                if ((this.trick1Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick1Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit &&
+                                        this.trick3Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick3Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit) ||
+                                    (this.trick2Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick2Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit &&
+                                        this.trick3Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick3Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit) ||
+                                    (this.trick3Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick3Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit &&
+                                        this.trick1Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick1Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit) ||
+                                    (this.trick3Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick3Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit &&
+                                        this.trick2Cards[OTHER_TOKEN_VALUE].number === neededCard2.number && this.trick2Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit)
+                                ) {
+                                    hostLied = true;
+                                }
+                            }
+                        }
+                        if (!card1Possible && !card2Possible) {
+                            hostLied = true;
+                        }
                     }
                 }
             }
@@ -536,53 +538,61 @@ export default class Game {
 
                 //if the number needed is 0, there are enough options such that the player cannot be lying
                 if (numberNeeded1 !== 0 && numberNeeded2 !== 0) {
+                    let otherMightLie = true;
                     let neededCard1 = new Card(numberNeeded1, this.trick1Cards[OTHER_TOKEN_VALUE].suit, 91, 91);
                     let neededCard2 = new Card(numberNeeded2, this.trick2Cards[OTHER_TOKEN_VALUE].suit, 92, 92);
-
-                    if (card1Possible && !card2Possible) {
-                        if ( (this.trick1Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick1Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit)
-                            || (this.trick2Cards[HOST_TOKEN_VALUE] !== null && this.trick2Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick2Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit)
-                            ) {
-                                otherLied = true;
-                        }
-                        if (this.trick3Cards[HOST_TOKEN_VALUE] !== null && this.trick3Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick3Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit) {
-                            otherLied = true;
-                        }
-                    }
-                    if (!card1Possible && card2Possible) {
-                        if ( (this.trick1Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick1Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit)
-                            || (this.trick2Cards[HOST_TOKEN_VALUE] !== null && this.trick2Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick2Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit)
-                            ) {
-                                otherLied = true;
-                        }
-                        if (this.trick3Cards[HOST_TOKEN_VALUE] !== null && this.trick3Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick3Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit) {
-                            otherLied = true;
-                        }
-                    }
-                    if (card1Possible && card2Possible) {
-                        if ((this.trick1Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick1Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit &&
-                                this.trick2Cards[HOST_TOKEN_VALUE] !== null && this.trick2Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick2Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit) ||
-                            (this.trick2Cards[HOST_TOKEN_VALUE] !== null && this.trick2Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick2Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit &&
-                                this.trick1Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick1Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit)
+                    if ((this.trick2Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit && this.trick2Cards[OTHER_TOKEN_VALUE].number === neededCard1.number)
+                        || (this.trick1Cards[OTHER_TOKEN_VALUE].suit === neededCard2.suit && this.trick1Cards[OTHER_TOKEN_VALUE].number === neededCard2.number)
                         ) {
-                            otherLied = true;
-                        }
-                        if (this.trick3Cards[HOST_TOKEN_VALUE] !== null) {
-                            if ((this.trick1Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick1Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit &&
-                                    this.trick3Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick3Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit) ||
-                                (this.trick2Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick2Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit &&
-                                    this.trick3Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick3Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit) ||
-                                (this.trick3Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick3Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit &&
-                                    this.trick1Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick1Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit) ||
-                                (this.trick3Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick3Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit &&
-                                    this.trick2Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick2Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit)
-                            ) {
+                        otherMightLie = false;
+                    }
+
+                    if (otherMightLie) {
+                        if (card1Possible && !card2Possible) {
+                            if ( (this.trick1Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick1Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit)
+                                || (this.trick2Cards[HOST_TOKEN_VALUE] !== null && this.trick2Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick2Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit)
+                                ) {
+                                    otherLied = true;
+                            }
+                            if (this.trick3Cards[HOST_TOKEN_VALUE] !== null && this.trick3Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick3Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit) {
                                 otherLied = true;
                             }
                         }
-                    }
-                    if (!card1Possible && !card2Possible) {
-                        otherLied = true;
+                        if (!card1Possible && card2Possible) {
+                            if ( (this.trick1Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick1Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit)
+                                || (this.trick2Cards[HOST_TOKEN_VALUE] !== null && this.trick2Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick2Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit)
+                                ) {
+                                    otherLied = true;
+                            }
+                            if (this.trick3Cards[HOST_TOKEN_VALUE] !== null && this.trick3Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick3Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit) {
+                                otherLied = true;
+                            }
+                        }
+                        if (card1Possible && card2Possible) {
+                            if ((this.trick1Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick1Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit &&
+                                    this.trick2Cards[HOST_TOKEN_VALUE] !== null && this.trick2Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick2Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit) ||
+                                (this.trick2Cards[HOST_TOKEN_VALUE] !== null && this.trick2Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick2Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit &&
+                                    this.trick1Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick1Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit)
+                            ) {
+                                otherLied = true;
+                            }
+                            if (this.trick3Cards[HOST_TOKEN_VALUE] !== null) {
+                                if ((this.trick1Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick1Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit &&
+                                        this.trick3Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick3Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit) ||
+                                    (this.trick2Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick2Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit &&
+                                        this.trick3Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick3Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit) ||
+                                    (this.trick3Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick3Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit &&
+                                        this.trick1Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick1Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit) ||
+                                    (this.trick3Cards[HOST_TOKEN_VALUE].number === neededCard1.number && this.trick3Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit &&
+                                        this.trick2Cards[HOST_TOKEN_VALUE].number === neededCard2.number && this.trick2Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit)
+                                ) {
+                                    otherLied = true;
+                                }
+                            }
+                        }
+                        if (!card1Possible && !card2Possible) {
+                            otherLied = true;
+                        }
                     }
                 }
             }
