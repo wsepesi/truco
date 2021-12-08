@@ -64,6 +64,9 @@ const GameHome = (props: Props) :React.ReactElement => {
                     otherPoints={game.otherPoints}
                     handTrucoPoints={game.handTrucoPoints}
                     handEnvidoPoints={game.handEnvidoPoints}
+                    trick1Cards={game.trick1Cards}
+                    trick2Cards={game.trick2Cards}
+                    cardsPlayedInHand={game.cardsPlayedInHand}
                 />}
             </Box>
             <Box style={{width: "70vw", borderLeft: "2px solid black", borderRight: "2px solid black"}}>
