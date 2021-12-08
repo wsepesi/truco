@@ -25,6 +25,8 @@ const GameHome = (props: Props) :React.ReactElement => {
     const endOfGame = game ? game.endOfGame : false;
     const endOfHand = game ? game.endOfHand : false;
 
+    const isSpectator = (game && socket) ? (game.hostId !== socket.id && game.otherId !== socket.id) : true;
+
     const updateAllStates = (game: Game) => {
         setGame(game);
     }
@@ -69,11 +71,12 @@ const GameHome = (props: Props) :React.ReactElement => {
                         <Board
                             socket={socket}
                             game={game}
+                            isSpectator={isSpectator}
                         />
                     }
                 </SocketContext.Consumer>}
-                {(game && endOfHand) && <HandOver game={game} socket={socket}/>}
-                {(game && endOfGame) && <GameOver game={game} socket={socket}/>}
+                {(game && endOfHand && !isSpectator) && <HandOver game={game} socket={socket}/>}
+                {(game && endOfGame && !isSpectator) && <GameOver game={game} socket={socket}/>}
                 {!game && <Typography>Loading...</Typography>}
             </Box>
             <Box style={{width: "15vw"}}>

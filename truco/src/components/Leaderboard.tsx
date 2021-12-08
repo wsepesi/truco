@@ -1,5 +1,6 @@
 import { Button, Card, Typography } from '@mui/material';
 
+import { Box } from '@mui/system';
 import React from 'react';
 import { User } from '../configs/types';
 
@@ -13,19 +14,21 @@ const Leaderboard = (props: Props): React.ReactElement => {
     return(
         <Card elevation={5} sx={{ 
             display: 'flex',
-            flexDirection: 'row',
+            flexDirection: 'column',
             justifyContent: 'center',
-            height: 250,
-            width: 1000 
+            alignItems: 'center',
+            maxWidth: '80vw'
+            // height: 250,
+            // width: 1000 
         }}>
             <Typography variant="h3">Leaderboard</Typography>
-            <div>
+            <Box sx={{ justifyContent: 'center'}}>
                 {topTen.map((user, index) => (
-                    <Card key={index} sx={{ height: '20px' }} variant="outlined">
+                    <Card key={index} sx={{ height: '30px', maxWidth: '100px' }} variant="outlined">
                         <Typography variant="h5">{user.name}: {user.wins} wins</Typography>
                     </Card>
                 ))}
-            </div>
+            </Box>
             <Button onClick={props.refetch}>Refresh</Button>
         </Card>
     )

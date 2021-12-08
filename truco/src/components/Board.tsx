@@ -8,11 +8,12 @@ import { Socket } from 'socket.io-client'
 
 type Props = {
   socket: Socket | null;
-  game: Game | undefined
+  game: Game | undefined,
+  isSpectator: boolean;
 }
 
 const Board = (props: Props) :React.ReactElement => {
-  const { socket, game } = props
+  const { socket, game, isSpectator } = props
   if(!game) throw new Error('Game not defined');
   const id = socket ? socket.id : '';
   const isHost = game ? game.hostId === id : false;
@@ -184,7 +185,7 @@ const Board = (props: Props) :React.ReactElement => {
     <div style={{display: "flex", justifyContent: "space-between"}}>
         <div style={{width: "90%"}}>
           <div style={{paddingTop: "35px"}}>
-            <Typography variant="h5" align="center">Opponent's Cards{isHost ? !game.hostHasDeck && " (has deck)" : game.hostHasDeck && " (has deck)"}</Typography>
+            {!isSpectator && <Typography variant="h5" align="center">Opponent's Cards{isHost ? !game.hostHasDeck && " (has deck)" : game.hostHasDeck && " (has deck)"}</Typography>}
             <Cards 
               socket={socket}
               other={true}
@@ -196,16 +197,16 @@ const Board = (props: Props) :React.ReactElement => {
             <CardsPlayed game={game} id={socket?.id}/> 
           </div>
           <div>
-            <Typography variant="h5" align="center">Your Cards{isHost ? game.hostHasDeck && " (you have deck)" : !game.hostHasDeck && " (you have deck)"}</Typography>
+            {!isSpectator && <Typography variant="h5" align="center">Your Cards{isHost ? game.hostHasDeck && " (you have deck)" : !game.hostHasDeck && " (you have deck)"}</Typography>}
             <Cards
               socket={socket}
-              other={false}
+              other={false || isSpectator}
               game={game}
               isHost={isHost}
             />
           </div>
         </div>
-        <div style={{width: "10%"}}>
+        {!isSpectator && <div style={{width: "10%"}}>
           <Typography variant="h5">Buttons</Typography>
           <div>
             {(game.canCallTruco && game.tempCanCallTruco) && <Button onClick={trucoCalled}>"Truco!"</Button>}
@@ -270,7 +271,7 @@ const Board = (props: Props) :React.ReactElement => {
             {(isHost ? game.hostCanEnvidoRespond2 && game.hostHasFlor : game.otherCanEnvidoRespond2 && game.otherHasFlor) && <Button onClick={tengoFlor}>"Tengo Flor!"</Button>}
             {(isHost ? game.hostCanEnvidoRespond2 && game.hostHasFlor : game.otherCanEnvidoRespond2 && game.otherHasFlor) && <Button onClick={tengoFlorTambienCalled}>"Tengo Flor Tambien!"</Button>}
           </div>
-        </div>
+        </div>}
     </div>
   )
 }

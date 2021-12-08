@@ -452,7 +452,10 @@ class Game {
                 this.trick1Cards[HOST_TOKEN_VALUE].order === this.trick1Cards[OTHER_TOKEN_VALUE].order &&
                 this.trick2Cards[HOST_TOKEN_VALUE].order === this.trick2Cards[OTHER_TOKEN_VALUE].order &&
                 this.trick3Cards[HOST_TOKEN_VALUE].order === this.trick3Cards[OTHER_TOKEN_VALUE].order &&
-                !this.hostHasDeck)) {
+                !this.hostHasDeck) || ( //win the first trick, tie the third trick
+            this.cardsPlayedInHand === 6 &&
+                this.trick1Cards[HOST_TOKEN_VALUE].order > this.trick1Cards[OTHER_TOKEN_VALUE].order &&
+                this.trick3Cards[HOST_TOKEN_VALUE].order === this.trick3Cards[OTHER_TOKEN_VALUE].order)) {
                 this.handTrucoWinnerId = this.otherId;
                 this.endHand();
             }
@@ -484,10 +487,8 @@ class Game {
         };
         //will receive the index of which card the user clicked on
         this.playCard = (cardId, playerId) => {
-            // console.log('playCard', cardId, playerId);
             //host cards
             if (playerId === this.hostId) {
-                // console.log(this.hostCards)
                 if (this.cardsPlayedInHand === 0 || this.cardsPlayedInHand === 1) {
                     this.trick1Cards[HOST_TOKEN_VALUE] = this.hostCards.find(card => card.id === cardId);
                 }
@@ -500,11 +501,9 @@ class Game {
                     ;
                 }
                 this.hostCards = this.hostCards.filter(card => card.id !== cardId);
-                // this.hostCards.splice(index, 1);
             }
             //other cards
             else {
-                // console.log(this.otherCards)
                 if (this.cardsPlayedInHand === 0 || this.cardsPlayedInHand === 1) {
                     this.trick1Cards[OTHER_TOKEN_VALUE] = this.otherCards.find(card => card.id === cardId);
                 }
@@ -518,29 +517,22 @@ class Game {
             }
             this.cardsPlayedInHand++;
             if (this.cardsPlayedInHand === 2) {
-                // console.log('case a')
                 if (this.trick1Cards[HOST_TOKEN_VALUE].order < this.trick1Cards[OTHER_TOKEN_VALUE].order || (this.trick1Cards[HOST_TOKEN_VALUE].order === this.trick1Cards[OTHER_TOKEN_VALUE].order && playerId === this.hostId)) {
-                    // console.log('case ai')
                     this.hostTurn = true;
                 }
                 else {
-                    // console.log('case aii')
                     this.hostTurn = false;
                 }
             }
             else if (this.cardsPlayedInHand === 4) {
-                // console.log('case b')
                 if (this.trick2Cards[HOST_TOKEN_VALUE].order < this.trick2Cards[OTHER_TOKEN_VALUE].order || (this.trick2Cards[HOST_TOKEN_VALUE].order === this.trick2Cards[OTHER_TOKEN_VALUE].order && playerId === this.hostId)) {
-                    // console.log('case bi')
                     this.hostTurn = true;
                 }
                 else {
-                    // console.log('case bii')
                     this.hostTurn = false;
                 }
             }
             else {
-                // console.log('case c')
                 this.hostTurn = !this.hostTurn;
             }
             this.checkIfTrucoWinner();

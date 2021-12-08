@@ -53,6 +53,11 @@ io.on("connection", (socket) => {
     // GET ROOM FROM DB
     const room = await getRoom(roomId);
     const player = await getUser(socket.id);
+
+    if(room.users.length >= 2) {
+      socket.emit("readyToStart", roomId);
+    }
+
     const isHost = room.host.socketId === socket.id;
     if (isHost) return; // we dont want the host doing the below things moved over from PUT
     if (!room || !player) throw new Error("Room or player not found");
@@ -71,6 +76,11 @@ io.on("connection", (socket) => {
     console.log("start game", id);
     // GET GAME FROM DB
     const game: Game = await getGame(id);
+
+    if(socket.id !== game.hostId && socket.id !== game.otherId) {
+      socket.emit("updateAll", game);
+      return;
+    }
 
     // START HAND ON OBJECT
     game.startHand();

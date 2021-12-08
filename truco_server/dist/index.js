@@ -55,6 +55,9 @@ io.on("connection", (socket) => {
         // GET ROOM FROM DB
         const room = yield (0, routesUtils_1.getRoom)(roomId);
         const player = yield (0, routesUtils_1.getUser)(socket.id);
+        if (room.users.length >= 2) {
+            socket.emit("readyToStart", roomId);
+        }
         const isHost = room.host.socketId === socket.id;
         if (isHost)
             return; // we dont want the host doing the below things moved over from PUT
@@ -71,6 +74,10 @@ io.on("connection", (socket) => {
         console.log("start game", id);
         // GET GAME FROM DB
         const game = yield (0, routesUtils_1.getGame)(id);
+        if (socket.id !== game.hostId && socket.id !== game.otherId) {
+            socket.emit("updateAll", game);
+            return;
+        }
         // START HAND ON OBJECT
         game.startHand();
         // SEND GAME TO DB

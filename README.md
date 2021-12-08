@@ -4,10 +4,11 @@ Justin Lewitus 488223 jlewitus
 William Sepesi 490682 wsepesi
 
 Creative Portion:
-- 5 points: Site is visually appealing. Cards are not just text and have images, the user who is playing is always on the bottom. The game could be hosted on a website.
+- 2.5 points: Site is visually appealing. Cards are not just text and have images, the user who is playing is always on the bottom. The game could be hosted on a website.
 - 5 points: Users can leave and forfeit games. If a user leaves, the other user's game does not continue. If a user forfeits, the other receives a win, and the game is deleted. If one user forfeits, both users can enter into a new game from the screen that pops up.
 - 5 points: There is a leaderboard connected to the Mongo DB database with users and their number of wins. The leaderboard is correctly updated and displayed to all users when the "refresh" button is hit.
 - 5 points: Lying logic. If a player calls Envido and was lying, the game accounts for this. The other player receives a lying point and Envido points are correct distributed accordingly.
+ - 2.5 points: A third player can spectate if the room is full and cannot interact with the game or otherwise disturb its normal flow.
 
 installation:
 -run this in both truco and truco_server folders
