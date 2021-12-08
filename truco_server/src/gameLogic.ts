@@ -510,7 +510,7 @@ export default class Game {
                 //on first two tricks
                 if (
                     this.trick1Cards[OTHER_TOKEN_VALUE].suit === this.trick2Cards[OTHER_TOKEN_VALUE].suit &&
-                    20 + this.trick1Cards[OTHER_TOKEN_VALUE].envidoWorth + this.trick2Cards[OTHER_TOKEN_VALUE].envidoWorth !== this.hostEnvidoCon
+                    20 + this.trick1Cards[OTHER_TOKEN_VALUE].envidoWorth + this.trick2Cards[OTHER_TOKEN_VALUE].envidoWorth !== this.otherEnvidoCon
                     ) {
                         otherLied = true;
                 }
@@ -519,10 +519,10 @@ export default class Game {
                 //on 1 and 3 or 2 and 3
                 if ((
                     this.trick1Cards[OTHER_TOKEN_VALUE].suit === this.trick3Cards[OTHER_TOKEN_VALUE].suit &&
-                    20 + this.trick1Cards[OTHER_TOKEN_VALUE].envidoWorth + this.trick3Cards[OTHER_TOKEN_VALUE].envidoWorth !== this.hostEnvidoCon
+                    20 + this.trick1Cards[OTHER_TOKEN_VALUE].envidoWorth + this.trick3Cards[OTHER_TOKEN_VALUE].envidoWorth !== this.otherEnvidoCon
                     )||(
                     this.trick2Cards[OTHER_TOKEN_VALUE].suit === this.trick3Cards[OTHER_TOKEN_VALUE].suit &&
-                    20 + this.trick2Cards[OTHER_TOKEN_VALUE].envidoWorth + this.trick3Cards[OTHER_TOKEN_VALUE].envidoWorth !== this.hostEnvidoCon
+                    20 + this.trick2Cards[OTHER_TOKEN_VALUE].envidoWorth + this.trick3Cards[OTHER_TOKEN_VALUE].envidoWorth !== this.otherEnvidoCon
                     )) {
                         otherLied = true;
                 }
