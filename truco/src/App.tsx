@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 
 import GameHome from './components/GameHome';
 import Home from './components/Home';
+import Rules from './components/Rules';
 // import AppContent from './components/AppContent';
 import { SocketContext } from './hooks/socket-context';
 
@@ -25,13 +26,12 @@ function App() {
     };
   }, []);
 
-  
-
   return (
     <SocketContext.Provider value={socket}>
       <Routes>
         <Route path="/" element={<Home socket={socket}/>} />
         <Route path="room/:id" element={<GameHome socket={socket}/>} />
+        <Route path="/rules" element={<Rules />} />
       </Routes>
     </SocketContext.Provider>
   );

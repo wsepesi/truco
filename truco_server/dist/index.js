@@ -95,7 +95,7 @@ io.on("connection", (socket) => {
         // UPDATE CLIENTS IN ROOM
         io.in(game.gameId).emit("updateAll", game);
         io.in(game.gameId).emit("chat", {
-            msg: `${player} played ${card}`,
+            msg: `${player} played ${card.slice(-1)} of ${card.slice(0, -1)}`,
             id: utils_1.SERVER_TOKEN
         });
     }));
