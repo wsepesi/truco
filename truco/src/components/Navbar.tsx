@@ -6,6 +6,8 @@ import React from 'react'
 import { Socket } from 'socket.io-client';
 import { User } from '../configs/types';
 
+// import { Navigate } from 'react-router';
+
 type Props = {
   loggedIn: boolean
   setLoggedIn: any //FIXME:
@@ -24,6 +26,7 @@ const Navbar = (props:Props): React.ReactElement => {
   const { socket } = props;
   const [username, setUsername] = React.useState<string>('');
   const [loginOpen, setLoginOpen] = React.useState<boolean>(false);
+  // const [toRules, setToRules] = React.useState<boolean>(false);
 
   const loginClick = () => {
     setLoginOpen(true)
@@ -80,7 +83,7 @@ const Navbar = (props:Props): React.ReactElement => {
           <Toolbar>
               <Typography variant="h6" color="inherit" sx={{ mr: 10 }}>Truco</Typography>
               <Button color="inherit" sx={{mr: 5}}>Home</Button>
-              <Button color="inherit" sx={{mr: "auto"}}>Rules</Button>
+              <Button color="inherit" sx={{mr: "auto"}} href="https://docs.google.com/document/d/1_HU9laefpcZ4aKuApETjx12t1oQdvwo0ophKL0Y8yyM/edit?usp=sharing">Rules</Button>
               {props.loggedIn
                 ? <span><Box sx={{ display: { xs: 'none', md: 'flex' } }}><Typography variant="h6" color="inherit">Username: {props.currentUser}</Typography><Button color="inherit" onClick={logoutClick} sx={{ml: 5}}>Logout</Button></Box></span>
                 : <Button color="inherit" onClick={loginClick}>Login</Button>}
@@ -107,6 +110,7 @@ const Navbar = (props:Props): React.ReactElement => {
           </Toolbar>
         </AppBar>
       </Box>
+      {/* {toRules && <Navigate to="https://docs.google.com/document/d/1_HU9laefpcZ4aKuApETjx12t1oQdvwo0ophKL0Y8yyM/edit?usp=sharing" />} */}
     </div>
   )
 }
