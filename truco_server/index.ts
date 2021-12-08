@@ -170,6 +170,13 @@ io.on("connection", (socket) => {
     io.in(game.gameId).emit("updateAll", game);
   })
 
+  socket.on('tengoFlorCalled', async (data) => {
+    const game: Game = await getGame(data.gameId);
+    game.handleTengoFlorBy(data.userId);
+    await updateGame(game);
+    io.in(game.gameId).emit("updateAll", game);
+  })
+
   socket.on('tengoFlorTambienCalled', async (data) => {
     const game: Game = await getGame(data.gameId);
     game.handleFlorTambienBy(data.userId);

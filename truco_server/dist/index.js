@@ -149,6 +149,12 @@ io.on("connection", (socket) => {
         yield (0, routesUtils_1.updateGame)(game);
         io.in(game.gameId).emit("updateAll", game);
     }));
+    socket.on('tengoFlorCalled', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const game = yield (0, routesUtils_1.getGame)(data.gameId);
+        game.handleTengoFlorBy(data.userId);
+        yield (0, routesUtils_1.updateGame)(game);
+        io.in(game.gameId).emit("updateAll", game);
+    }));
     socket.on('tengoFlorTambienCalled', (data) => __awaiter(void 0, void 0, void 0, function* () {
         const game = yield (0, routesUtils_1.getGame)(data.gameId);
         game.handleFlorTambienBy(data.userId);

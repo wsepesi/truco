@@ -163,6 +163,7 @@ export interface ClientToServerEvents {
     quieroConFlorCalled: (data: basicCallData) => void;
     esMejorCalled: (data: basicCallData) => void;
     tengoCalled: (data: numericCallData) => void;
+    tengoFlorCalled: (data: basicCallData) => void;
     tengoFlorTambienCalled: (data: basicCallData) => void;
     ready: (data: string) => void;
     forfeit: (data: string) => void;

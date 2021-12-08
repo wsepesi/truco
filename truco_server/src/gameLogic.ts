@@ -333,11 +333,16 @@ export default class Game {
     startHand = () => {
         this.handEnvidoWinnerId = '';
         this.handTrucoWinnerId = '';
+        this.handTrucoPoints = 1;
+        this.handEnvidoPoints = 0;
         this.handLiarId = '';
         this.resetDeck();
         this.shuffle();
         this.dealAll();
         this.changeDeck();
+        this.trick1Cards = [null, null];
+        this.trick2Cards = [null, null];
+        this.trick3Cards = [null, null];
         this.endOfHand = false;
         this.hostTurn = this.hostHasDeck;
 
@@ -432,6 +437,11 @@ export default class Game {
                 if (numberNeeded1 !== 0 && numberNeeded2 !== 0) {
                     let neededCard1 = new Card(numberNeeded1, this.trick1Cards[HOST_TOKEN_VALUE].suit, 91, 91);
                     let neededCard2 = new Card(numberNeeded2, this.trick2Cards[HOST_TOKEN_VALUE].suit, 92, 92);
+                    if ((this.trick2Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit && this.trick2Cards[HOST_TOKEN_VALUE].number === neededCard1.number)
+                        || (this.trick1Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit && this.trick1Cards[HOST_TOKEN_VALUE].number === neededCard2.number)
+                        ) {
+                        return;
+                    }
 
                     if (card1Possible && !card2Possible) {
                         if ( (this.trick1Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick1Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit)
@@ -600,14 +610,13 @@ export default class Game {
     checkIfTrucoWinner = () => {
         if(this.cardsPlayedInHand < 4 || this.cardsPlayedInHand === 5) return;
         if(this.trick2Cards.length !== 2) return;
-        const isThirdTrick = this.trick3Cards.length === 2;
         //host wins
         if (
             (//win the first two tricks
             this.trick1Cards[HOST_TOKEN_VALUE].order < this.trick1Cards[OTHER_TOKEN_VALUE].order &&
             this.trick2Cards[HOST_TOKEN_VALUE].order < this.trick2Cards[OTHER_TOKEN_VALUE].order
             ) || (//win the third trick
-            isThirdTrick &&
+            this.cardsPlayedInHand === 6 &&
             this.trick3Cards[HOST_TOKEN_VALUE].order < this.trick3Cards[OTHER_TOKEN_VALUE].order
             ) || (//tie the first trick, win the second trick
             this.trick1Cards[HOST_TOKEN_VALUE].order === this.trick1Cards[OTHER_TOKEN_VALUE].order &&
@@ -616,13 +625,13 @@ export default class Game {
             this.trick1Cards[HOST_TOKEN_VALUE].order < this.trick1Cards[OTHER_TOKEN_VALUE].order &&
             this.trick2Cards[HOST_TOKEN_VALUE].order === this.trick2Cards[OTHER_TOKEN_VALUE].order
             ) || (//tie all three tricks with deck
-            isThirdTrick &&
+            this.cardsPlayedInHand === 6 &&
             this.trick1Cards[HOST_TOKEN_VALUE].order === this.trick1Cards[OTHER_TOKEN_VALUE].order &&
             this.trick2Cards[HOST_TOKEN_VALUE].order === this.trick2Cards[OTHER_TOKEN_VALUE].order &&
             this.trick3Cards[HOST_TOKEN_VALUE].order === this.trick3Cards[OTHER_TOKEN_VALUE].order &&
             this.hostHasDeck
             ) || (//win the first trick, tie the third trick
-                isThirdTrick &&
+                this.cardsPlayedInHand === 6 &&
                 this.trick1Cards[HOST_TOKEN_VALUE].order < this.trick1Cards[OTHER_TOKEN_VALUE].order &&
                 this.trick3Cards[HOST_TOKEN_VALUE].order === this.trick3Cards[OTHER_TOKEN_VALUE].order
             )
@@ -636,7 +645,7 @@ export default class Game {
                 this.trick1Cards[HOST_TOKEN_VALUE].order > this.trick1Cards[OTHER_TOKEN_VALUE].order &&
                 this.trick2Cards[HOST_TOKEN_VALUE].order > this.trick2Cards[OTHER_TOKEN_VALUE].order
                 ) || (//win the third trick
-                isThirdTrick &&
+                    this.cardsPlayedInHand === 6 &&
                 this.trick3Cards[HOST_TOKEN_VALUE].order > this.trick3Cards[OTHER_TOKEN_VALUE].order
                 ) || (//tie the first trick, win the second trick
                 this.trick1Cards[HOST_TOKEN_VALUE].order === this.trick1Cards[OTHER_TOKEN_VALUE].order &&
@@ -645,7 +654,7 @@ export default class Game {
                 this.trick1Cards[HOST_TOKEN_VALUE].order > this.trick1Cards[OTHER_TOKEN_VALUE].order &&
                 this.trick2Cards[HOST_TOKEN_VALUE].order === this.trick2Cards[OTHER_TOKEN_VALUE].order
                 ) || (//tie all three tricks with deck
-                isThirdTrick &&
+                    this.cardsPlayedInHand === 6 &&
                 this.trick1Cards[HOST_TOKEN_VALUE].order === this.trick1Cards[OTHER_TOKEN_VALUE].order &&
                 this.trick2Cards[HOST_TOKEN_VALUE].order === this.trick2Cards[OTHER_TOKEN_VALUE].order &&
                 this.trick3Cards[HOST_TOKEN_VALUE].order === this.trick3Cards[OTHER_TOKEN_VALUE].order &&
@@ -660,15 +669,11 @@ export default class Game {
     distributeTrucoPoints = () => {
         if (this.handTrucoWinnerId === this.hostId) this.hostPoints += this.handTrucoPoints;
         if (this.handTrucoWinnerId === this.otherId) this.otherPoints += this.handTrucoPoints;
-        this.handTrucoPoints = 1;
-        
     }
 
     distributeEnvidoPoints = () => {
         if (this.handEnvidoWinnerId === this.hostId) this.hostPoints += this.handEnvidoPoints;
         if (this.handEnvidoWinnerId === this.otherId) this.otherPoints += this.handEnvidoPoints;
-        this.handEnvidoPoints = 0;
-       
     }
 
     //end the hand
@@ -682,9 +687,6 @@ export default class Game {
         this.hostCards = [];
         this.otherCards = [];
         this.cardsPlayedInHand = 0;
-        this.trick1Cards = [];
-        this.trick2Cards = [];
-        this.trick3Cards = [];
         this.isGameOver();
         if (this.endOfGame) this.endOfHand = false;
     }
@@ -813,7 +815,14 @@ export default class Game {
 
     //assign the envido hand winner, allow users to call truco again
     handleEnvidoNoQuieroBy = (playerId: string) => {
-        playerId === this.hostId ? this.handEnvidoWinnerId = this.otherId : this.handEnvidoWinnerId = this.hostId;
+        if (playerId === this.hostId) {
+            this.hostCanEnvidoRespond1 = false;
+            this.handEnvidoWinnerId = this.otherId;
+        }
+        else {
+            this.otherCanEnvidoRespond1 = false;
+            this.handEnvidoWinnerId = this.hostId;
+        }
         this.tempCanCallTruco = true;
         this.canPlayCards = true;
     }
@@ -875,6 +884,17 @@ export default class Game {
         }
         this.tempCanCallTruco = true;
         this.canPlayCards = true;
+    }
+
+    handleTengoFlorBy = (playerId: string) => {
+        if (playerId === this.hostId) {
+            this.hostCanEnvidoRespond2 = false;
+            this.otherCanEnvidoRespond2 = true;
+        }
+        else {
+            this.otherCanEnvidoRespond2 = false;
+            this.hostCanEnvidoRespond2 = true;
+        }
     }
 
     handleFlorTambienBy = (playerId: string) => {

@@ -71,10 +71,20 @@ const Board = (props: Props) :React.ReactElement => {
         setTengoNumber(0);
         return;
       }
+      if (game.hostHasFlor) {
+        alert("Cannot use this function when you have flor");
+        setTengoNumber(0);
+        return;
+      }
     }
     else {
       if (tengoNumber < game.hostEnvidoCon || (tengoNumber === game.hostEnvidoCon && game.hostHasDeck) || tengoNumber > 33) {
         alert("Invalid Tengo Number");
+        setTengoNumber(0);
+        return;
+      }
+      if (game.otherHasFlor) {
+        alert("Cannot use this function when you have flor");
         setTengoNumber(0);
         return;
       }
@@ -160,6 +170,7 @@ const Board = (props: Props) :React.ReactElement => {
   }
 
   const esMejorCalled = () => {
+    //TODO: UPDATE FLOR SHIT
     if (socket) socket.emit('esMejorCalled', {
       gameId: game.gameId,
       userId: id
@@ -172,6 +183,14 @@ const Board = (props: Props) :React.ReactElement => {
       gameId: game.gameId,
       userId: id,
       number: tengoNumber
+    })
+    else (alert("no socket"))
+  }
+
+  const tengoFlor = () => {
+    if (socket) socket.emit('tengoFlorCalled', {
+      gameId: game.gameId,
+      userId: id,
     })
     else (alert("no socket"))
   }
@@ -237,7 +256,6 @@ const Board = (props: Props) :React.ReactElement => {
                     fullWidth
                     variant="standard"
                     onChange={(e) => setQuieroConNumber(parseInt(e.target.value))}
-                    // FIXME: DO SOMETHING INSTEAD OF PARSEINT
                   />
               </DialogContent>
               <DialogActions>
@@ -266,7 +284,6 @@ const Board = (props: Props) :React.ReactElement => {
                     fullWidth
                     variant="standard"
                     onChange={(e) => setTengoNumber(parseInt(e.target.value))}
-                    // FIXME: DO SOMETHING INSTEAD OF PARSEINT
                   />
               </DialogContent>
               <DialogActions>
@@ -275,7 +292,8 @@ const Board = (props: Props) :React.ReactElement => {
                 </DialogActions>
             </Dialog>
             {/* TODO: check if works */}
-            <Button disabled={(!(isHost && game.hostCanEnvidoRespond2) || !(!isHost && game.otherCanEnvidoRespond2)) || (isHost ? !game.hostHasFlor : !game.otherHasFlor)} onClick={tengoFlorTambienCalled}>"Tengo Flor Tambien!"</Button>
+            <Button disabled={(!(isHost && game.hostCanEnvidoRespond2) && !(!isHost && game.otherCanEnvidoRespond2)) && (isHost ? !game.hostHasFlor : !game.otherHasFlor)} onClick={tengoFlor}>"Tengo Flor!"</Button>
+            <Button disabled={(!(isHost && game.hostCanEnvidoRespond2) && !(!isHost && game.otherCanEnvidoRespond2)) || (!game.hostHasFlor || !game.otherHasFlor)} onClick={tengoFlorTambienCalled}>"Tengo Flor Tambien!"</Button>
           </div>
         </div>
     </div>
