@@ -66,7 +66,7 @@ export const getGames = async (): Promise<Game[]> => {
 
 export const getGame = async (id: string): Promise<Game> => {
     try {
-        // console.log(id);
+        console.log(id);
         const query = { gameId: id };
         const gameData: GameType = collections.games ? (await collections.games.findOne(query)) as unknown as GameType: null;
         const game: Game = Game.fromDb(gameData);

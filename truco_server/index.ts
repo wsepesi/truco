@@ -3,7 +3,6 @@ import { collections, connectToDatabase } from "./src/services/database.service"
 import { createGame, deleteGame, deleteRoom, getGame, getRoom, getRooms, getUser, updateGame, updateRoom } from "./src/routes/routesUtils";
 
 import Game from "./src/gameLogic";
-import { ObjectId } from "bson";
 import Room from "./src/models/room";
 import { Server } from "socket.io";
 import cors from 'cors'
@@ -51,6 +50,7 @@ io.on("connection", (socket) => {
 
   // JOIN ROOM
   socket.on('joinRoom', async (roomId) => {
+    console.log("join room", roomId);
     socket.join(roomId);
 
     // GET ROOM FROM DB
@@ -73,6 +73,7 @@ io.on("connection", (socket) => {
 
   // START GAME
   socket.on('startGame', async (id) => {
+    console.log("start game", id);
     // GET GAME FROM DB
     const game: Game = await getGame(id);
 
@@ -203,13 +204,14 @@ io.on("connection", (socket) => {
   socket.on('overReady', async (data) => {
     const room: Room = await getRoom(data);
     room.readyCount++;
-    console.log(room);
+    console.log(room.id);
     if(room.readyCount === 2) {
       console.log("READY")
       // DELETE OLD GAME
       await deleteGame(data);
       createGame(data, room.host.socketId, room.other.socketId);
       const game: Game = await getGame(data);
+      console.log(game.gameId);
       game.startHand();
       await updateGame(game);
       io.in(game.gameId).emit("startGame", game);

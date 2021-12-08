@@ -83,7 +83,7 @@ const getGames = () => __awaiter(void 0, void 0, void 0, function* () {
 exports.getGames = getGames;
 const getGame = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // console.log(id);
+        console.log(id);
         const query = { gameId: id };
         const gameData = database_service_1.collections.games ? (yield database_service_1.collections.games.findOne(query)) : null;
         const game = gameLogic_1.default.fromDb(gameData);
