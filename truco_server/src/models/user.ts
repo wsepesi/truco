@@ -4,6 +4,7 @@ export default class User {
     constructor(
         public name: string,
         public socketId: string,
+        public wins: number,
         public id?: ObjectId
     ) {}
 

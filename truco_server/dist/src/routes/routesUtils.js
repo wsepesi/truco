@@ -100,6 +100,15 @@ const getGame = (id) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getGame = getGame;
 const updateGame = (game) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const isOver = game.endOfGame;
+        if (isOver) {
+            const winnerId = game.hostPoints > game.otherPoints ? game.hostId : game.otherId;
+            // INCREASE WINS OF WINNER BY 1 IN DB
+            const query = { socketId: winnerId };
+            const result = yield database_service_1.collections.users.updateOne(query, { $inc: { wins: 1 } });
+            if (!result)
+                throw new Error("Unable to update user");
+        }
         const query = { gameId: game.gameId };
         const result = yield database_service_1.collections.games.updateOne(query, { $set: game });
         if (!result)

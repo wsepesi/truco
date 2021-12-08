@@ -256,6 +256,10 @@ class Game {
                     if (numberNeeded1 !== 0 && numberNeeded2 !== 0) {
                         let neededCard1 = new types_1.Card(numberNeeded1, this.trick1Cards[HOST_TOKEN_VALUE].suit, 91, 91);
                         let neededCard2 = new types_1.Card(numberNeeded2, this.trick2Cards[HOST_TOKEN_VALUE].suit, 92, 92);
+                        if ((this.trick2Cards[HOST_TOKEN_VALUE].suit === neededCard1.suit && this.trick2Cards[HOST_TOKEN_VALUE].number === neededCard1.number)
+                            || (this.trick1Cards[HOST_TOKEN_VALUE].suit === neededCard2.suit && this.trick1Cards[HOST_TOKEN_VALUE].number === neededCard2.number)) {
+                            return;
+                        }
                         if (card1Possible && !card2Possible) {
                             if ((this.trick1Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick1Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit)
                                 || (this.trick2Cards[OTHER_TOKEN_VALUE] !== null && this.trick2Cards[OTHER_TOKEN_VALUE].number === neededCard1.number && this.trick2Cards[OTHER_TOKEN_VALUE].suit === neededCard1.suit)) {

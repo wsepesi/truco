@@ -35,7 +35,7 @@ const Home = (props: Props) :React.ReactElement => {
           <Games socket={props.socket} loggedIn={loggedIn}/>
         </Box>
         {status === "success" && data ? <Leaderboard users={data} refetch={refetch}/> : 
-            <Skeleton variant="rectangular" width={100} height={250}/>}
+            <Skeleton variant="rectangular" width={1000} height={250}/>}
     </Box>
   )
 }

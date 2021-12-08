@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class User {
-    constructor(name, socketId, id) {
+    constructor(name, socketId, wins, id) {
         this.name = name;
         this.socketId = socketId;
+        this.wins = wins;
         this.id = id;
     }
     isEqual(user) {

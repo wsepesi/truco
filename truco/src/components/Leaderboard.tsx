@@ -16,7 +16,7 @@ const Leaderboard = (props: Props): React.ReactElement => {
             flexDirection: 'row',
             justifyContent: 'center',
             height: 250,
-            width: 100 
+            width: 1000 
         }}>
             <Typography variant="h3">Leaderboard</Typography>
             <div>
