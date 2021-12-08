@@ -6,8 +6,14 @@ type cChat = {
     room: string
 }
 
+type leaveData = {
+    id: string,
+    started: boolean
+}
+
 type sChat = {
     msg: string,
+    id: string
 }
 
 type playCardData = {
@@ -137,6 +143,7 @@ export interface ServerToClientEvents {
     rooms: (rooms: Room[]) => void;
     startGame: (game: Game) => void;
     updateAll: (game: Game) => void;
+    readyToStart: (roomId: string) => void
   }
   
 export interface ClientToServerEvents {
@@ -158,6 +165,9 @@ export interface ClientToServerEvents {
     tengoCalled: (data: numericCallData) => void;
     tengoFlorTambienCalled: (data: basicCallData) => void;
     ready: (data: string) => void;
+    forfeit: (data: string) => void;
+    leave: (data: leaveData) => void;
+    overReady: (data: string) => void;
 }
 
 export interface InterServerEvents {

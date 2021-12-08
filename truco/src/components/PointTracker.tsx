@@ -9,15 +9,20 @@ type Props = {
 }
 
 const PointTracker = (props:Props) :React.ReactElement => {
+  const { hostPoints, otherPoints, handTrucoPoints, handEnvidoPoints } = props
+  const forfeited = hostPoints === -1 || otherPoints === -1
   return (
     <div>
-        <Typography variant="h4">Overall Points:</Typography>
-        {/* TODO: ADD IN PROP WITH USERNAMES */}
-        <p>User 1: {props.hostPoints}</p>
-        <p>User 2: {props.otherPoints}</p>
+        {!forfeited && (
+          <div>
+            <Typography variant="h4">Overall Points:</Typography>
+            <Typography>Host: {hostPoints}</Typography>
+            <Typography>Guest: {otherPoints}</Typography>
+          </div>
+        )}
         <Typography variant="h5">This Hand:</Typography>
-        <p>Truco Points: {props.handTrucoPoints}</p>
-        <p>Envido Points: {props.handEnvidoPoints}</p>
+        <Typography>Truco Points: {handTrucoPoints}</Typography>
+        <Typography>Envido Points: {handEnvidoPoints}</Typography>
     </div>
   )
 }

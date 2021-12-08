@@ -55,16 +55,29 @@ trucoRouter.post("/users", async (req: Request, res: Response) => {
     try {
         console.log("trying to add user", req.body)
         const user = req.body as User;
-        const result = collections.users ? await collections.users.insertOne(user) : null;
+        // CHECK IF USER ALREADY IN DB
+        const query = { name: user.name };
+        const existingUser = collections.users ? (await collections.users.findOne(query)) as unknown as User : null;
+        if(existingUser) {
+            // UPDATE USER
+            const updatedUser = await collections.users.updateOne(query, { $set: user });
+            res.status(201).send({
+                message: "User already exists",
+                success: true,
+                id: existingUser.id
+            })
+        } else {
+            const result = collections.users ? await collections.users.insertOne(user) : null;
 
-        result ? res.status(201).send({
-            msg: `Successfully created user with id: ${result.insertedId}`,
-            success: true,
-            id: result.insertedId 
-        }) : res.status(500).send({
-            msg: "Unable to create user",
-            success: false
-        });
+            result ? res.status(201).send({
+                msg: `Successfully created user with id: ${result.insertedId}`,
+                success: true,
+                id: result.insertedId 
+            }) : res.status(500).send({
+                msg: "Unable to create user",
+                success: false
+            });
+        }
         } catch (error: unknown) {
         console.error(error);
         res.status(400).send(error);

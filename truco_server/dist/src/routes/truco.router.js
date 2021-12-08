@@ -64,15 +64,29 @@ exports.trucoRouter.post("/users", (req, res) => __awaiter(void 0, void 0, void 
     try {
         console.log("trying to add user", req.body);
         const user = req.body;
-        const result = database_service_1.collections.users ? yield database_service_1.collections.users.insertOne(user) : null;
-        result ? res.status(201).send({
-            msg: `Successfully created user with id: ${result.insertedId}`,
-            success: true,
-            id: result.insertedId
-        }) : res.status(500).send({
-            msg: "Unable to create user",
-            success: false
-        });
+        // CHECK IF USER ALREADY IN DB
+        const query = { name: user.name };
+        const existingUser = database_service_1.collections.users ? (yield database_service_1.collections.users.findOne(query)) : null;
+        if (existingUser) {
+            // UPDATE USER
+            const updatedUser = yield database_service_1.collections.users.updateOne(query, { $set: user });
+            res.status(201).send({
+                message: "User already exists",
+                success: true,
+                id: existingUser.id
+            });
+        }
+        else {
+            const result = database_service_1.collections.users ? yield database_service_1.collections.users.insertOne(user) : null;
+            result ? res.status(201).send({
+                msg: `Successfully created user with id: ${result.insertedId}`,
+                success: true,
+                id: result.insertedId
+            }) : res.status(500).send({
+                msg: "Unable to create user",
+                success: false
+            });
+        }
     }
     catch (error) {
         console.error(error);

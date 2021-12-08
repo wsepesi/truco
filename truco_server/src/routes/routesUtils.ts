@@ -2,7 +2,14 @@ import Game from "../gameLogic";
 import { GameType } from "../types";
 import { ObjectId } from "mongodb";
 import Room from "../models/room";
+import User from "../models/user";
 import { collections } from "../services/database.service";
+
+export const getUser = async (socketId: string): Promise<User> => {
+    const user = collections.users ? await collections.users.findOne({ socketId }) as unknown as User : null;
+    if(!user) throw new Error("User not found");
+    return user;
+}
 
 export const getRooms = async (): Promise<Room[]> => {
     try {
@@ -18,9 +25,9 @@ export const getRooms = async (): Promise<Room[]> => {
 
 export const getRoom = async (roomId: string): Promise<Room> => {
     try {
-        console.log(roomId);
+        // console.log(roomId);
         const room = collections.rooms ? (await collections.rooms.findOne({ _id: new ObjectId(roomId) }) as unknown as Room) : null;
-        console.log(room);
+        // console.log(room);
         return room;
     } catch (error) {
         return null;
@@ -32,6 +39,16 @@ export const updateRoom = async (id: string, room: Room) => {
         const query = { _id: new ObjectId(id) };
         const result = await collections.rooms.updateOne(query, { $set: room });
         if (!result) throw new Error("Unable to update room");
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const deleteRoom = async (id: string) => {
+    try {
+        const query = { _id: new ObjectId(id) };
+        const result = await collections.rooms.deleteOne(query);
+        if (!result) throw new Error("Unable to delete room");
     } catch (error) {
         throw error;
     }
@@ -49,11 +66,12 @@ export const getGames = async (): Promise<Game[]> => {
 
 export const getGame = async (id: string): Promise<Game> => {
     try {
+        // console.log(id);
         const query = { gameId: id };
         const gameData: GameType = collections.games ? (await collections.games.findOne(query)) as unknown as GameType: null;
         const game: Game = Game.fromDb(gameData);
         
-        console.log("game", game);
+        // console.log("game", game);
         // const game = new Game(gameData.gameId, gameData.hostId, gameData.otherId);
         if (!game) throw new Error("Game not found");
         return game;
@@ -74,10 +92,20 @@ export const updateGame = async (game: Game) => {
 
 export const createGame = async (gameId: string, hostId: string, otherId: string) => {
     try {
-        console.log(gameId, hostId, otherId);
+        // console.log(gameId, hostId, otherId);
         const game: Game = Game.newGame(gameId, hostId, otherId);
         const result = collections.games ? await collections.games.insertOne(game) : null;
         if(!result) throw new Error('Game not created');
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+export const deleteGame = async (gameId: string) => {
+    try {
+        const query = { gameId };
+        const result = await collections.games.deleteOne(query);
+        if (!result) throw new Error("Game not found");
     } catch (error) {
         throw new Error(error);
     }

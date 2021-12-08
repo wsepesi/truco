@@ -1,4 +1,4 @@
-import { Button, TextField } from '@mui/material';
+import { Button, Paper, TextField, Typography } from '@mui/material';
 import { Room, User } from '../configs/types';
 import axios, { AxiosResponse } from 'axios';
 
@@ -9,7 +9,8 @@ import { Socket } from 'socket.io-client';
 import { getUser } from '../hooks/getUser';
 
 type Props = {
-  socket: Socket | null
+  socket: Socket | null,
+  loggedIn: boolean
 }
 
 type RoomResult = {
@@ -19,7 +20,7 @@ type RoomResult = {
 }
 
 const Host = (props: Props): React.ReactElement => {
-  const { socket } = props;
+  const { socket, loggedIn } = props;
   const [redirect, setRedirect] = React.useState<string>('');
   const [roomName, setRoomName] = React.useState<string>('');
 
@@ -65,15 +66,17 @@ const Host = (props: Props): React.ReactElement => {
   }
 
   return (
-    <div>
+    <Paper sx={{flexDirection: 'row'}} elevation={3}>
       <TextField
         label="Room Name"
         value={roomName}
         onChange={(e) => setRoomName(e.target.value)}
+        disabled={!loggedIn}
       />
-      <Button disabled={roomName.length === 0} onClick={handleClick}>Host a Game</Button>
+      <Button disabled={roomName.length === 0 || !loggedIn} onClick={handleClick}>Host a Game</Button>
+      {!loggedIn && <Typography>Please log in to host a game</Typography>}
       {redirect && <Navigate to={redirect} />}
-    </div>
+    </Paper>
   )
 }
 

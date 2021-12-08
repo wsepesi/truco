@@ -12,6 +12,7 @@ type Props = {
 
 type sChat = {
   msg: string,
+  id: string
 }
 
 const Chat = (props: Props): React.ReactElement => {
@@ -24,7 +25,8 @@ const Chat = (props: Props): React.ReactElement => {
   useEffect(() => {
     if (socket) {
       socket.on("chat", (data: sChat) => {
-        setMessages(messages => [...messages, data.msg]);
+        const msg = `${data.id === socket.id ? 'You' : 'Opponent'}: ${data.msg}`
+        setMessages(messages => [...messages, msg]);
       })
 
       return () => {

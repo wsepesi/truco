@@ -16,4 +16,15 @@ export const theme = createTheme({
   typography: {
     fontFamily: 'Crete Round',
   },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          fontFamily: 'Crete Round',
+          elevation: 15,
+          color: 'black'
+        },
+      },
+    },
+  },
 });

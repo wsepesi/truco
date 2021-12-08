@@ -1,13 +1,17 @@
 import React, { useEffect } from 'react'
 
 import Board from './Board';
+import { Box } from '@mui/system';
 import Chat from './Chat';
 import { Game } from '../configs/types';
+import GameBar from './GameBar';
 import GameOver from './GameOver';
 import HandOver from './HandOver';
 import PointTracker from './PointTracker';
+import { SYSTEM_COLORS } from '../configs/colors';
 import { Socket } from 'socket.io-client';
 import { SocketContext } from '../hooks/socket-context';
+import { Typography } from '@mui/material';
 
 // import { useParams } from 'react-router';
 
@@ -50,35 +54,39 @@ const GameHome = (props: Props) :React.ReactElement => {
       }, [socket]);
 
   return (
-    <div style={{display: "flex", justifyContent: "space-between", height: "100vh"}}>
-        <div style={{width: "15vw"}}>
-            {/* TODO: PASS THE USERNAMES TO THE POINT TRACKER TO DISPLAY IT */}
-            {game && <PointTracker
-                hostPoints={game.hostPoints}
-                otherPoints={game.otherPoints}
-                handTrucoPoints={game.handTrucoPoints}
-                handEnvidoPoints={game.handEnvidoPoints}
-            />}
-        </div>
-        <div style={{width: "70vw", borderLeft: "2px solid black", borderRight: "2px solid black"}}>
-            {(game && !(endOfGame || endOfHand)) && <SocketContext.Consumer>
-                {socket =>
-                    <Board
-                        socket={socket}
-                        game={game}
-                    />
-                }
-            </SocketContext.Consumer>}
-            {(game && endOfHand) && <HandOver game={game} socket={socket}/>}
-            {(game && endOfGame) && <GameOver game={game} socket={socket}/>}
-            {!game && <div>Loading...</div>}
-        </div>
-        <div style={{width: "15vw"}}>
-            <SocketContext.Consumer>
-                {socket => <Chat socket={socket}/>}
-            </SocketContext.Consumer>
-        </div>
-    </div>
+    <Box sx={{height: "100vh", backgroundColor: SYSTEM_COLORS.BACKGROUND_2}}>
+        <GameBar socket={socket} game={game}/>
+        <Box sx={{display: 'flex', flex: 'column', width: '100vw', minHeight: '85vh'}}>
+            <Box style={{width: "15vw"}}>
+                {/* TODO: PASS THE USERNAMES TO THE POINT TRACKER TO DISPLAY IT */}
+                {game && <PointTracker
+                    hostPoints={game.hostPoints}
+                    otherPoints={game.otherPoints}
+                    handTrucoPoints={game.handTrucoPoints}
+                    handEnvidoPoints={game.handEnvidoPoints}
+                />}
+            </Box>
+            <Box style={{width: "70vw", borderLeft: "2px solid black", borderRight: "2px solid black"}}>
+                {(game && !(endOfGame || endOfHand)) && <SocketContext.Consumer>
+                    {socket =>
+                        <Board
+                            socket={socket}
+                            game={game}
+                        />
+                    }
+                </SocketContext.Consumer>}
+                {(game && endOfHand) && <HandOver game={game} socket={socket}/>}
+                {(game && endOfGame) && <GameOver game={game} socket={socket}/>}
+                {!game && <Typography>Loading...</Typography>}
+            </Box>
+            <Box style={{width: "15vw"}}>
+                <SocketContext.Consumer>
+                    {socket => <Chat socket={socket}/>}
+                </SocketContext.Consumer>
+            </Box>
+        </Box>
+        
+    </Box>
   )
 }
 

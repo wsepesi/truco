@@ -1,14 +1,16 @@
 import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "./src/types";
-import { getGame, getRoom, getRooms, updateGame, updateRoom } from "./src/routes/routesUtils";
+import { collections, connectToDatabase } from "./src/services/database.service"
+import { createGame, deleteGame, deleteRoom, getGame, getRoom, getRooms, getUser, updateGame, updateRoom } from "./src/routes/routesUtils";
 
 import Game from "./src/gameLogic";
+import { ObjectId } from "bson";
 import Room from "./src/models/room";
 import { Server } from "socket.io";
-import { connectToDatabase } from "./src/services/database.service"
 import cors from 'cors'
 import { createServer } from "http";
 import dotenv from 'dotenv'
 import express from 'express'
+import { forfeit } from "./src/utils";
 import { trucoRouter } from './src/routes/truco.router'
 
 dotenv.config({ path: './config.env'});
@@ -19,9 +21,6 @@ const port = process.env.PORT || 5000
 app.use(cors())
 app.use(express.json())
 
-const t = "hi";
-console.log(t);
-
 const httpServer = createServer(app);
 const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(httpServer, {
   cors: {
@@ -31,15 +30,11 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEve
 });
 
 io.on("connection", (socket) => {
-  socket.on("hello", () => {
-    console.log("Test");
-    socket.emit('ping', 'pong');
-  })
-
   socket.on("chat", (data) => {
-    console.log("chat", data.room);
+    // console.log("chat", data.room);
     io.in(data.room).emit("chat", {
-      msg: data.msg
+      msg: data.msg,
+      id: socket.id
     });
   })
 
@@ -48,15 +43,32 @@ io.on("connection", (socket) => {
     // GET ROOMS FROM DB
     const rooms: Room[] = await getRooms();
 
-    console.log("got rooms", rooms);
+    // console.log("got rooms", rooms);
 
     // SEND ROOMS TO CLIENT
     io.emit("rooms", rooms);
   });
 
   // JOIN ROOM
-  socket.on('joinRoom', (roomId) => {
+  socket.on('joinRoom', async (roomId) => {
     socket.join(roomId);
+
+    // GET ROOM FROM DB
+    const room = await getRoom(roomId);
+    const player = await getUser(socket.id);
+    const isHost = room.host.socketId === socket.id;
+    if (isHost) return; // we dont want the host doing the below things moved over from PUT
+    if (!room || !player) throw new Error("Room or player not found");
+
+    room.other = player;
+    room.users.push(player);
+
+    await updateRoom(roomId, room);
+    createGame(roomId, room.host.socketId, room.other.socketId);
+
+    socket.emit('readyToStart', roomId);
+
+    // await collections.rooms.updateOne({ _id: new ObjectId(roomId) }, { $set: room });
   })
 
   // START GAME
@@ -78,7 +90,7 @@ io.on("connection", (socket) => {
     const { gameId, playerId, cardId } = data;
     // GET GAME FROM DB
     const game: Game = await getGame(gameId);
-    console.log(game);
+    // console.log(game);
     game.playCard(cardId, playerId);
 
     // UPDATE GAME IN DB
@@ -167,8 +179,10 @@ io.on("connection", (socket) => {
 
   socket.on('ready', async (data) => {
     const room: Room = await getRoom(data);
+    console.log(room);
     room.readyCount++;
     if(room.readyCount === 2) {
+      console.log("READY")
       // START NEXT HAND
       const game: Game = await getGame(data);
       game.startHand();
@@ -177,8 +191,62 @@ io.on("connection", (socket) => {
       room.readyCount = 0;
     }
     await updateRoom(data, room);
-
   })
+
+  socket.on('overReady', async (data) => {
+    const room: Room = await getRoom(data);
+    room.readyCount++;
+    console.log(room);
+    if(room.readyCount === 2) {
+      console.log("READY")
+      // DELETE OLD GAME
+      await deleteGame(data);
+      createGame(data, room.host.socketId, room.other.socketId);
+      const game: Game = await getGame(data);
+      game.startHand();
+      await updateGame(game);
+      io.in(game.gameId).emit("startGame", game);
+      room.readyCount = 0;
+    }
+    await updateRoom(data, room);
+  })
+
+  socket.on('forfeit', async (data) => {
+    await forfeit(data, io, socket);
+  })
+
+  socket.on('leave', async (data) => {
+    const { id, started } = data;
+    if (started) await forfeit(id, io, socket);
+
+    const playerId = socket.id;
+
+    // REMOVE PLAYER FROM ROOM
+    const room: Room = await getRoom(id);
+    room.users = room.users.filter(p => p.socketId !== playerId);
+
+    // REMOVE ROOM IF EMPTY
+    if(room.users.length === 0) {
+      await deleteRoom(id);
+    } else {
+      if(room.host.socketId === playerId) {
+        room.host = room.other;
+        room.other = null;
+        // TODO: notify new host?
+      } else {
+        room.other = null;
+      }
+      // console.log(room);
+      await updateRoom(id, room);
+    }
+
+    
+    // REMOVE PLAYER FROM SOCKET LOBBY
+    socket.leave(playerId);
+
+    // UPDATE ALL PLAYERS IN HOME
+    io.emit("rooms", await getRooms());
+  });
 })
 
 httpServer.listen(4000);

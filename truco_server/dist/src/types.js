@@ -7,6 +7,7 @@ class Card {
         this.suit = suit;
         this.id = id;
         this.order = order;
+        this.envidoWorth = this.number > 9 ? 0 : this.number;
     }
 }
 exports.Card = Card;

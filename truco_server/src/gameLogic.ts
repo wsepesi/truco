@@ -198,6 +198,16 @@ export default class Game {
         return game;
     }
 
+    forfeit = (playerId: string): void => {
+        this.endOfGame = true;
+        if (playerId === this.hostId) {
+            this.hostPoints = -1;
+        }
+        else {
+            this.otherPoints = -1;
+        }
+    }
+
     resetDeck = () => {
         this.deck = [
             new Card(1, "Swords", CardIds.Swords1, CardOrder.Swords1),
@@ -681,10 +691,10 @@ export default class Game {
 
     //will receive the index of which card the user clicked on
     playCard = (cardId: number, playerId: string) => {
-        console.log('playCard', cardId, playerId);
+        // console.log('playCard', cardId, playerId);
         //host cards
         if (playerId === this.hostId) {
-            console.log(this.hostCards)
+            // console.log(this.hostCards)
             if (this.cardsPlayedInHand === 0 || this.cardsPlayedInHand === 1) {
                 this.trick1Cards[HOST_TOKEN_VALUE] = this.hostCards.find(card => card.id === cardId);
             }
@@ -699,7 +709,7 @@ export default class Game {
         }
         //other cards
         else {
-            console.log(this.otherCards)
+            // console.log(this.otherCards)
             if (this.cardsPlayedInHand === 0 || this.cardsPlayedInHand === 1) {
                 this.trick1Cards[OTHER_TOKEN_VALUE] = this.otherCards.find(card => card.id === cardId);
             }
@@ -713,29 +723,29 @@ export default class Game {
         }
         this.cardsPlayedInHand++;
         if (this.cardsPlayedInHand === 2) {
-            console.log('case a')
+            // console.log('case a')
             if (this.trick1Cards[HOST_TOKEN_VALUE].order < this.trick1Cards[OTHER_TOKEN_VALUE].order || (this.trick1Cards[HOST_TOKEN_VALUE].order === this.trick1Cards[OTHER_TOKEN_VALUE].order && playerId===this.hostId)) {
-                console.log('case ai')
+                // console.log('case ai')
                 this.hostTurn = true;
             }
             else {
-                console.log('case aii')
+                // console.log('case aii')
                 this.hostTurn = false;
             }
         }
         else if (this.cardsPlayedInHand === 4) {
-            console.log('case b')
+            // console.log('case b')
             if (this.trick2Cards[HOST_TOKEN_VALUE].order < this.trick2Cards[OTHER_TOKEN_VALUE].order || (this.trick2Cards[HOST_TOKEN_VALUE].order === this.trick2Cards[OTHER_TOKEN_VALUE].order && playerId===this.hostId)) {
-                console.log('case bi')
+                // console.log('case bi')
                 this.hostTurn = true;
             }
             else {
-                console.log('case bii')
+                // console.log('case bii')
                 this.hostTurn = false;
             }
         }
         else {
-            console.log('case c')
+            // console.log('case c')
             this.hostTurn = !this.hostTurn;
         }
         this.checkIfTrucoWinner();
