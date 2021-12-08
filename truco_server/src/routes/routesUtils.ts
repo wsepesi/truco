@@ -82,6 +82,14 @@ export const getGame = async (id: string): Promise<Game> => {
 
 export const updateGame = async (game: Game) => {
     try {
+        const isOver = game.endOfGame;
+        if (isOver) {
+            const winnerId = game.hostPoints > game.otherPoints ? game.hostId : game.otherId;
+            // INCREASE WINS OF WINNER BY 1 IN DB
+            const query = { socketId: winnerId };
+            const result = await collections.users.updateOne(query, { $inc: { wins: 1 } });
+            if (!result) throw new Error("Unable to update user");
+        }
         const query = { gameId: game.gameId };
         const result = await collections.games.updateOne(query, { $set: game });
         if (!result) throw new Error("Game not found");

@@ -1,8 +1,6 @@
 import { Button, Paper, Typography } from '@mui/material'
 import React, { useEffect } from 'react'
-import axios, { AxiosResponse } from 'axios'
 
-import { BASE_URL } from '../configs/vars'
 import { Navigate } from 'react-router'
 import { Room } from '../configs/types'
 import { Socket } from 'socket.io-client'
@@ -11,12 +9,6 @@ type Props = {
   room: Room
   socket: Socket | null,
   loggedIn: boolean
-}
-
-type RoomResult = {
-  msg: string,
-  success: boolean,
-  id: string
 }
 
 const Game = (props:Props) :React.ReactElement => {

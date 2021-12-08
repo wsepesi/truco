@@ -42,7 +42,8 @@ const Navbar = (props:Props): React.ReactElement => {
     if (!socket) return false; //FIXME:
     const user: User = {
       name: username,
-      socketId: socket.id
+      socketId: socket.id,
+      wins: 0
     }
     console.log(user)
     const result: AxiosResponse<LoginResult> = await axios({

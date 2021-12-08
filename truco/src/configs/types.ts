@@ -1,6 +1,7 @@
 export type User = {
     name: string;
     socketId: string;
+    wins: number;
     _id?: string;
 }
 
