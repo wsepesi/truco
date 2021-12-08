@@ -207,7 +207,7 @@ const Board = (props: Props) :React.ReactElement => {
     <div style={{display: "flex", justifyContent: "space-between"}}>
         <div style={{width: "90%"}}>
           <div style={{paddingTop: "35px"}}>
-            <Typography variant="h5" align="center">Opponent's Cards</Typography>
+            <Typography variant="h5" align="center">Opponent's Cards{isHost ? !game.hostHasDeck && " (has deck)" : game.hostHasDeck && " (has deck)"}</Typography>
             <Cards 
               socket={socket}
               other={true}
@@ -219,7 +219,7 @@ const Board = (props: Props) :React.ReactElement => {
             <CardsPlayed game={game} id={socket?.id}/*FIXME: */ /> 
           </div>
           <div>
-            <Typography variant="h5" align="center">Your Cards</Typography>
+            <Typography variant="h5" align="center">Your Cards{isHost ? game.hostHasDeck && " (you have deck)" : !game.hostHasDeck && " (you have deck)"}</Typography>
             <Cards
               socket={socket}
               other={false}
