@@ -6,6 +6,8 @@ import { useParams } from 'react-router'
 
 //TODO: users should show up w messages
 
+export const SERVER_TOKEN = 'SERVER_TOKEN';
+
 type Props = {
   socket: Socket | null
 }
@@ -25,7 +27,13 @@ const Chat = (props: Props): React.ReactElement => {
   useEffect(() => {
     if (socket) {
       socket.on("chat", (data: sChat) => {
-        const msg = `${data.id === socket.id ? 'You' : 'Opponent'}: ${data.msg}`
+        let msg: string;
+        if( data.id === SERVER_TOKEN) {
+          msg = `SERVER: ${data.msg}`
+        }
+        else {
+          msg = `${data.id === socket.id ? 'You' : 'Opponent'}: ${data.msg}`
+        }
         setMessages(messages => [...messages, msg]);
       })
 
@@ -38,7 +46,6 @@ const Chat = (props: Props): React.ReactElement => {
   const sendChat = () => {
     const message = msg
     setMsg('');
-    // addMsg(message);
     if (socket) socket.emit('chat', {
       msg: message,
       room: id
@@ -47,7 +54,6 @@ const Chat = (props: Props): React.ReactElement => {
   }
 
   const toComponents = (messages: string[]): React.ReactElement[] => {
-    // console.log()
     return messages.slice(-10).map((msg: string, i: number) => <Typography key={i}>{msg}</Typography>)
   }
 
@@ -60,7 +66,6 @@ const Chat = (props: Props): React.ReactElement => {
         {messages ? toComponents(messages) : null}
       </div>
       <TextField variant="standard" style={{marginLeft: "5px"}} value={msg} onChange={(e) => setMsg(e.target.value)}/>
-      {/* <input type="text" id="chatText"  placeholder="Chat"></input> */}
       <Button onClick={sendChat}>Send</Button>
     </div>
   )

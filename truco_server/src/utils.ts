@@ -10,5 +10,12 @@ export const forfeit = async (gameId: string, io: Server<ClientToServerEvents, S
     game.forfeit(playerId);
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
+
+    const player = game.hostId === socket.id ? "host" : "other";
+    io.in(game.gameId).emit("chat", {
+      msg: `${player} forfeited the game`,
+      id: SERVER_TOKEN
+    });
 }
 
+export const SERVER_TOKEN = "SERVER_TOKEN";

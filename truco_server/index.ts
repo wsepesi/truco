@@ -1,4 +1,5 @@
-import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "./src/types";
+import { CardIds, ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "./src/types";
+import { SERVER_TOKEN, forfeit } from "./src/utils";
 import { collections, connectToDatabase } from "./src/services/database.service"
 import { createGame, deleteGame, deleteRoom, getGame, getRoom, getRooms, getUser, updateGame, updateRoom } from "./src/routes/routesUtils";
 
@@ -9,7 +10,6 @@ import cors from 'cors'
 import { createServer } from "http";
 import dotenv from 'dotenv'
 import express from 'express'
-import { forfeit } from "./src/utils";
 import { trucoRouter } from './src/routes/truco.router'
 
 dotenv.config({ path: './config.env'});
@@ -30,7 +30,6 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEve
 
 io.on("connection", (socket) => {
   socket.on("chat", (data) => {
-    // console.log("chat", data.room);
     io.in(data.room).emit("chat", {
       msg: data.msg,
       id: socket.id
@@ -41,8 +40,6 @@ io.on("connection", (socket) => {
   socket.on("updateRooms", async () => {
     // GET ROOMS FROM DB
     const rooms: Room[] = await getRooms();
-
-    // console.log("got rooms", rooms);
 
     // SEND ROOMS TO CLIENT
     io.emit("rooms", rooms);
@@ -67,8 +64,6 @@ io.on("connection", (socket) => {
     createGame(roomId, room.host.socketId, room.other.socketId);
 
     socket.emit('readyToStart', roomId);
-
-    // await collections.rooms.updateOne({ _id: new ObjectId(roomId) }, { $set: room });
   })
 
   // START GAME
@@ -85,6 +80,10 @@ io.on("connection", (socket) => {
 
     // UPDATE CLIENTS IN ROOM
     io.in(game.gameId).emit("startGame", game);
+    io.in(game.gameId).emit("chat", {
+      msg: "Game is starting...",
+      id: SERVER_TOKEN
+    });
   });
 
   socket.on('playCard', async (data) => {
@@ -94,11 +93,18 @@ io.on("connection", (socket) => {
     // console.log(game);
     game.playCard(cardId, playerId);
 
+    const player = game.hostId === playerId ? "Host" : "Guest";
+    const card = CardIds[cardId];
+
     // UPDATE GAME IN DB
     await updateGame(game);
 
     // UPDATE CLIENTS IN ROOM
     io.in(game.gameId).emit("updateAll", game);
+    io.in(game.gameId).emit("chat", {
+      msg: `${player} played ${card}`,
+      id: SERVER_TOKEN
+    });
   });
 
   socket.on('trucoCalled', async (data) => {
@@ -106,6 +112,11 @@ io.on("connection", (socket) => {
       game.handleTrucoCalledBy(data.userId);
       await updateGame(game);
       io.in(game.gameId).emit("updateAll", game);
+      const player = game.hostId === data.userId ? "host" : "other";
+      io.in(game.gameId).emit("chat", {
+        msg: `${player} called truco`,
+        id: SERVER_TOKEN
+      });
   })
 
   socket.on('envidoCalled', async (data) => {
@@ -113,6 +124,11 @@ io.on("connection", (socket) => {
     game.handleEnvidoCalledBy(data.userId);
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
+    const player = game.hostId === data.userId ? "host" : "other";
+    io.in(game.gameId).emit("chat", {
+      msg: `${player} called envido`,
+      id: SERVER_TOKEN
+    });
   })
 
   socket.on('trucoQuieroCalled', async (data) => {
@@ -120,6 +136,11 @@ io.on("connection", (socket) => {
     game.handleTrucoQuieroBy(data.userId);
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
+    const player = game.hostId === data.userId ? "host" : "other";
+    io.in(game.gameId).emit("chat", {
+      msg: `${player} called quiero`,
+      id: SERVER_TOKEN
+    });
   })
 
   socket.on('trucoNoQuieroCalled', async (data) => {
@@ -127,6 +148,11 @@ io.on("connection", (socket) => {
     game.handleTrucoNoQuieroBy(data.userId);
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
+    const player = game.hostId === data.userId ? "host" : "other";
+    io.in(game.gameId).emit("chat", {
+      msg: `${player} called no quiero`,
+      id: SERVER_TOKEN
+    });
   })
 
   socket.on('retrucoCalled', async (data) => {
@@ -134,6 +160,12 @@ io.on("connection", (socket) => {
     game.handleRetrucoBy(data.userId);
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
+
+    const player = game.hostId === data.userId ? "host" : "other";
+    io.in(game.gameId).emit("chat", {
+      msg: `${player} called retruco`,
+      id: SERVER_TOKEN
+    });
   })
 
   socket.on('quieroConCalled', async (data) => {
@@ -141,6 +173,12 @@ io.on("connection", (socket) => {
     game.handleEnvidoQuieroConBy(data.userId, data.number);
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
+
+    const player = game.hostId === data.userId ? "host" : "other";
+    io.in(game.gameId).emit("chat", {
+      msg: `${player} called quiero con ${data.number}`,
+      id: SERVER_TOKEN
+    });
   })
 
   socket.on('envidoNoQuieroCalled', async (data) => {
@@ -148,6 +186,12 @@ io.on("connection", (socket) => {
     game.handleEnvidoNoQuieroBy(data.userId);
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
+
+    const player = game.hostId === data.userId ? "host" : "other";
+    io.in(game.gameId).emit("chat", {
+      msg: `${player} called no quiero`,
+      id: SERVER_TOKEN
+    });
   })
 
   socket.on('quieroConFlorCalled', async (data) => {
@@ -155,6 +199,12 @@ io.on("connection", (socket) => {
     game.handleEnvidoQuieroConFlorBy(data.userId);
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
+
+    const player = game.hostId === data.userId ? "host" : "other";
+    io.in(game.gameId).emit("chat", {
+      msg: `${player} called flor`,
+      id: SERVER_TOKEN
+    });
   })
 
   socket.on('esMejorCalled', async (data) => {
@@ -162,6 +212,12 @@ io.on("connection", (socket) => {
     game.handleEsMejorBy(data.userId);
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
+
+    const player = game.hostId === data.userId ? "host" : "other";
+    io.in(game.gameId).emit("chat", {
+      msg: `${player} called es mejor`,
+      id: SERVER_TOKEN
+    });
   })
 
   socket.on('tengoCalled', async (data) => {
@@ -169,6 +225,12 @@ io.on("connection", (socket) => {
     game.handleTengoBy(data.userId, data.number);
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
+
+    const player = game.hostId === data.userId ? "host" : "other";
+    io.in(game.gameId).emit("chat", {
+      msg: `${player} called tengo with ${data.number}`,
+      id: SERVER_TOKEN
+    });
   })
 
   socket.on('tengoFlorCalled', async (data) => {
@@ -176,6 +238,12 @@ io.on("connection", (socket) => {
     game.handleTengoFlorBy(data.userId);
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
+
+    const player = game.hostId === data.userId ? "host" : "other";
+    io.in(game.gameId).emit("chat", {
+      msg: `${player} called flor`,
+      id: SERVER_TOKEN
+    });
   })
 
   socket.on('tengoFlorTambienCalled', async (data) => {
@@ -183,20 +251,32 @@ io.on("connection", (socket) => {
     game.handleFlorTambienBy(data.userId);
     await updateGame(game);
     io.in(game.gameId).emit("updateAll", game);
+
+    const player = game.hostId === data.userId ? "host" : "other";
+    io.in(game.gameId).emit("chat", {
+      msg: `${player} called flor`,
+      id: SERVER_TOKEN
+    });
   })
 
   socket.on('ready', async (data) => {
     const room: Room = await getRoom(data);
     console.log(room);
     room.readyCount++;
+    const game: Game = await getGame(data);
     if(room.readyCount === 2) {
       console.log("READY")
       // START NEXT HAND
-      const game: Game = await getGame(data);
       game.startHand();
       await updateGame(game);
       io.in(game.gameId).emit("updateAll", game);
       room.readyCount = 0;
+    } else {
+      const player = game.hostId === socket.id ? "host" : "other";
+      io.in(game.gameId).emit("chat", {
+        msg: `${player} is ready`,
+        id: SERVER_TOKEN
+      })
     }
     await updateRoom(data, room);
   })
@@ -233,6 +313,12 @@ io.on("connection", (socket) => {
     // REMOVE PLAYER FROM ROOM
     const room: Room = await getRoom(id);
     room.users = room.users.filter(p => p.socketId !== playerId);
+    socket.leave(playerId);
+
+    io.in(id).emit("chat", {
+      msg: `Opponent left the game`,
+      id: SERVER_TOKEN
+    });
 
     // REMOVE ROOM IF EMPTY
     if(room.users.length === 0) {
@@ -241,18 +327,16 @@ io.on("connection", (socket) => {
       if(room.host.socketId === playerId) {
         room.host = room.other;
         room.other = null;
-        // TODO: notify new host?
+
+        io.in(id).emit("chat", {
+          msg: `You are the new host!`,
+          id: SERVER_TOKEN
+        });
       } else {
         room.other = null;
       }
-      // console.log(room);
       await updateRoom(id, room);
     }
-
-    
-    // REMOVE PLAYER FROM SOCKET LOBBY
-    socket.leave(playerId);
-
     // UPDATE ALL PLAYERS IN HOME
     io.emit("rooms", await getRooms());
   });
@@ -263,19 +347,6 @@ httpServer.listen(4000);
 app.get('/', (_, res) => {
   res.send('Hello World!');
 })
-
-// app.get('login', (req, res) => {
-//   const { username, socketId } = req.body;
-//   const user: User = {
-//     id: null,
-//     username,
-//     socketId
-//   }
-//   truco
-//   // add to database  
-
-//   res.send({ success: true});
-// });
 
 connectToDatabase()
 .then(() => {
@@ -289,6 +360,3 @@ connectToDatabase()
   console.log(error);
   process.exit();
 })
-
-//TODO:
-// add routing file, see https://mongodb.com/languages/mern-stack-tutorial
