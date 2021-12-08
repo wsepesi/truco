@@ -51,6 +51,7 @@ io.on("connection", (socket) => {
     }));
     // JOIN ROOM
     socket.on('joinRoom', (roomId) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log("join room", roomId);
         socket.join(roomId);
         // GET ROOM FROM DB
         const room = yield (0, routesUtils_1.getRoom)(roomId);
@@ -69,6 +70,7 @@ io.on("connection", (socket) => {
     }));
     // START GAME
     socket.on('startGame', (id) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log("start game", id);
         // GET GAME FROM DB
         const game = yield (0, routesUtils_1.getGame)(id);
         // START HAND ON OBJECT
@@ -179,13 +181,14 @@ io.on("connection", (socket) => {
     socket.on('overReady', (data) => __awaiter(void 0, void 0, void 0, function* () {
         const room = yield (0, routesUtils_1.getRoom)(data);
         room.readyCount++;
-        console.log(room);
+        console.log(room.id);
         if (room.readyCount === 2) {
             console.log("READY");
             // DELETE OLD GAME
             yield (0, routesUtils_1.deleteGame)(data);
             (0, routesUtils_1.createGame)(data, room.host.socketId, room.other.socketId);
             const game = yield (0, routesUtils_1.getGame)(data);
+            console.log(game.gameId);
             game.startHand();
             yield (0, routesUtils_1.updateGame)(game);
             io.in(game.gameId).emit("startGame", game);

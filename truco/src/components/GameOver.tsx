@@ -11,7 +11,7 @@ type Props = {
 }
 
 const GameOver = (props: Props): React.ReactElement => {
-    const { id} = useParams();
+    const { id } = useParams();
     const { hostPoints, otherPoints } = props.game;
     const [ready, setReady] = React.useState(false);
 
@@ -19,6 +19,7 @@ const GameOver = (props: Props): React.ReactElement => {
 
     const handleClick = () => {
         if (props.socket) {
+            console.log(id);
             props.socket.emit('overReady', id);
             setReady(true);
         }
