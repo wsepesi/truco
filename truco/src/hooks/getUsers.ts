@@ -1,9 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
+import { BASE_URL } from "../configs/vars"
 import { User } from '../configs/types';
 import { useQuery } from 'react-query';
-
-const BASE_URL = 'http://localhost:5000/';
 
 const getUsers = async (): Promise<User[]> => {
     const requestOptions: AxiosRequestConfig = {
