@@ -1,8 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
+import { BASE_URL } from "../configs/vars"
 import { useQuery } from 'react-query';
-
-const BASE_URL = 'http://localhost:5000/';
 
 type LoginResult = {
     success: boolean,
