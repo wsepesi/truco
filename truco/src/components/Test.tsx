@@ -6,6 +6,7 @@ const Test = (): React.ReactElement => {
 
     return(
         <div className="Test">
+            <h1>Test result:</h1>
             <h1>{(status === "success" && data) ? data.data : "ERROR"}</h1>
         </div>)
 }
