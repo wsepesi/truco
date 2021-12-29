@@ -20,13 +20,13 @@ export const getDomain = (): string => {
 const getApiEndpoint = (): string => {
 	switch (getDomain()) {
 		case BUILD_TYPES.PRODUCTION: //TODO: fix
-			return 'http://104.131.120.33/';
+			return 'https://trucoserver.xyz/';
         case BUILD_TYPES.LOCAL:
             return 'http://localhost:5000/'
 		// case BUILD_TYPES.STAGING:
 		// 	return 'https://staging--services.4giving.com';
 		default:
-			return 'http://104.131.120.33/';
+			return 'https://trucoserver.xyz/';
 	}
 };
 
