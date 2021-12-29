@@ -28,6 +28,7 @@ const Home = (props: Props) :React.ReactElement => {
           socket={props.socket}
         />
         <Box sx={{padding: '50px 0px', display: 'flex', width: '100vw', flex: 'column', justifyContent: 'space-around'}}>
+          <h3>Note that Truco is still in a beta version, so bugs may occur. If they do, please note the game state, take a screenshot of console (inspect element to find this) and report using the form</h3>
           <Host
             socket={props.socket}
             loggedIn={loggedIn}
