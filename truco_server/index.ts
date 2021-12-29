@@ -8,10 +8,13 @@ import Room from "./src/models/room";
 import { Server } from "socket.io";
 import cors from 'cors'
 import { createServer } from "https";
+import { createServer as createServerHttp } from "http";
 import dotenv from 'dotenv'
 import express from 'express'
 import fs from 'fs'
 import { trucoRouter } from './src/routes/truco.router'
+
+const LOCAL = false; // REMEMBER TO SET THIS TO FALSE WHEN YOU PUSH
 
 dotenv.config({ path: './config.env'});
 
@@ -21,12 +24,12 @@ const port = process.env.PORT || 5000
 app.use(cors())
 app.use(express.json())
 
-const options = {
+const options = LOCAL ? null : {
     cert: fs.readFileSync(process.env.CERT_PATH),
     key: fs.readFileSync(process.env.KEY_PATH)
 }
 
-const httpsServer = createServer(options, app);
+const httpsServer = LOCAL ? createServerHttp(app) : createServer(options, app);
 const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(httpsServer, {
   cors: {
     origin: "*",
