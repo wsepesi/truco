@@ -78,6 +78,7 @@ const Navbar = (props:Props): React.ReactElement => {
               <Typography variant="h6" color="inherit" sx={{ mr: 10 }}>Truco</Typography>
               <Button color="inherit" sx={{mr: 5}}>Home</Button>
               <Button color="inherit" sx={{mr: "auto"}} href="https://docs.google.com/document/d/1_HU9laefpcZ4aKuApETjx12t1oQdvwo0ophKL0Y8yyM/edit?usp=sharing">Rules</Button>
+              <Button color="inherit" sx={{mr: "auto"}} href="https://forms.gle/9EsxaPpHpXnvxgzj9">Report a Bug</Button>
               {props.loggedIn
                 ? <span><Box sx={{ display: { xs: 'none', md: 'flex' } }}><Typography variant="h6" color="inherit">Username: {props.currentUser}</Typography><Button color="inherit" onClick={logoutClick} sx={{ml: 5}}>Logout</Button></Box></span>
                 : <Button color="inherit" onClick={loginClick}>Login</Button>}
