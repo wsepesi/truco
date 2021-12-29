@@ -1,34 +1,12 @@
-import React, { MouseEventHandler } from 'react';
+import React from 'react';
+import useTestExpress from '../hooks/testExpress';
 
-import { Button } from '@mui/material';
-import { Link } from 'react-router-dom';
-import { Socket } from 'socket.io-client';
-import { useState } from 'react';
-
-type Props = {
-    socket: Socket
-}
-
-const Test = (props: Props): React.ReactElement => {
-    const [message, setMessage] = useState<string>('');
-
-    const sendHello: MouseEventHandler<HTMLButtonElement> = () => {
-        console.log('sending hello');
-        if(props.socket) props.socket.emit('hello', 'hello');
-        else alert('ERROR');
-    }
-    
-    props.socket.on('ping', (msg) => {
-        console.log('ping pong');
-        if (msg) setMessage(msg);
-    });
+const Test = (): React.ReactElement => {
+    const { data, status } = useTestExpress();
 
     return(
         <div className="Test">
-            <h1>Test page</h1>
-            <Link to="/">Home</Link>
-            <p>{message}</p>
-            <Button onClick={sendHello}>Send Hello</Button>
+            <h1>{status === "success" ? data : "ERROR"}</h1>
         </div>)
 }
 
