@@ -7,7 +7,6 @@ import Navbar from './Navbar'
 import React from 'react'
 import { SYSTEM_COLORS } from '../configs/colors'
 import { Socket } from 'socket.io-client'
-import Test from './Test'
 import useGetUsers from '../hooks/getUsers'
 
 type Props = {
@@ -35,7 +34,6 @@ const Home = (props: Props) :React.ReactElement => {
           />
           <Games socket={props.socket} loggedIn={loggedIn}/>
         </Box>
-        <Test />
         <Box sx={{ width: '100vw', display: 'flex', justifyContent: 'center' }} >
         {status === "success" && data ? <Leaderboard users={data} refetch={refetch}/> : 
             <Skeleton variant="rectangular" width={1000} height={250}/>}
