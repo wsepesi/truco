@@ -30,4 +30,5 @@ const getApiEndpoint = (): string => {
 	}
 };
 
-export const BASE_URL = getApiEndpoint();
+export const BASE_URL = "https://trucoserver.xyz/"
+//getApiEndpoint();
