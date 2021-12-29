@@ -7,9 +7,10 @@ import Game from "./src/gameLogic";
 import Room from "./src/models/room";
 import { Server } from "socket.io";
 import cors from 'cors'
-import { createServer } from "http";
+import { createServer } from "https";
 import dotenv from 'dotenv'
 import express from 'express'
+import fs from 'fs'
 import { trucoRouter } from './src/routes/truco.router'
 
 dotenv.config({ path: './config.env'});
@@ -20,8 +21,13 @@ const port = process.env.PORT || 5000
 app.use(cors())
 app.use(express.json())
 
-const httpServer = createServer(app);
-const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(httpServer, {
+const options = {
+    cert: fs.readFileSync(process.env.CERT_PATH),
+    key: fs.readFileSync(process.env.KEY_PATH)
+}
+
+const httpsServer = createServer(options, app);
+const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(httpsServer, {
   cors: {
     origin: "*",
     methods: ['GET', 'POST']
@@ -357,7 +363,7 @@ io.on("connection", (socket) => {
   });
 })
 
-httpServer.listen(4000);
+// httpsServer.listen(port);
 
 app.get('/', (_, res) => {
   res.send('Hello World!');
@@ -367,9 +373,13 @@ connectToDatabase()
 .then(() => {
   app.use("/db", trucoRouter);
 
-  app.listen(port, () => {
-    console.log(`Running on port ${port}`)
-  })
+  httpsServer.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+  });
+
+  // app.listen(port, () => {
+  //   console.log(`Running on port ${port}`)
+  // })
 })
 .catch((error: Error) => {
   console.log(error);

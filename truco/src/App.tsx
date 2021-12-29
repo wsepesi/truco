@@ -14,7 +14,7 @@ function App() {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const newSocket = io(`${BASE_URL}:4000`, {
+    const newSocket = io(`${BASE_URL}`, {
       // withCredentials: true,
       extraHeaders: {
         'Access-Control-Allow-Origin': '*',
