@@ -4,6 +4,7 @@ import { collections, connectToDatabase } from "./src/services/database.service"
 import { createGame, deleteGame, deleteRoom, getGame, getRoom, getRooms, getUser, updateGame, updateRoom } from "./src/routes/routesUtils";
 
 import Game from "./src/gameLogic";
+import { LOCAL } from './src/env'
 import Room from "./src/models/room";
 import { Server } from "socket.io";
 import cors from 'cors'
@@ -13,8 +14,6 @@ import dotenv from 'dotenv'
 import express from 'express'
 import fs from 'fs'
 import { trucoRouter } from './src/routes/truco.router'
-
-const LOCAL = false; // REMEMBER TO SET THIS TO FALSE WHEN YOU PUSH
 
 dotenv.config({ path: './config.env'});
 
@@ -366,8 +365,6 @@ io.on("connection", (socket) => {
   });
 })
 
-// httpsServer.listen(port);
-
 app.get('/', (_, res) => {
   res.send('Hello World!');
 })
@@ -379,10 +376,6 @@ connectToDatabase()
   httpsServer.listen(port, () => {
     console.log(`Server listening on port ${port}`);
   });
-
-  // app.listen(port, () => {
-  //   console.log(`Running on port ${port}`)
-  // })
 })
 .catch((error: Error) => {
   console.log(error);
