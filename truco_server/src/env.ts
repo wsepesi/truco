@@ -1,1 +1,1 @@
-export const LOCAL = false;
+export const LOCAL = true;
